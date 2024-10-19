@@ -4,6 +4,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -35,9 +37,13 @@ public class Employee {
     @EqualsAndHashCode.Include
     private Long employeeId;
 
-    private Long roleId;
+    @ManyToOne
+    @JoinColumn(name = "role_id")
+    private Role role;
 
-    private Long specializationId;
+    @ManyToOne
+    @JoinColumn(name = "specialization_id")
+    private Specialization specialization;
 
     private String firstName;
 
