@@ -28,14 +28,7 @@ import ru.projects.views.MainLayout;
 import java.time.LocalDate;
 import java.util.List;
 
-/**
- * @author Artem Chernikov
- * @version 1.0
- * @since 19.10.2024
- */
-@PageTitle("Create Employee")
-@Route(value = "create-employee", layout = MainLayout.class)
-public class CreateEmployeeView extends Composite<VerticalLayout> {
+public class CreateViewNew extends Composite<VerticalLayout> {
 
     private final EmployeeService employeeService;
     private final SpecializationService specializationService;
@@ -50,7 +43,7 @@ public class CreateEmployeeView extends Composite<VerticalLayout> {
     private ComboBox<SpecializationDto> comboBox;
     private FormLayout formLayout2Col;
 
-    public CreateEmployeeView(EmployeeService employeeService, SpecializationService specializationService) {
+    public CreateViewNew(EmployeeService employeeService, SpecializationService specializationService) {
         this.employeeService = employeeService;
         this.specializationService = specializationService;
 
@@ -131,6 +124,7 @@ public class CreateEmployeeView extends Composite<VerticalLayout> {
         String email = emailField.getValue();
         String specializationName = comboBox.getValue().getSpecializationName();
 
+        // Валидация данных (например, проверка на пустые поля)
         if (firstName.isEmpty() || lastName.isEmpty() || login.isEmpty()) {
             Notification.show("Please fill in all required fields.");
             return;
@@ -149,8 +143,8 @@ public class CreateEmployeeView extends Composite<VerticalLayout> {
                 .build();
 
         employeeService.save(newEmployee);
-        clearFields();
-        Notification.show("Employee saved successfully.", 5000, Notification.Position.TOP_CENTER);
+
+        Notification.show("Employee saved successfully.");
     }
 
     private void cancel() {
@@ -176,3 +170,4 @@ public class CreateEmployeeView extends Composite<VerticalLayout> {
         comboBox.setItemLabelGenerator(SpecializationDto::getSpecializationName);
     }
 }
+
