@@ -52,7 +52,7 @@ public class MainLayout extends AppLayout {
         SideNav nav = new SideNav();
 
         nav.addItem(new SideNavItem("Employees", EmployeesView.class, LineAwesomeIcon.FILTER_SOLID.create()));
-        nav.addItem(new SideNavItem("Create Employee", CreateEmployeeView.class, LineAwesomeIcon.FILTER_SOLID.create()));
+        nav.addItem(new SideNavItem("Create Employee", CreateEmployeeView.class, LineAwesomeIcon.USER.create()));
         return nav;
     }
 
