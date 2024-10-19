@@ -4,7 +4,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,8 +25,10 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @ToString
+@Builder
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
+@Table(name = "employees")
 public class Employee {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,11 +43,11 @@ public class Employee {
 
     private String lastName;
 
-    private String patronymic;
+    private String patronymicName;
 
     private LocalDate dateOfBirth;
 
-    private String phoneNumber;
+    private String phone;
 
     private String email;
 

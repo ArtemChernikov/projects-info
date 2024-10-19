@@ -1,0 +1,5 @@
+CREATE TABLE roles
+(
+    role_id   BIGSERIAL PRIMARY KEY,
+    role_name VARCHAR(100) NOT NULL UNIQUE
+);
