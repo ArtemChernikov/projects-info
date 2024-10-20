@@ -11,6 +11,7 @@ import ru.projects.model.Role;
 import ru.projects.model.Specialization;
 import ru.projects.model.dto.CreateEmployeeDto;
 import ru.projects.model.dto.EmployeeDto;
+import ru.projects.model.dto.EmployeeFullDto;
 import ru.projects.repository.EmployeeRepository;
 import ru.projects.repository.RoleRepository;
 import ru.projects.repository.SpecializationRepository;
@@ -63,11 +64,46 @@ public class EmployeeService {
         employeeRepository.save(newEmployee);
     }
 
-    public Optional<Employee> getById(Long id) {
-        return employeeRepository.findById(id);
+    public Optional<EmployeeFullDto> getById(Long id) {
+        Optional<Employee> optionalEmployee = employeeRepository.findById(id);
+        if (optionalEmployee.isEmpty()) {
+            return Optional.empty();
+        }
+        Employee employee = optionalEmployee.get();
+        EmployeeFullDto employeeFullDto = EmployeeFullDto.builder()
+                .employeeId(employee.getEmployeeId())
+                .specialization(employee.getSpecialization().getSpecializationName())
+                .firstName(employee.getFirstName())
+                .lastName(employee.getLastName())
+                .patronymicName(employee.getPatronymicName())
+                .dateOfBirth(employee.getDateOfBirth())
+                .phone(employee.getPhone())
+                .email(employee.getEmail())
+                .login(employee.getLogin())
+                .password(employee.getPassword())
+                .build();
+        return Optional.of(employeeFullDto);
     }
 
-    public Employee update(Employee employee) {
+    public Employee update(EmployeeFullDto employeeFullDto) {
+        Specialization specialization = specializationRepository
+                .findBySpecializationName(employeeFullDto.getSpecialization())
+                .orElseThrow(() -> new RuntimeException("Specialization not found"));
+
+        Employee employee = Employee.builder()
+                .employeeId(employeeFullDto.getEmployeeId())
+                .role(getRoleBySpecializationName(specialization.getSpecializationName()))
+                .specialization(specialization)
+                .role(getRoleBySpecializationName(specialization.getSpecializationName()))
+                .firstName(employeeFullDto.getFirstName())
+                .lastName(employeeFullDto.getLastName())
+                .patronymicName(employeeFullDto.getPatronymicName())
+                .dateOfBirth(employeeFullDto.getDateOfBirth())
+                .phone(employeeFullDto.getPhone())
+                .email(employeeFullDto.getEmail())
+                .login(employeeFullDto.getLogin())
+                .password(passwordEncoder.encode(employeeFullDto.getPassword()))
+                .build();
         return employeeRepository.save(employee);
     }
 
@@ -75,8 +111,13 @@ public class EmployeeService {
         employeeRepository.deleteById(id);
     }
 
-    public Page<Employee> getAll(Pageable pageable) {
-        return employeeRepository.findAll(pageable);
+    public Page<EmployeeFullDto> getAll(Pageable pageable) {
+        return employeeRepository.findAll(pageable)
+                .map(employee -> new EmployeeFullDto(employee.getEmployeeId(),
+                        employee.getSpecialization().getSpecializationName(),
+                        employee.getFirstName(), employee.getLastName(), employee.getPatronymicName(),
+                        employee.getDateOfBirth(), employee.getPhone(), employee.getEmail(),
+                        employee.getLogin(), employee.getPassword()));
     }
 
     public Page<EmployeeDto> getAllByFilter(Pageable pageable, Specification<Employee> filter) {

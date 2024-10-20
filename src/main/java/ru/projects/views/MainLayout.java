@@ -1,5 +1,6 @@
 package ru.projects.views;
 
+import ru.projects.views.employees.AdminEmployeesView;
 import ru.projects.views.employees.CreateEmployeeView;
 import ru.projects.views.employees.EmployeesView;
 import com.vaadin.flow.component.applayout.AppLayout;
@@ -53,6 +54,7 @@ public class MainLayout extends AppLayout {
 
         nav.addItem(new SideNavItem("Employees", EmployeesView.class, LineAwesomeIcon.FILTER_SOLID.create()));
         nav.addItem(new SideNavItem("Create Employee", CreateEmployeeView.class, LineAwesomeIcon.USER.create()));
+        nav.addItem(new SideNavItem("Admin Employees", AdminEmployeesView.class, LineAwesomeIcon.COLUMNS_SOLID.create()));
         return nav;
     }
 
