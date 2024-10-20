@@ -15,6 +15,7 @@ import com.vaadin.flow.component.sidenav.SideNavItem;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import org.vaadin.lineawesome.LineAwesomeIcon;
+import ru.projects.views.projects.CreateProjectView;
 
 /**
  * The main view is a top-level placeholder for other views.
@@ -54,6 +55,7 @@ public class MainLayout extends AppLayout {
 
         nav.addItem(new SideNavItem("Employees", EmployeesView.class, LineAwesomeIcon.FILTER_SOLID.create()));
         nav.addItem(new SideNavItem("Create Employee", CreateEmployeeView.class, LineAwesomeIcon.USER.create()));
+        nav.addItem(new SideNavItem("Create Project", CreateProjectView.class, LineAwesomeIcon.PROJECT_DIAGRAM_SOLID.create()));
         nav.addItem(new SideNavItem("Admin Employees", AdminEmployeesView.class, LineAwesomeIcon.COLUMNS_SOLID.create()));
         return nav;
     }

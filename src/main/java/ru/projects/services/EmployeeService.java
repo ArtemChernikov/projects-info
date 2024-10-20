@@ -11,11 +11,15 @@ import ru.projects.model.Role;
 import ru.projects.model.Specialization;
 import ru.projects.model.dto.EmployeeDto;
 import ru.projects.model.dto.EmployeeFullDto;
+import ru.projects.model.dto.EmployeeShortDto;
 import ru.projects.repository.EmployeeRepository;
 import ru.projects.repository.RoleRepository;
 import ru.projects.repository.SpecializationRepository;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static ru.projects.utils.Constants.AQA_ENGINEER_SPECIALIZATION_NAME;
 import static ru.projects.utils.Constants.BACKEND_DEVELOPER_SPECIALIZATION_NAME;
@@ -126,6 +130,40 @@ public class EmployeeService {
                         employee.getFirstName(), employee.getLastName(), employee.getPatronymicName(),
                         employee.getDateOfBirth(), employee.getPhone(), employee.getEmail(),
                         employee.getLogin(), employee.getPassword()));
+    }
+
+    public List<EmployeeShortDto> getAllProjectManagers() {
+        StringBuilder stringBuilder = new StringBuilder();
+        return employeeRepository.findAllByRole_RoleName(PROJECT_MANAGER_ROLE_NAME).stream()
+                .map(employee -> {
+                    stringBuilder.append(employee.getFirstName());
+                    stringBuilder.append(" ");
+                    stringBuilder.append(employee.getLastName());
+                    stringBuilder.append(" ");
+                    stringBuilder.append(employee.getPatronymicName());
+                    stringBuilder.append(" ");
+                    EmployeeShortDto employeeShortDto = new EmployeeShortDto(employee.getEmployeeId(), stringBuilder.toString());
+                    stringBuilder.setLength(0);
+                    return employeeShortDto;
+                }).toList();
+    }
+
+    public Map<String, List<EmployeeShortDto>> groupEmployeesBySpecialization() {
+        StringBuilder stringBuilder = new StringBuilder();
+        List<Employee> employees = employeeRepository.findAll();
+        return employees.stream()
+                .collect(Collectors.groupingBy(employee -> employee.getSpecialization().getSpecializationName(),
+                        Collectors.mapping(employee -> {
+                            stringBuilder.append(employee.getFirstName());
+                            stringBuilder.append(" ");
+                            stringBuilder.append(employee.getLastName());
+                            stringBuilder.append(" ");
+                            stringBuilder.append(employee.getPatronymicName());
+                            stringBuilder.append(" ");
+                            EmployeeShortDto employeeShortDto = new EmployeeShortDto(employee.getEmployeeId(), stringBuilder.toString());
+                            stringBuilder.setLength(0);
+                            return employeeShortDto;
+                        }, Collectors.toList())));
     }
 
     private Role getRoleBySpecializationName(String specializationName) {

@@ -1,11 +1,17 @@
 package ru.projects.model;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,6 +20,7 @@ import lombok.ToString;
 import ru.projects.model.enums.Status;
 
 import java.time.LocalDate;
+import java.util.Set;
 
 /**
  * @author Artem Chernikov
@@ -26,6 +33,7 @@ import java.time.LocalDate;
 @Setter
 @ToString
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@Builder
 @Entity
 @Table(name = "projects")
 public class Project {
@@ -34,13 +42,15 @@ public class Project {
     @EqualsAndHashCode.Include
     private Long projectId;
 
-    private Long managerId;
-
     private String name;
 
     private LocalDate startDate;
 
     private LocalDate endDate;
 
+    @Enumerated(EnumType.STRING)
     private Status status;
+
+    @ManyToMany(mappedBy = "projects")
+    private Set<Employee> employees;
 }

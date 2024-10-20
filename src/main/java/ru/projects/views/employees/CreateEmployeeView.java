@@ -182,16 +182,13 @@ public class CreateEmployeeView extends Composite<VerticalLayout> {
         emailField.setRequiredIndicatorVisible(true);
         loginField.setRequiredIndicatorVisible(true);
         passwordField.setRequiredIndicatorVisible(true);
+        specializationsComboBox.setRequiredIndicatorVisible(true);
     }
 
     private void clearForm() {
-        fillCreatedForm(null);
-        specializationsComboBox.clear();
-    }
-
-    private void fillCreatedForm(EmployeeDto value) {
-        this.employeeDto = value;
+        this.employeeDto = null;
         binder.readBean(this.employeeDto);
+        specializationsComboBox.clear();
     }
 
     private void setSpecializationsToComboBox() {

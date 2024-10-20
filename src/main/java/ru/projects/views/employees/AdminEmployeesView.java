@@ -191,6 +191,7 @@ public class AdminEmployeesView extends Div implements BeforeEnterObserver {
         email.setRequiredIndicatorVisible(true);
         login.setRequiredIndicatorVisible(true);
         password.setRequiredIndicatorVisible(true);
+        specializationsComboBox.setRequiredIndicatorVisible(true);
     }
 
     private void configureGrid() {
