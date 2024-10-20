@@ -19,7 +19,6 @@ import jakarta.persistence.criteria.Root;
 import org.springframework.data.jpa.domain.Specification;
 import ru.projects.model.Employee;
 import ru.projects.model.Specialization;
-import ru.projects.model.dto.SpecializationDto;
 import ru.projects.services.SpecializationService;
 
 import java.util.ArrayList;
@@ -31,7 +30,7 @@ public class EmployeeFilter extends Div implements Specification<Employee> {
     private final TextField phone = new TextField("Phone");
     private final DatePicker startDate = new DatePicker("Date of Birth");
     private final DatePicker endDate = new DatePicker();
-    private final MultiSelectComboBox<SpecializationDto> specializations = new MultiSelectComboBox<>("Specialization");
+    private final MultiSelectComboBox<String> specializations = new MultiSelectComboBox<>("Specialization");
 
     public EmployeeFilter(SpecializationService specializationService, Runnable onSearch) {
         setWidthFull();
@@ -45,9 +44,8 @@ public class EmployeeFilter extends Div implements Specification<Employee> {
 
     private void configureFilters(SpecializationService specializationService) {
         name.setPlaceholder("First or last name");
-        List<SpecializationDto> specializationDtos = specializationService.getAll();
-        specializations.setItems(specializationDtos);
-        specializations.setItemLabelGenerator(SpecializationDto::getSpecializationName);
+        List<String> allSpecializationsNames = specializationService.getAllSpecializationsNames();
+        this.specializations.setItems(allSpecializationsNames);
     }
 
     private void addComponents(Runnable onSearch) {
@@ -108,10 +106,10 @@ public class EmployeeFilter extends Div implements Specification<Employee> {
         if (!specializations.isEmpty()) {
             Join<Employee, Specialization> specializationJoin = root.join("specialization");
             List<Predicate> specializationPredicates = new ArrayList<>();
-            for (SpecializationDto specialization : specializations.getValue()) {
+            for (String specializationName : specializations.getValue()) {
                 specializationPredicates.add(
                         criteriaBuilder.equal(specializationJoin.get("specializationName"),
-                                specialization.getSpecializationName())
+                                specializationName)
                 );
             }
             predicates.add(criteriaBuilder.or(specializationPredicates.toArray(Predicate[]::new)));

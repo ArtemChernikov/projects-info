@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import ru.projects.model.Employee;
 import ru.projects.model.Role;
 import ru.projects.model.Specialization;
-import ru.projects.model.dto.CreateEmployeeDto;
 import ru.projects.model.dto.EmployeeDto;
 import ru.projects.model.dto.EmployeeFullDto;
 import ru.projects.repository.EmployeeRepository;
@@ -43,23 +42,23 @@ public class EmployeeService {
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public void save(CreateEmployeeDto createEmployeeDto) {
+    public void save(EmployeeDto employeeDto) {
         //TODO ОБРАБОТАТЬ
         Specialization specialization = specializationRepository
-                .findBySpecializationName(createEmployeeDto.getSpecializationName())
+                .findBySpecializationName(employeeDto.getSpecialization())
                 .orElseThrow(() -> new RuntimeException("Specialization not found"));
 
         Employee newEmployee = Employee.builder()
                 .role(getRoleBySpecializationName(specialization.getSpecializationName()))
                 .specialization(specialization)
-                .firstName(createEmployeeDto.getFirstName())
-                .lastName(createEmployeeDto.getLastName())
-                .patronymicName(createEmployeeDto.getPatronymicName())
-                .dateOfBirth(createEmployeeDto.getDateOfBirth())
-                .phone(createEmployeeDto.getPhone())
-                .email(createEmployeeDto.getEmail())
-                .login(createEmployeeDto.getLogin())
-                .password(passwordEncoder.encode(createEmployeeDto.getPassword()))
+                .firstName(employeeDto.getFirstName())
+                .lastName(employeeDto.getLastName())
+                .patronymicName(employeeDto.getPatronymicName())
+                .dateOfBirth(employeeDto.getDateOfBirth())
+                .phone(employeeDto.getPhone())
+                .email(employeeDto.getEmail())
+                .login(employeeDto.getLogin())
+                .password(passwordEncoder.encode(employeeDto.getPassword()))
                 .build();
         employeeRepository.save(newEmployee);
     }

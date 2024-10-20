@@ -31,7 +31,6 @@ import java.util.Optional;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import ru.projects.model.dto.EmployeeFullDto;
-import ru.projects.model.dto.SpecializationDto;
 import ru.projects.services.EmployeeService;
 import ru.projects.services.SpecializationService;
 import ru.projects.views.MainLayout;
@@ -56,9 +55,9 @@ public class AdminEmployeesView extends Div implements BeforeEnterObserver {
     private PasswordField password;
     private ComboBox<String> specializationsComboBox;
 
-    private final Button cancel = new Button("Cancel");
     private final Button save = new Button("Save");
     private final Button delete = new Button("Delete");
+    private final Button cancel = new Button("Cancel");
 
     private BeanValidationBinder<EmployeeFullDto> binder;
 
@@ -100,15 +99,15 @@ public class AdminEmployeesView extends Div implements BeforeEnterObserver {
             employeeService.update(this.employee);
             clearForm();
             refreshGrid();
-            Notification.show("The employee has been updated.", 3000, Position.MIDDLE)
+            Notification.show("The employee has been updated.", 3000, Position.TOP_CENTER)
                     .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
             UI.getCurrent().navigate(AdminEmployeesView.class);
         } catch (ObjectOptimisticLockingFailureException exception) {
             Notification.show(
-                    "Error updating the data. Somebody else has updated the record while you were making changes.",
+                    "Error updating the employee. Somebody else has updated the record while you were making changes.",
                     3000, Position.TOP_CENTER).addThemeVariants(NotificationVariant.LUMO_ERROR);
         } catch (ValidationException validationException) {
-            Notification.show("Failed to update the data. Check again that all values are valid",
+            Notification.show("Failed to update the employee. Check again that all values are valid",
                     3000, Position.TOP_CENTER).addThemeVariants(NotificationVariant.LUMO_ERROR);
         }
     }
@@ -122,16 +121,32 @@ public class AdminEmployeesView extends Div implements BeforeEnterObserver {
             employeeService.deleteById(this.employee.getEmployeeId());
             clearForm();
             refreshGrid();
-            Notification.show("The employee has been removed.", 3000, Position.MIDDLE)
+            Notification.show("The employee has been removed.", 3000, Position.TOP_CENTER)
                     .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
             UI.getCurrent().navigate(AdminEmployeesView.class);
         } catch (ObjectOptimisticLockingFailureException exception) {
-        Notification.show(
+            Notification.show(
                     "Error updating the data. Somebody else has updated the record while you were making changes.",
-                    3000, Notification.Position.TOP_CENTER). addThemeVariants(NotificationVariant.LUMO_ERROR);
+                    3000, Notification.Position.TOP_CENTER).addThemeVariants(NotificationVariant.LUMO_ERROR);
         } catch (ValidationException validationException) {
             Notification.show("Failed to delete employee. Check again that all values are valid",
                     3000, Notification.Position.TOP_CENTER);
+        }
+    }
+
+    @Override
+    public void beforeEnter(BeforeEnterEvent event) {
+        Optional<Long> employeeId = event.getRouteParameters().get(EMPLOYEE_ID).map(Long::parseLong);
+        if (employeeId.isPresent()) {
+            Optional<EmployeeFullDto> employeeFromBackend = employeeService.getById(employeeId.get());
+            if (employeeFromBackend.isPresent()) {
+                fillEditForm(employeeFromBackend.get());
+            } else {
+                Notification.show(String.format("The requested employee was not found, ID = %s", employeeId.get()),
+                        3000, Notification.Position.BOTTOM_START);
+                refreshGrid();
+                event.forwardTo(AdminEmployeesView.class);
+            }
         }
     }
 
@@ -167,20 +182,15 @@ public class AdminEmployeesView extends Div implements BeforeEnterObserver {
         binder.bindInstanceFields(this);
     }
 
-    @Override
-    public void beforeEnter(BeforeEnterEvent event) {
-        Optional<Long> employeeId = event.getRouteParameters().get(EMPLOYEE_ID).map(Long::parseLong);
-        if (employeeId.isPresent()) {
-            Optional<EmployeeFullDto> employeeFromBackend = employeeService.getById(employeeId.get());
-            if (employeeFromBackend.isPresent()) {
-                populateForm(employeeFromBackend.get());
-            } else {
-                Notification.show(String.format("The requested employee was not found, ID = %s", employeeId.get()),
-                        3000, Notification.Position.BOTTOM_START);
-                refreshGrid();
-                event.forwardTo(AdminEmployeesView.class);
-            }
-        }
+    private void setRequiredFiles() {
+        firstName.setRequiredIndicatorVisible(true);
+        lastName.setRequiredIndicatorVisible(true);
+        patronymicName.setRequiredIndicatorVisible(true);
+        dateOfBirth.setRequiredIndicatorVisible(true);
+        phone.setRequiredIndicatorVisible(true);
+        email.setRequiredIndicatorVisible(true);
+        login.setRequiredIndicatorVisible(true);
+        password.setRequiredIndicatorVisible(true);
     }
 
     private void configureGrid() {
@@ -226,7 +236,7 @@ public class AdminEmployeesView extends Div implements BeforeEnterObserver {
         password = new PasswordField("Password");
         specializationsComboBox = new ComboBox<>("Specialization");
         specializationsComboBox.setWidth("min-content");
-        setSpecializations();
+        setSpecializationsToComboBox();
         setRequiredFiles();
         formLayout.add(firstName, lastName, patronymicName, dateOfBirth, phone, email, login, password, specializationsComboBox);
 
@@ -234,17 +244,6 @@ public class AdminEmployeesView extends Div implements BeforeEnterObserver {
         createButtonLayout(editorLayoutDiv);
 
         splitLayout.addToSecondary(editorLayoutDiv);
-    }
-
-    private void setRequiredFiles() {
-        firstName.setRequiredIndicatorVisible(true);
-        lastName.setRequiredIndicatorVisible(true);
-        patronymicName.setRequiredIndicatorVisible(true);
-        dateOfBirth.setRequiredIndicatorVisible(true);
-        phone.setRequiredIndicatorVisible(true);
-        email.setRequiredIndicatorVisible(true);
-        login.setRequiredIndicatorVisible(true);
-        password.setRequiredIndicatorVisible(true);
     }
 
     private void createButtonLayout(Div editorLayoutDiv) {
@@ -270,18 +269,17 @@ public class AdminEmployeesView extends Div implements BeforeEnterObserver {
     }
 
     private void clearForm() {
-        populateForm(null);
+        fillEditForm(null);
         specializationsComboBox.clear();
     }
 
-    private void populateForm(EmployeeFullDto value) {
+    private void fillEditForm(EmployeeFullDto value) {
         this.employee = value;
         binder.readBean(this.employee);
     }
 
-    private void setSpecializations() {
-        List<String> specializations = specializationService.getAll().stream()
-                .map(SpecializationDto::getSpecializationName).toList();
+    private void setSpecializationsToComboBox() {
+        List<String> specializations = specializationService.getAllSpecializationsNames();
         specializationsComboBox.setItems(specializations);
     }
 }

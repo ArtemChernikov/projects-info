@@ -19,9 +19,15 @@ public class SpecializationService {
 
     private final SpecializationRepository specializationRepository;
 
-    public List<SpecializationDto> getAll() {
+    public List<SpecializationDto> getAllSpecializationsDto() {
         return specializationRepository.findAll().stream()
                 .map(specialization -> new SpecializationDto(specialization.getSpecializationName()))
+                .toList();
+    }
+
+    public List<String> getAllSpecializationsNames() {
+        return specializationRepository.findAll().stream()
+                .map(Specialization::getSpecializationName)
                 .toList();
     }
 

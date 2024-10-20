@@ -8,6 +8,7 @@ import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.FlexComponent.Alignment;
 import com.vaadin.flow.component.orderedlayout.FlexComponent.JustifyContentMode;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -15,16 +16,16 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.EmailField;
 import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.binder.BeanValidationBinder;
+import com.vaadin.flow.data.binder.ValidationException;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility.Gap;
-import ru.projects.model.dto.CreateEmployeeDto;
-import ru.projects.model.dto.SpecializationDto;
+import ru.projects.model.dto.EmployeeDto;
 import ru.projects.services.EmployeeService;
 import ru.projects.services.SpecializationService;
 import ru.projects.views.MainLayout;
 
-import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -46,8 +47,11 @@ public class CreateEmployeeView extends Composite<VerticalLayout> {
     private TextField loginField;
     private PasswordField passwordField;
     private EmailField emailField;
-    private ComboBox<SpecializationDto> comboBox;
+    private ComboBox<String> specializationsComboBox;
     private FormLayout formLayout2Col;
+    private BeanValidationBinder<EmployeeDto> binder;
+
+    private EmployeeDto employeeDto;
 
     public CreateEmployeeView(EmployeeService employeeService, SpecializationService specializationService) {
         this.employeeService = employeeService;
@@ -60,7 +64,46 @@ public class CreateEmployeeView extends Composite<VerticalLayout> {
 
         initLayout();
         initFormFields();
+        configureValidationBinder();
+        setRequiredFiles();
         initButtons();
+    }
+
+    private void saveEmployee() {
+        try {
+            if (this.employeeDto == null) {
+                this.employeeDto = new EmployeeDto();
+            }
+            binder.writeBean(this.employeeDto);
+            employeeService.save(employeeDto);
+            clearForm();
+            Notification.show("Employee saved successfully.", 3000, Notification.Position.TOP_CENTER)
+                    .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+        } catch (ValidationException e) {
+            Notification.show("Failed to create employee. Check again that all values are valid",
+                    3000, Notification.Position.TOP_CENTER).addThemeVariants(NotificationVariant.LUMO_ERROR);
+        }
+    }
+
+    private void initButtons() {
+        HorizontalLayout layoutRow = new HorizontalLayout();
+        layoutRow.addClassName(Gap.MEDIUM);
+        layoutRow.setWidth("100%");
+        layoutRow.setHeight("50px");
+        layoutRow.setAlignItems(Alignment.CENTER);
+        layoutRow.setJustifyContentMode(JustifyContentMode.CENTER);
+
+        Button buttonSave = new Button("Save", event -> saveEmployee());
+        buttonSave.setWidth("min-content");
+        buttonSave.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+
+        Button buttonCancel = new Button("Cancel", event -> clearForm());
+        buttonCancel.setWidth("min-content");
+
+        layoutRow.add(buttonSave, buttonCancel);
+
+        VerticalLayout layoutColumn2 = (VerticalLayout) getContent().getComponentAt(0);
+        layoutColumn2.add(layoutRow);
     }
 
     private void initLayout() {
@@ -90,88 +133,69 @@ public class CreateEmployeeView extends Composite<VerticalLayout> {
         passwordField = new PasswordField("Password");
         passwordField.setWidth("min-content");
         emailField = new EmailField("Email");
-        comboBox = new ComboBox<>("Specialization");
-        comboBox.setWidth("min-content");
-        setComboBoxSampleData(comboBox);
+        specializationsComboBox = new ComboBox<>("Specialization");
+        specializationsComboBox.setWidth("min-content");
+        setSpecializationsToComboBox();
 
         formLayout2Col.add(firstNameField, lastNameField, patronymicNameField, dateOfBirth,
-                phoneNumberField, loginField, passwordField, emailField, comboBox);
+                phoneNumberField, loginField, passwordField, emailField, specializationsComboBox);
     }
 
-    private void initButtons() {
-        HorizontalLayout layoutRow = new HorizontalLayout();
-        layoutRow.addClassName(Gap.MEDIUM);
-        layoutRow.setWidth("100%");
-        layoutRow.setHeight("50px");
-        layoutRow.setAlignItems(Alignment.CENTER);
-        layoutRow.setJustifyContentMode(JustifyContentMode.CENTER);
-
-        Button buttonSave = new Button("Save", event -> saveEmployee());
-        buttonSave.setWidth("min-content");
-        buttonSave.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-
-        Button buttonCancel = new Button("Cancel", event -> cancel());
-        buttonCancel.setWidth("min-content");
-
-        layoutRow.add(buttonSave, buttonCancel);
-
-        VerticalLayout layoutColumn2 = (VerticalLayout) getContent().getComponentAt(0);
-        layoutColumn2.add(layoutRow);
+    private void configureValidationBinder() {
+        binder = new BeanValidationBinder<>(EmployeeDto.class);
+        binder.forField(firstNameField)
+                .asRequired("First Name is required")
+                .bind(EmployeeDto::getFirstName, EmployeeDto::setFirstName);
+        binder.forField(lastNameField)
+                .asRequired("Last Name is required")
+                .bind(EmployeeDto::getLastName, EmployeeDto::setLastName);
+        binder.forField(patronymicNameField)
+                .asRequired("Patronymic Name is required")
+                .bind(EmployeeDto::getPatronymicName, EmployeeDto::setPatronymicName);
+        binder.forField(dateOfBirth)
+                .asRequired("Date of Birth is required")
+                .bind(EmployeeDto::getDateOfBirth, EmployeeDto::setDateOfBirth);
+        binder.forField(phoneNumberField)
+                .asRequired("Phone is required")
+                .bind(EmployeeDto::getPhone, EmployeeDto::setPhone);
+        binder.forField(emailField)
+                .asRequired("Email is required")
+                .bind(EmployeeDto::getEmail, EmployeeDto::setEmail);
+        binder.forField(loginField)
+                .asRequired("Login is required")
+                .bind(EmployeeDto::getLogin, EmployeeDto::setLogin);
+        binder.forField(passwordField)
+                .asRequired("Password is required")
+                .bind(EmployeeDto::getPassword, EmployeeDto::setPassword);
+        binder.forField(specializationsComboBox)
+                .asRequired("Specialization is required")
+                .bind(EmployeeDto::getSpecialization, EmployeeDto::setSpecialization);
+        binder.bindInstanceFields(this);
     }
 
-    private void saveEmployee() {
-        String firstName = firstNameField.getValue();
-        String lastName = lastNameField.getValue();
-        String patronymicName = patronymicNameField.getValue();
-        LocalDate birthday = dateOfBirth.getValue();
-        String phoneNumber = phoneNumberField.getValue();
-        String login = loginField.getValue();
-        String password = passwordField.getValue();
-        String email = emailField.getValue();
-        String specializationName = comboBox.getValue().getSpecializationName();
-
-        if (firstName.isEmpty() || lastName.isEmpty() || login.isEmpty()) {
-            Notification.show("Please fill in all required fields.");
-            return;
-        }
-
-        CreateEmployeeDto newEmployee = CreateEmployeeDto.builder()
-                .firstName(firstName)
-                .lastName(lastName)
-                .patronymicName(patronymicName)
-                .dateOfBirth(birthday)
-                .phone(phoneNumber)
-                .login(login)
-                .password(password)
-                .email(email)
-                .specializationName(specializationName)
-                .build();
-
-        employeeService.save(newEmployee);
-        clearFields();
-        Notification.show("Employee saved successfully.", 5000, Notification.Position.TOP_CENTER);
+    private void setRequiredFiles() {
+        firstNameField.setRequiredIndicatorVisible(true);
+        lastNameField.setRequiredIndicatorVisible(true);
+        phoneNumberField.setRequiredIndicatorVisible(true);
+        dateOfBirth.setRequiredIndicatorVisible(true);
+        phoneNumberField.setRequiredIndicatorVisible(true);
+        emailField.setRequiredIndicatorVisible(true);
+        loginField.setRequiredIndicatorVisible(true);
+        passwordField.setRequiredIndicatorVisible(true);
     }
 
-    private void cancel() {
-        clearFields();
-        Notification.show("The fields are cleared.");
+    private void clearForm() {
+        fillCreatedForm(null);
+        specializationsComboBox.clear();
     }
 
-    private void clearFields() {
-        firstNameField.clear();
-        lastNameField.clear();
-        patronymicNameField.clear();
-        dateOfBirth.clear();
-        phoneNumberField.clear();
-        loginField.clear();
-        passwordField.clear();
-        emailField.clear();
-        comboBox.clear();
+    private void fillCreatedForm(EmployeeDto value) {
+        this.employeeDto = value;
+        binder.readBean(this.employeeDto);
     }
 
-    private void setComboBoxSampleData(ComboBox<SpecializationDto> comboBox) {
-        List<SpecializationDto> specializations = specializationService.getAll();
-        comboBox.setItems(specializations);
-        comboBox.setItemLabelGenerator(SpecializationDto::getSpecializationName);
+    private void setSpecializationsToComboBox() {
+        List<String> specializations = specializationService.getAllSpecializationsNames();
+        specializationsComboBox.setItems(specializations);
     }
 }
