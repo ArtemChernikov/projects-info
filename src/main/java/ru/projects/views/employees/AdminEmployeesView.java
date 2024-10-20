@@ -58,6 +58,7 @@ public class AdminEmployeesView extends Div implements BeforeEnterObserver {
 
     private final Button cancel = new Button("Cancel");
     private final Button save = new Button("Save");
+    private final Button delete = new Button("Delete");
 
     private BeanValidationBinder<EmployeeFullDto> binder;
 
@@ -87,6 +88,7 @@ public class AdminEmployeesView extends Div implements BeforeEnterObserver {
             refreshGrid();
         });
         save.addClickListener(clickEvent -> updateEmployee());
+        delete.addClickListener(clickEvent -> deleteEmployee());
     }
 
     private void updateEmployee() {
@@ -98,17 +100,38 @@ public class AdminEmployeesView extends Div implements BeforeEnterObserver {
             employeeService.update(this.employee);
             clearForm();
             refreshGrid();
-            Notification.show("Data updated");
+            Notification.show("The employee has been updated.", 3000, Position.MIDDLE)
+                    .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
             UI.getCurrent().navigate(AdminEmployeesView.class);
         } catch (ObjectOptimisticLockingFailureException exception) {
-            Notification n = Notification.show(
+            Notification.show(
                     "Error updating the data. Somebody else has updated the record while you were making changes.",
-                    5000, Notification.Position.TOP_CENTER);
-            n.setPosition(Position.MIDDLE);
-            n.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                    3000, Position.TOP_CENTER).addThemeVariants(NotificationVariant.LUMO_ERROR);
         } catch (ValidationException validationException) {
             Notification.show("Failed to update the data. Check again that all values are valid",
-                    5000, Notification.Position.TOP_CENTER);
+                    3000, Position.TOP_CENTER).addThemeVariants(NotificationVariant.LUMO_ERROR);
+        }
+    }
+
+    private void deleteEmployee() {
+        try {
+            if (this.employee == null) {
+                this.employee = new EmployeeFullDto();
+            }
+            binder.writeBean(this.employee);
+            employeeService.deleteById(this.employee.getEmployeeId());
+            clearForm();
+            refreshGrid();
+            Notification.show("The employee has been removed.", 3000, Position.MIDDLE)
+                    .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+            UI.getCurrent().navigate(AdminEmployeesView.class);
+        } catch (ObjectOptimisticLockingFailureException exception) {
+        Notification.show(
+                    "Error updating the data. Somebody else has updated the record while you were making changes.",
+                    3000, Notification.Position.TOP_CENTER). addThemeVariants(NotificationVariant.LUMO_ERROR);
+        } catch (ValidationException validationException) {
+            Notification.show("Failed to delete employee. Check again that all values are valid",
+                    3000, Notification.Position.TOP_CENTER);
         }
     }
 
@@ -154,8 +177,6 @@ public class AdminEmployeesView extends Div implements BeforeEnterObserver {
             } else {
                 Notification.show(String.format("The requested employee was not found, ID = %s", employeeId.get()),
                         3000, Notification.Position.BOTTOM_START);
-                // when a row is selected but the data is no longer available,
-                // refresh grid
                 refreshGrid();
                 event.forwardTo(AdminEmployeesView.class);
             }
@@ -229,9 +250,10 @@ public class AdminEmployeesView extends Div implements BeforeEnterObserver {
     private void createButtonLayout(Div editorLayoutDiv) {
         HorizontalLayout buttonLayout = new HorizontalLayout();
         buttonLayout.setClassName("button-layout");
-        cancel.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
         save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        buttonLayout.add(save, cancel);
+        delete.addThemeVariants(ButtonVariant.LUMO_ERROR);
+        cancel.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+        buttonLayout.add(save, delete, cancel);
         editorLayoutDiv.add(buttonLayout);
     }
 

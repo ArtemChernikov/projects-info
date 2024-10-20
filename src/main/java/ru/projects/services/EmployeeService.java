@@ -129,10 +129,6 @@ public class EmployeeService {
                         employee.getLogin(), employee.getPassword()));
     }
 
-    public int count() {
-        return (int) employeeRepository.count();
-    }
-
     private Role getRoleBySpecializationName(String specializationName) {
         return switch (specializationName) {
             case FULLSTACK_DEVELOPER_SPECIALIZATION_NAME, BACKEND_DEVELOPER_SPECIALIZATION_NAME,
