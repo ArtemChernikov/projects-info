@@ -3,37 +3,18 @@ package ru.projects.services;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.projects.model.Employee;
 import ru.projects.model.Project;
-import ru.projects.model.Role;
-import ru.projects.model.Specialization;
-import ru.projects.model.dto.EmployeeDto;
-import ru.projects.model.dto.EmployeeFullDto;
 import ru.projects.model.dto.EmployeeShortDto;
 import ru.projects.model.dto.ProjectCreateDto;
+import ru.projects.model.dto.ProjectFullDto;
 import ru.projects.model.enums.Status;
-import ru.projects.repository.EmployeeRepository;
 import ru.projects.repository.ProjectRepository;
-import ru.projects.repository.RoleRepository;
-import ru.projects.repository.SpecializationRepository;
 
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import static ru.projects.utils.Constants.AQA_ENGINEER_SPECIALIZATION_NAME;
-import static ru.projects.utils.Constants.BACKEND_DEVELOPER_SPECIALIZATION_NAME;
-import static ru.projects.utils.Constants.DEVELOPER_ROLE_NAME;
-import static ru.projects.utils.Constants.FRONTEND_DEVELOPER_SPECIALIZATION_NAME;
-import static ru.projects.utils.Constants.FULLSTACK_DEVELOPER_SPECIALIZATION_NAME;
-import static ru.projects.utils.Constants.PROJECT_MANAGER_ROLE_NAME;
-import static ru.projects.utils.Constants.PROJECT_MANAGER_SPECIALIZATION_NAME;
-import static ru.projects.utils.Constants.QA_ENGINEER_SPECIALIZATION_NAME;
-import static ru.projects.utils.Constants.TESTER_ROLE_NAME;
-import static ru.projects.utils.Constants.USER_ROLE_NAME;
 
 /**
  * @author Artem Chernikov
@@ -59,61 +40,61 @@ public class ProjectService {
         projectRepository.save(newProject);
     }
 
-//    public Optional<EmployeeFullDto> getById(Long id) {
-//        Optional<Employee> optionalEmployee = employeeRepository.findById(id);
-//        if (optionalEmployee.isEmpty()) {
-//            return Optional.empty();
-//        }
-//        Employee employee = optionalEmployee.get();
-//        EmployeeFullDto employeeFullDto = EmployeeFullDto.builder()
-//                .employeeId(employee.getEmployeeId())
-//                .specialization(employee.getSpecialization().getSpecializationName())
-//                .firstName(employee.getFirstName())
-//                .lastName(employee.getLastName())
-//                .patronymicName(employee.getPatronymicName())
-//                .dateOfBirth(employee.getDateOfBirth())
-//                .phone(employee.getPhone())
-//                .email(employee.getEmail())
-//                .login(employee.getLogin())
-//                .password(employee.getPassword())
-//                .build();
-//        return Optional.of(employeeFullDto);
-//    }
+    public Optional<ProjectFullDto> getById(Long id) {
+        Optional<Project> optionalProject = projectRepository.findById(id);
+        if (optionalProject.isEmpty()) {
+            return Optional.empty();
+        }
+        Project project = optionalProject.get();
+        Set<Employee> employees = project.getEmployees();
+        ProjectFullDto projectFullDto = ProjectFullDto.builder()
+                .projectId(project.getProjectId())
+                .name(project.getName())
+                .startDate(project.getStartDate())
+                .endDate(project.getEndDate())
+                .status(project.getStatus().toString())
+                .employees(employeesToEmployeeShortDtos(employees))
+                .build();
+        return Optional.of(projectFullDto);
+    }
 
-//    public Employee update(EmployeeFullDto employeeFullDto) {
-//        Specialization specialization = specializationRepository
-//                .findBySpecializationName(employeeFullDto.getSpecialization())
-//                .orElseThrow(() -> new RuntimeException("Specialization not found"));
-//
-//        Employee employee = Employee.builder()
-//                .employeeId(employeeFullDto.getEmployeeId())
-//                .role(getRoleBySpecializationName(specialization.getSpecializationName()))
-//                .specialization(specialization)
-//                .role(getRoleBySpecializationName(specialization.getSpecializationName()))
-//                .firstName(employeeFullDto.getFirstName())
-//                .lastName(employeeFullDto.getLastName())
-//                .patronymicName(employeeFullDto.getPatronymicName())
-//                .dateOfBirth(employeeFullDto.getDateOfBirth())
-//                .phone(employeeFullDto.getPhone())
-//                .email(employeeFullDto.getEmail())
-//                .login(employeeFullDto.getLogin())
-//                .password(passwordEncoder.encode(employeeFullDto.getPassword()))
-//                .build();
-//        return employeeRepository.save(employee);
-//    }
-//
-//    public void deleteById(Long id) {
-//        employeeRepository.deleteById(id);
-//    }
-//
-//    public Page<EmployeeFullDto> getAll(Pageable pageable) {
-//        return employeeRepository.findAll(pageable)
-//                .map(employee -> new EmployeeFullDto(employee.getEmployeeId(),
-//                        employee.getSpecialization().getSpecializationName(),
-//                        employee.getFirstName(), employee.getLastName(), employee.getPatronymicName(),
-//                        employee.getDateOfBirth(), employee.getPhone(), employee.getEmail(),
-//                        employee.getLogin(), employee.getPassword()));
-//    }
+    private Set<EmployeeShortDto> employeesToEmployeeShortDtos(Set<Employee> employees) {
+        StringBuilder stringBuilder = new StringBuilder();
+        return employees.stream().map(employee -> {
+            stringBuilder.append(employee.getFirstName());
+            stringBuilder.append(" ");
+            stringBuilder.append(employee.getLastName());
+            stringBuilder.append(" ");
+            stringBuilder.append(employee.getPatronymicName());
+            stringBuilder.append(" ");
+            EmployeeShortDto employeeShortDto = new EmployeeShortDto(employee.getEmployeeId(), stringBuilder.toString());
+            stringBuilder.setLength(0);
+            return employeeShortDto;
+        }).collect(Collectors.toSet());
+    }
+
+    public Project update(ProjectFullDto projectFullDto) {
+        Project project = projectRepository.findById(projectFullDto.getProjectId())
+                .orElseThrow(() -> new RuntimeException("Project Not Found."));
+        project.setName(projectFullDto.getName());
+        project.setStartDate(projectFullDto.getStartDate());
+        project.setEndDate(projectFullDto.getEndDate());
+        project.setStatus(Status.valueOf(projectFullDto.getStatus()));
+
+        return projectRepository.save(project);
+    }
+
+    public void deleteById(Long id) {
+        projectRepository.deleteById(id);
+    }
+
+    //
+    public Page<ProjectFullDto> getAll(Pageable pageable) {
+        return projectRepository.findAll(pageable)
+                .map(project -> new ProjectFullDto(project.getProjectId(), project.getName(),
+                        project.getStartDate(), project.getEndDate(), project.getStatus().toString(),
+                        employeesToEmployeeShortDtos(project.getEmployees())));
+    }
 //
 //    public Page<EmployeeDto> getAllByFilter(Pageable pageable, Specification<Employee> filter) {
 //        return employeeRepository.findAll(filter, pageable)
