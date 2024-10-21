@@ -27,7 +27,6 @@ import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import ru.projects.model.dto.ProjectFullDto;
 import ru.projects.model.enums.Status;
 import ru.projects.services.ProjectService;
-import ru.projects.services.SpecializationService;
 import ru.projects.views.MainLayout;
 
 import java.util.List;
@@ -157,7 +156,7 @@ public class ProjectsView extends Div implements BeforeEnterObserver {
         binder.bindInstanceFields(this);
     }
 
-    private void setRequiredFiles() {
+    private void setRequiredFields() {
         name.setRequiredIndicatorVisible(true);
         startDate.setRequiredIndicatorVisible(true);
         statusesComboBox.setRequiredIndicatorVisible(true);
@@ -198,7 +197,7 @@ public class ProjectsView extends Div implements BeforeEnterObserver {
         statusesComboBox = new ComboBox<>("Status");
         statusesComboBox.setWidth("min-content");
         setStatusesToComboBox();
-        setRequiredFiles();
+        setRequiredFields();
         formLayout.add(name, startDate, endDate, statusesComboBox);
 
         editorDiv.add(formLayout);

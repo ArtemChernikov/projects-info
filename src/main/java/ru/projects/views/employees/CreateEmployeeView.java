@@ -65,7 +65,7 @@ public class CreateEmployeeView extends Composite<VerticalLayout> {
         initLayout();
         initFormFields();
         configureValidationBinder();
-        setRequiredFiles();
+        setRequiredFields();
         initButtons();
     }
 
@@ -173,7 +173,7 @@ public class CreateEmployeeView extends Composite<VerticalLayout> {
         binder.bindInstanceFields(this);
     }
 
-    private void setRequiredFiles() {
+    private void setRequiredFields() {
         firstNameField.setRequiredIndicatorVisible(true);
         lastNameField.setRequiredIndicatorVisible(true);
         phoneNumberField.setRequiredIndicatorVisible(true);

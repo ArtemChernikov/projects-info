@@ -84,7 +84,7 @@ public class CreateProjectView extends Composite<VerticalLayout> {
         initLayout();
         initFormFields();
         configureValidationBinder();
-        setRequiredFiles();
+        setRequiredFields();
         initButtons();
     }
 
@@ -219,7 +219,7 @@ public class CreateProjectView extends Composite<VerticalLayout> {
         binder.bindInstanceFields(this);
     }
 
-    private void setRequiredFiles() {
+    private void setRequiredFields() {
         name.setRequiredIndicatorVisible(true);
         startDate.setRequiredIndicatorVisible(true);
     }

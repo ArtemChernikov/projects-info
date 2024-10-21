@@ -182,7 +182,7 @@ public class AdminEmployeesView extends Div implements BeforeEnterObserver {
         binder.bindInstanceFields(this);
     }
 
-    private void setRequiredFiles() {
+    private void setRequiredFields() {
         firstName.setRequiredIndicatorVisible(true);
         lastName.setRequiredIndicatorVisible(true);
         patronymicName.setRequiredIndicatorVisible(true);
@@ -238,7 +238,7 @@ public class AdminEmployeesView extends Div implements BeforeEnterObserver {
         specializationsComboBox = new ComboBox<>("Specialization");
         specializationsComboBox.setWidth("min-content");
         setSpecializationsToComboBox();
-        setRequiredFiles();
+        setRequiredFields();
         formLayout.add(firstName, lastName, patronymicName, dateOfBirth, phone, email, login, password, specializationsComboBox);
 
         editorDiv.add(formLayout);
