@@ -1,5 +1,6 @@
 package ru.projects.services;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -10,11 +11,26 @@ import ru.projects.model.dto.EmployeeShortDto;
 import ru.projects.model.dto.ProjectCreateDto;
 import ru.projects.model.dto.ProjectFullDto;
 import ru.projects.model.enums.Status;
+import ru.projects.repository.EmployeeRepository;
 import ru.projects.repository.ProjectRepository;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import static ru.projects.utils.Constants.AQA_ENGINEER_SPECIALIZATION_NAME;
+import static ru.projects.utils.Constants.BACKEND_DEVELOPER_SPECIALIZATION_NAME;
+import static ru.projects.utils.Constants.DATA_ANALYST_SPECIALIZATION_NAME;
+import static ru.projects.utils.Constants.DATA_SCIENTIST_SPECIALIZATION_NAME;
+import static ru.projects.utils.Constants.DEV_OPS_SPECIALIZATION_NAME;
+import static ru.projects.utils.Constants.FRONTEND_DEVELOPER_SPECIALIZATION_NAME;
+import static ru.projects.utils.Constants.FULLSTACK_DEVELOPER_SPECIALIZATION_NAME;
+import static ru.projects.utils.Constants.PROJECT_MANAGER_SPECIALIZATION_NAME;
+import static ru.projects.utils.Constants.QA_ENGINEER_SPECIALIZATION_NAME;
 
 /**
  * @author Artem Chernikov
@@ -25,18 +41,25 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ProjectService {
 
+    private final EmployeeService employeeService;
     private final ProjectRepository projectRepository;
+    private final EmployeeRepository employeeRepository;
 
+    @Transactional
     public void save(ProjectCreateDto projectCreateDto) {
         Set<EmployeeShortDto> employees = projectCreateDto.getEmployees();
-        Set<Employee> employeesForSave = employees.stream()
-                .map(employeeShortDto -> Employee.builder().employeeId(employeeShortDto.getEmployeeId()).build()).collect(Collectors.toSet());
+        Set<Long> employeeIds = employees.stream()
+                .map(EmployeeShortDto::getEmployeeId)
+                .collect(Collectors.toSet());
+        Set<Employee> employeesForSave = new HashSet<>(employeeRepository.findAllById(employeeIds));
+
         Project newProject = Project.builder()
                 .name(projectCreateDto.getName())
                 .startDate(projectCreateDto.getStartDate())
                 .status(Status.NEW)
                 .employees(employeesForSave)
                 .build();
+        employeesForSave.forEach(employee -> employee.getProjects().add(newProject));
         projectRepository.save(newProject);
     }
 
@@ -46,24 +69,55 @@ public class ProjectService {
             return Optional.empty();
         }
         Project project = optionalProject.get();
-        Set<Employee> employees = project.getEmployees();
         ProjectFullDto projectFullDto = ProjectFullDto.builder()
                 .projectId(project.getProjectId())
                 .name(project.getName())
                 .startDate(project.getStartDate())
                 .endDate(project.getEndDate())
                 .status(project.getStatus().toString())
-                .employees(employeesToEmployeeShortDtos(employees))
                 .build();
+        setEmployeesToProjectFullDto(project.getEmployees(), projectFullDto);
         return Optional.of(projectFullDto);
+    }
+
+    private void setEmployeesToProjectFullDto(Set<Employee> employees, ProjectFullDto projectFullDto) {
+        Map<String, List<EmployeeShortDto>> employeesBySpecializations = employeeService
+                .groupEmployeesBySpecializations(new ArrayList<>(employees));
+        if (employeesBySpecializations.containsKey(PROJECT_MANAGER_SPECIALIZATION_NAME)) {
+            projectFullDto.setProjectManager(employeesBySpecializations.get(PROJECT_MANAGER_SPECIALIZATION_NAME).getFirst());
+        }
+        if (employeesBySpecializations.containsKey(BACKEND_DEVELOPER_SPECIALIZATION_NAME)) {
+            projectFullDto.setBackendDevelopers(employeesBySpecializations.get(BACKEND_DEVELOPER_SPECIALIZATION_NAME));
+        }
+        if (employeesBySpecializations.containsKey(FRONTEND_DEVELOPER_SPECIALIZATION_NAME)) {
+            projectFullDto.setFrontendDevelopers(employeesBySpecializations.get(FRONTEND_DEVELOPER_SPECIALIZATION_NAME));
+        }
+        if (employeesBySpecializations.containsKey(FULLSTACK_DEVELOPER_SPECIALIZATION_NAME)) {
+            projectFullDto.setFullstackDeveloper(employeesBySpecializations.get(FULLSTACK_DEVELOPER_SPECIALIZATION_NAME).getFirst());
+        }
+        if (employeesBySpecializations.containsKey(QA_ENGINEER_SPECIALIZATION_NAME)) {
+            projectFullDto.setQaEngineer(employeesBySpecializations.get(QA_ENGINEER_SPECIALIZATION_NAME).getFirst());
+        }
+        if (employeesBySpecializations.containsKey(AQA_ENGINEER_SPECIALIZATION_NAME)) {
+            projectFullDto.setAqaEngineer(employeesBySpecializations.get(AQA_ENGINEER_SPECIALIZATION_NAME).getFirst());
+        }
+        if (employeesBySpecializations.containsKey(DEV_OPS_SPECIALIZATION_NAME)) {
+            projectFullDto.setDevOps(employeesBySpecializations.get(DEV_OPS_SPECIALIZATION_NAME).getFirst());
+        }
+        if (employeesBySpecializations.containsKey(DATA_SCIENTIST_SPECIALIZATION_NAME)) {
+            projectFullDto.setDataScientist(employeesBySpecializations.get(DATA_SCIENTIST_SPECIALIZATION_NAME).getFirst());
+        }
+        if (employeesBySpecializations.containsKey(DATA_ANALYST_SPECIALIZATION_NAME)) {
+            projectFullDto.setDataAnalyst(employeesBySpecializations.get(DATA_ANALYST_SPECIALIZATION_NAME).getFirst());
+        }
     }
 
     private Set<EmployeeShortDto> employeesToEmployeeShortDtos(Set<Employee> employees) {
         StringBuilder stringBuilder = new StringBuilder();
         return employees.stream().map(employee -> {
-            stringBuilder.append(employee.getFirstName());
-            stringBuilder.append(" ");
             stringBuilder.append(employee.getLastName());
+            stringBuilder.append(" ");
+            stringBuilder.append(employee.getFirstName());
             stringBuilder.append(" ");
             stringBuilder.append(employee.getPatronymicName());
             stringBuilder.append(" ");
@@ -91,9 +145,19 @@ public class ProjectService {
     //
     public Page<ProjectFullDto> getAll(Pageable pageable) {
         return projectRepository.findAll(pageable)
-                .map(project -> new ProjectFullDto(project.getProjectId(), project.getName(),
-                        project.getStartDate(), project.getEndDate(), project.getStatus().toString(),
-                        employeesToEmployeeShortDtos(project.getEmployees())));
+                .map(project -> {
+                    ProjectFullDto projectFullDto = ProjectFullDto.builder()
+                            .projectId(project.getProjectId())
+                            .name(project.getName())
+                            .startDate(project.getStartDate())
+                            .endDate(project.getEndDate())
+                            .status(project.getStatus().toString())
+                            .build();
+
+                    Set<Employee> employees = project.getEmployees();
+                    setEmployeesToProjectFullDto(employees, projectFullDto);
+                    return projectFullDto;
+                });
     }
 //
 //    public Page<EmployeeDto> getAllByFilter(Pageable pageable, Specification<Employee> filter) {

@@ -196,7 +196,7 @@ public class CreateProjectView extends Composite<VerticalLayout> {
     }
 
     private void setEmployeesToComboBoxes() {
-        Map<String, List<EmployeeShortDto>> employees = employeeService.groupEmployeesBySpecialization();
+        Map<String, List<EmployeeShortDto>> employees = employeeService.getAllEmployeesBySpecialization();
         setComboBoxItems(projectManagersComboBox, PROJECT_MANAGER_SPECIALIZATION_NAME, employees);
         setMultiSelectComboBoxItems(backendDevelopersComboBox, BACKEND_DEVELOPER_SPECIALIZATION_NAME, employees);
         setMultiSelectComboBoxItems(frontendDevelopersComboBox, FRONTEND_DEVELOPER_SPECIALIZATION_NAME, employees);

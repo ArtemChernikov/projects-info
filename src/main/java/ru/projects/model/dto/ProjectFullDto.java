@@ -8,7 +8,8 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.time.LocalDate;
-import java.util.Set;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Artem Chernikov
@@ -33,6 +34,24 @@ public class ProjectFullDto {
 
     private String status;
 
-    private Set<EmployeeShortDto> employees;
+    private EmployeeShortDto projectManager;
+
+    private List<EmployeeShortDto> backendDevelopers;
+
+    private List<EmployeeShortDto> frontendDevelopers;
+
+    private EmployeeShortDto fullstackDeveloper;
+
+    private EmployeeShortDto qaEngineer;
+
+    private EmployeeShortDto aqaEngineer;
+
+    private EmployeeShortDto devOps;
+
+    private EmployeeShortDto dataScientist;
+
+    private EmployeeShortDto dataAnalyst;
+
+    //private Map<String, List<EmployeeShortDto>> employeesBySpecializations;
 
 }

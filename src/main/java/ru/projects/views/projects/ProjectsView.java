@@ -17,6 +17,9 @@ import com.vaadin.flow.component.splitlayout.SplitLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.ValidationException;
+import com.vaadin.flow.data.renderer.ComponentRenderer;
+import com.vaadin.flow.data.renderer.LitRenderer;
+import com.vaadin.flow.data.renderer.Renderer;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
@@ -24,13 +27,26 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
+import ru.projects.model.dto.EmployeeShortDto;
 import ru.projects.model.dto.ProjectFullDto;
 import ru.projects.model.enums.Status;
 import ru.projects.services.ProjectService;
 import ru.projects.views.MainLayout;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Stream;
+
+import static ru.projects.utils.Constants.AQA_ENGINEER_SPECIALIZATION_NAME;
+import static ru.projects.utils.Constants.BACKEND_DEVELOPER_SPECIALIZATION_NAME;
+import static ru.projects.utils.Constants.DATA_ANALYST_SPECIALIZATION_NAME;
+import static ru.projects.utils.Constants.DATA_SCIENTIST_SPECIALIZATION_NAME;
+import static ru.projects.utils.Constants.DEV_OPS_SPECIALIZATION_NAME;
+import static ru.projects.utils.Constants.FRONTEND_DEVELOPER_SPECIALIZATION_NAME;
+import static ru.projects.utils.Constants.FULLSTACK_DEVELOPER_SPECIALIZATION_NAME;
+import static ru.projects.utils.Constants.PROJECT_MANAGER_SPECIALIZATION_NAME;
+import static ru.projects.utils.Constants.QA_ENGINEER_SPECIALIZATION_NAME;
 
 @PageTitle("All Projects")
 @Route(value = "projects/:projectID?/:action?(edit)", layout = MainLayout.class)
@@ -167,10 +183,17 @@ public class ProjectsView extends Div implements BeforeEnterObserver {
         grid.addColumn("startDate").setAutoWidth(true);
         grid.addColumn("endDate").setAutoWidth(true);
         grid.addColumn("status").setAutoWidth(true);
+
+        grid.addColumn(ProjectEmployeeDetails.createToggleDetailsRenderer(grid));
+
+        grid.setDetailsVisibleOnClick(false);
+        grid.setItemDetailsRenderer(ProjectEmployeeDetails.createProjectDetailsRenderer());
+
         grid.setItems(query -> projectService.getAll(
                         PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)))
                 .stream());
-        grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
+
+        grid.addThemeVariants(GridVariant.LUMO_ROW_STRIPES);
 
         grid.asSingleSelect().addValueChangeListener(event -> {
             if (event.getValue() != null) {

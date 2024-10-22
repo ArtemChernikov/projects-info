@@ -19,6 +19,7 @@ import ru.projects.repository.SpecializationRepository;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static ru.projects.utils.Constants.AQA_ENGINEER_SPECIALIZATION_NAME;
@@ -132,31 +133,19 @@ public class EmployeeService {
                         employee.getLogin(), employee.getPassword()));
     }
 
-    public List<EmployeeShortDto> getAllProjectManagers() {
-        StringBuilder stringBuilder = new StringBuilder();
-        return employeeRepository.findAllByRole_RoleName(PROJECT_MANAGER_ROLE_NAME).stream()
-                .map(employee -> {
-                    stringBuilder.append(employee.getFirstName());
-                    stringBuilder.append(" ");
-                    stringBuilder.append(employee.getLastName());
-                    stringBuilder.append(" ");
-                    stringBuilder.append(employee.getPatronymicName());
-                    stringBuilder.append(" ");
-                    EmployeeShortDto employeeShortDto = new EmployeeShortDto(employee.getEmployeeId(), stringBuilder.toString());
-                    stringBuilder.setLength(0);
-                    return employeeShortDto;
-                }).toList();
+    public Map<String, List<EmployeeShortDto>> getAllEmployeesBySpecialization() {
+        List<Employee> employees = employeeRepository.findAll();
+        return groupEmployeesBySpecializations(employees);
     }
 
-    public Map<String, List<EmployeeShortDto>> groupEmployeesBySpecialization() {
+    public Map<String, List<EmployeeShortDto>> groupEmployeesBySpecializations(List<Employee> employees) {
         StringBuilder stringBuilder = new StringBuilder();
-        List<Employee> employees = employeeRepository.findAll();
         return employees.stream()
                 .collect(Collectors.groupingBy(employee -> employee.getSpecialization().getSpecializationName(),
                         Collectors.mapping(employee -> {
-                            stringBuilder.append(employee.getFirstName());
-                            stringBuilder.append(" ");
                             stringBuilder.append(employee.getLastName());
+                            stringBuilder.append(" ");
+                            stringBuilder.append(employee.getFirstName());
                             stringBuilder.append(" ");
                             stringBuilder.append(employee.getPatronymicName());
                             stringBuilder.append(" ");
