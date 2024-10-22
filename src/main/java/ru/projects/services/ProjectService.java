@@ -74,7 +74,7 @@ public class ProjectService {
                 .name(project.getName())
                 .startDate(project.getStartDate())
                 .endDate(project.getEndDate())
-                .status(project.getStatus().toString())
+                .status(project.getStatus().getDisplayName())
                 .build();
         setEmployeesToProjectFullDto(project.getEmployees(), projectFullDto);
         return Optional.of(projectFullDto);
@@ -133,7 +133,7 @@ public class ProjectService {
         project.setName(projectFullDto.getName());
         project.setStartDate(projectFullDto.getStartDate());
         project.setEndDate(projectFullDto.getEndDate());
-        project.setStatus(Status.valueOf(projectFullDto.getStatus()));
+        project.setStatus(Status.fromDisplayName(projectFullDto.getStatus()));
 
         return projectRepository.save(project);
     }
@@ -151,7 +151,7 @@ public class ProjectService {
                             .name(project.getName())
                             .startDate(project.getStartDate())
                             .endDate(project.getEndDate())
-                            .status(project.getStatus().toString())
+                            .status(project.getStatus().getDisplayName())
                             .build();
 
                     Set<Employee> employees = project.getEmployees();

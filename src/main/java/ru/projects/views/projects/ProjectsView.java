@@ -262,7 +262,7 @@ public class ProjectsView extends Div implements BeforeEnterObserver {
     }
 
     private void setStatusesToComboBox() {
-        statusesComboBox.setItems(List.of(Status.NEW.toString(), Status.IN_PROGRESS.toString(),
-                Status.FINISHED.toString()));
+        statusesComboBox.setItems(List.of(Status.NEW.getDisplayName(), Status.IN_PROGRESS.getDisplayName(),
+                Status.FINISHED.getDisplayName()));
     }
 }
