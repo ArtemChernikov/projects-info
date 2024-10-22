@@ -10,6 +10,7 @@ import ru.projects.model.dto.EmployeeShortDto;
 import ru.projects.model.dto.ProjectFullDto;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Stream;
 
 /**
@@ -65,8 +66,8 @@ public class ProjectEmployeeDetails {
 
         public void setEmployees(ProjectFullDto projectFullDto) {
             EmployeeShortDto projectManager = projectFullDto.getProjectManager();
-            List<EmployeeShortDto> backendDevelopers = projectFullDto.getBackendDevelopers();
-            List<EmployeeShortDto> frontendDevelopers = projectFullDto.getFrontendDevelopers();
+            Set<EmployeeShortDto> backendDevelopers = projectFullDto.getBackendDevelopers();
+            Set<EmployeeShortDto> frontendDevelopers = projectFullDto.getFrontendDevelopers();
             EmployeeShortDto fullstackDeveloper = projectFullDto.getFullstackDeveloper();
             EmployeeShortDto qaEngineer = projectFullDto.getQaEngineer();
             EmployeeShortDto aqaEngineer = projectFullDto.getAqaEngineer();

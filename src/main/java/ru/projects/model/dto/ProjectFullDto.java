@@ -37,9 +37,9 @@ public class ProjectFullDto {
 
     private EmployeeShortDto projectManager;
 
-    private List<EmployeeShortDto> backendDevelopers;
+    private Set<EmployeeShortDto> backendDevelopers;
 
-    private List<EmployeeShortDto> frontendDevelopers;
+    private Set<EmployeeShortDto> frontendDevelopers;
 
     private EmployeeShortDto fullstackDeveloper;
 
@@ -52,7 +52,5 @@ public class ProjectFullDto {
     private EmployeeShortDto dataScientist;
 
     private EmployeeShortDto dataAnalyst;
-
-    //private Map<String, List<EmployeeShortDto>> employeesBySpecializations;
 
 }

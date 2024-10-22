@@ -119,7 +119,6 @@ public class ProjectsView extends Div implements BeforeEnterObserver {
                 this.projectFullDto = new ProjectFullDto();
             }
             binder.writeBean(this.projectFullDto);
-            setEmployeesToProject();
             projectService.update(this.projectFullDto);
             clearForm();
             refreshGrid();
@@ -134,18 +133,6 @@ public class ProjectsView extends Div implements BeforeEnterObserver {
             Notification.show("Failed to update the project. Check again that all values are valid",
                     3000, Position.TOP_CENTER).addThemeVariants(NotificationVariant.LUMO_ERROR);
         }
-    }
-
-    private void setEmployeesToProject() {
-        projectFullDto.setProjectManager(projectManagersComboBox.getValue());
-        projectFullDto.setBackendDevelopers(new ArrayList<>(backendDevelopersComboBox.getValue()));
-        projectFullDto.setFrontendDevelopers(new ArrayList<>(frontendDevelopersComboBox.getValue()));
-        projectFullDto.setFullstackDeveloper(fullstackDevelopersComboBox.getValue());
-        projectFullDto.setQaEngineer(qaEngineerComboBox.getValue());
-        projectFullDto.setAqaEngineer(aqaEngineerComboBox.getValue());
-        projectFullDto.setDevOps(devOpsComboBox.getValue());
-        projectFullDto.setDataScientist(dataScientistComboBox.getValue());
-        projectFullDto.setDataAnalyst(dataAnalystComboBox.getValue());
     }
 
     private void deleteProject() {
@@ -199,6 +186,24 @@ public class ProjectsView extends Div implements BeforeEnterObserver {
         binder.forField(statusesComboBox)
                 .asRequired("Project Status is required")
                 .bind(ProjectFullDto::getStatus, ProjectFullDto::setStatus);
+        binder.forField(projectManagersComboBox)
+                        .bind(ProjectFullDto::getProjectManager, ProjectFullDto::setProjectManager);
+        binder.forField(backendDevelopersComboBox)
+                        .bind(ProjectFullDto::getBackendDevelopers, ProjectFullDto::setBackendDevelopers);
+        binder.forField(frontendDevelopersComboBox)
+                        .bind(ProjectFullDto::getFrontendDevelopers, ProjectFullDto::setFrontendDevelopers);
+        binder.forField(fullstackDevelopersComboBox)
+                        .bind(ProjectFullDto::getFullstackDeveloper, ProjectFullDto::setFullstackDeveloper);
+        binder.forField(qaEngineerComboBox)
+                        .bind(ProjectFullDto::getQaEngineer, ProjectFullDto::setQaEngineer);
+        binder.forField(aqaEngineerComboBox)
+                        .bind(ProjectFullDto::getAqaEngineer, ProjectFullDto::setAqaEngineer);
+        binder.forField(devOpsComboBox)
+                        .bind(ProjectFullDto::getDevOps, ProjectFullDto::setDevOps);
+        binder.forField(dataScientistComboBox)
+                        .bind(ProjectFullDto::getDataScientist, ProjectFullDto::setDataScientist);
+        binder.forField(dataAnalystComboBox)
+                        .bind(ProjectFullDto::getDataAnalyst, ProjectFullDto::setDataAnalyst);
         binder.bindInstanceFields(this);
     }
 

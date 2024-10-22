@@ -80,6 +80,109 @@ public class ProjectService {
         return Optional.of(projectFullDto);
     }
 
+    @Transactional
+    public Project update(ProjectFullDto projectFullDto) {
+        Project project = projectRepository.findById(projectFullDto.getProjectId())
+                .orElseThrow(() -> new RuntimeException("Project Not Found."));
+
+        // Собираем новых сотрудников из DTO
+        Set<EmployeeShortDto> newEmployees = new HashSet<>();
+        if (projectFullDto.getProjectManager() != null) {
+            newEmployees.add(projectFullDto.getProjectManager());
+        }
+        if (projectFullDto.getBackendDevelopers() != null) {
+            newEmployees.addAll(projectFullDto.getBackendDevelopers());
+        }
+        if (projectFullDto.getFrontendDevelopers() != null) {
+            newEmployees.addAll(projectFullDto.getFrontendDevelopers());
+        }
+        if (projectFullDto.getFullstackDeveloper() != null) {
+            newEmployees.add(projectFullDto.getFullstackDeveloper());
+        }
+        if (projectFullDto.getQaEngineer() != null) {
+            newEmployees.add(projectFullDto.getQaEngineer());
+        }
+        if (projectFullDto.getAqaEngineer() != null) {
+            newEmployees.add(projectFullDto.getAqaEngineer());
+        }
+        if (projectFullDto.getDevOps() != null) {
+            newEmployees.add(projectFullDto.getDevOps());
+        }
+        if (projectFullDto.getDataScientist() != null) {
+            newEmployees.add(projectFullDto.getDataScientist());
+        }
+        if (projectFullDto.getDataAnalyst() != null) {
+            newEmployees.add(projectFullDto.getDataAnalyst());
+        }
+
+        Set<Employee> currentEmployees = project.getEmployees();
+
+        if (newEmployees.isEmpty()) {
+            currentEmployees.forEach(employee -> employee.getProjects().remove(project));
+            currentEmployees.clear();
+            project.setEmployees(currentEmployees);
+        } else {
+            // Идентификаторы новых сотрудников
+            Set<Long> newEmployeeIds = newEmployees.stream()
+                    .map(EmployeeShortDto::getEmployeeId)
+                    .collect(Collectors.toSet());
+
+            // Удаляем сотрудников, которые больше не должны быть связаны с проектом
+            currentEmployees.removeIf(employee -> !newEmployeeIds.contains(employee.getEmployeeId()));
+
+            // Загружаем новых сотрудников по их ID
+            Set<Employee> employeesForUpdate = new HashSet<>(employeeRepository.findAllById(newEmployeeIds));
+            employeesForUpdate.forEach(employee -> {
+                if (!currentEmployees.contains(employee)) {
+                    employee.getProjects().add(project); // Добавляем проект к новому сотруднику
+                }
+            });
+
+            // Объединяем текущих сотрудников с новыми
+            currentEmployees.addAll(employeesForUpdate);
+
+        }
+
+        project.setEmployees(currentEmployees);
+
+        // Обновляем проект
+        project.setName(projectFullDto.getName());
+        project.setStartDate(projectFullDto.getStartDate());
+        project.setEndDate(projectFullDto.getEndDate());
+        project.setStatus(Status.fromDisplayName(projectFullDto.getStatus()));
+
+
+
+        return projectRepository.save(project);
+    }
+
+    @Transactional
+    public void deleteById(Long id) {
+        Project project = projectRepository.findById(id).orElseThrow(() -> new RuntimeException("Project Not Found."));
+
+        for (Employee employee : project.getEmployees()) {
+            employee.getProjects().remove(project);  // Удаляем проект из сотрудников
+        }
+        projectRepository.deleteById(id);
+    }
+
+    public Page<ProjectFullDto> getAll(Pageable pageable) {
+        return projectRepository.findAll(pageable)
+                .map(project -> {
+                    ProjectFullDto projectFullDto = ProjectFullDto.builder()
+                            .projectId(project.getProjectId())
+                            .name(project.getName())
+                            .startDate(project.getStartDate())
+                            .endDate(project.getEndDate())
+                            .status(project.getStatus().getDisplayName())
+                            .build();
+
+                    Set<Employee> employees = project.getEmployees();
+                    setEmployeesToProjectFullDto(employees, projectFullDto);
+                    return projectFullDto;
+                });
+    }
+
     private void setEmployeesToProjectFullDto(Set<Employee> employees, ProjectFullDto projectFullDto) {
         Map<String, List<EmployeeShortDto>> employeesBySpecializations = employeeService
                 .groupEmployeesBySpecializations(new ArrayList<>(employees));
@@ -87,10 +190,10 @@ public class ProjectService {
             projectFullDto.setProjectManager(employeesBySpecializations.get(PROJECT_MANAGER_SPECIALIZATION_NAME).getFirst());
         }
         if (employeesBySpecializations.containsKey(BACKEND_DEVELOPER_SPECIALIZATION_NAME)) {
-            projectFullDto.setBackendDevelopers(employeesBySpecializations.get(BACKEND_DEVELOPER_SPECIALIZATION_NAME));
+            projectFullDto.setBackendDevelopers(new HashSet<>(employeesBySpecializations.get(BACKEND_DEVELOPER_SPECIALIZATION_NAME)));
         }
         if (employeesBySpecializations.containsKey(FRONTEND_DEVELOPER_SPECIALIZATION_NAME)) {
-            projectFullDto.setFrontendDevelopers(employeesBySpecializations.get(FRONTEND_DEVELOPER_SPECIALIZATION_NAME));
+            projectFullDto.setFrontendDevelopers(new HashSet<>(employeesBySpecializations.get(FRONTEND_DEVELOPER_SPECIALIZATION_NAME)));
         }
         if (employeesBySpecializations.containsKey(FULLSTACK_DEVELOPER_SPECIALIZATION_NAME)) {
             projectFullDto.setFullstackDeveloper(employeesBySpecializations.get(FULLSTACK_DEVELOPER_SPECIALIZATION_NAME).getFirst());
@@ -111,94 +214,5 @@ public class ProjectService {
             projectFullDto.setDataAnalyst(employeesBySpecializations.get(DATA_ANALYST_SPECIALIZATION_NAME).getFirst());
         }
     }
-
-    @Transactional
-    public Project update(ProjectFullDto projectFullDto) {
-        Project project = projectRepository.findById(projectFullDto.getProjectId())
-                .orElseThrow(() -> new RuntimeException("Project Not Found."));
-
-        Set<EmployeeShortDto> employees = new HashSet<>();
-        if (projectFullDto.getProjectManager() != null) {
-            employees.add(projectFullDto.getProjectManager());
-        }
-        if (projectFullDto.getBackendDevelopers() != null) {
-            employees.addAll(projectFullDto.getBackendDevelopers());
-        }
-        if (projectFullDto.getFrontendDevelopers() != null) {
-            employees.addAll(projectFullDto.getFrontendDevelopers());
-        }
-        if (projectFullDto.getFullstackDeveloper() != null) {
-            employees.add(projectFullDto.getFullstackDeveloper());
-        }
-        if (projectFullDto.getQaEngineer() != null) {
-            employees.add(projectFullDto.getQaEngineer());
-        }
-        if (projectFullDto.getAqaEngineer() != null) {
-            employees.add(projectFullDto.getAqaEngineer());
-        }
-        if (projectFullDto.getDevOps() != null) {
-            employees.add(projectFullDto.getDevOps());
-        }
-        if (projectFullDto.getDataScientist() != null) {
-            employees.add(projectFullDto.getDataScientist());
-        }
-        if (projectFullDto.getDataAnalyst() != null) {
-            employees.add(projectFullDto.getDataAnalyst());
-        }
-        Set<Long> employeeIds = employees.stream()
-                .map(EmployeeShortDto::getEmployeeId)
-                .collect(Collectors.toSet());
-        Set<Employee> employeesForUpdate = new HashSet<>(employeeRepository.findAllById(employeeIds));
-        employeesForUpdate.forEach(employee -> employee.getProjects().add(project));
-
-        project.setName(projectFullDto.getName());
-        project.setStartDate(projectFullDto.getStartDate());
-        project.setEndDate(projectFullDto.getEndDate());
-        project.setStatus(Status.fromDisplayName(projectFullDto.getStatus()));
-        project.getEmployees();
-        return projectRepository.save(project);
-    }
-
-    public void deleteById(Long id) {
-        projectRepository.deleteById(id);
-    }
-
-
-    public Page<ProjectFullDto> getAll(Pageable pageable) {
-        return projectRepository.findAll(pageable)
-                .map(project -> {
-                    ProjectFullDto projectFullDto = ProjectFullDto.builder()
-                            .projectId(project.getProjectId())
-                            .name(project.getName())
-                            .startDate(project.getStartDate())
-                            .endDate(project.getEndDate())
-                            .status(project.getStatus().getDisplayName())
-                            .build();
-
-                    Set<Employee> employees = project.getEmployees();
-                    setEmployeesToProjectFullDto(employees, projectFullDto);
-                    return projectFullDto;
-                });
-    }
-//
-//    public Page<EmployeeDto> getAllByFilter(Pageable pageable, Specification<Employee> filter) {
-//        return employeeRepository.findAll(filter, pageable)
-//                .map(employee -> new EmployeeDto(
-//                        employee.getSpecialization().getSpecializationName(),
-//                        employee.getFirstName(), employee.getLastName(), employee.getPatronymicName(),
-//                        employee.getDateOfBirth(), employee.getPhone(), employee.getEmail(),
-//                        employee.getLogin(), employee.getPassword()));
-//    }
-//
-//    private Role getRoleBySpecializationName(String specializationName) {
-//        return switch (specializationName) {
-//            case FULLSTACK_DEVELOPER_SPECIALIZATION_NAME, BACKEND_DEVELOPER_SPECIALIZATION_NAME,
-//                 FRONTEND_DEVELOPER_SPECIALIZATION_NAME -> roleRepository.findByRoleName(DEVELOPER_ROLE_NAME);
-//            case QA_ENGINEER_SPECIALIZATION_NAME, AQA_ENGINEER_SPECIALIZATION_NAME -> roleRepository
-//                    .findByRoleName(TESTER_ROLE_NAME);
-//            case PROJECT_MANAGER_SPECIALIZATION_NAME -> roleRepository.findByRoleName(PROJECT_MANAGER_ROLE_NAME);
-//            default -> roleRepository.findByRoleName(USER_ROLE_NAME);
-//        };
-//    }
 
 }
