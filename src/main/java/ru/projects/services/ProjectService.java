@@ -128,7 +128,13 @@ public class ProjectService {
                     .collect(Collectors.toSet());
 
             // Удаляем сотрудников, которые больше не должны быть связаны с проектом
-            currentEmployees.removeIf(employee -> !newEmployeeIds.contains(employee.getEmployeeId()));
+            currentEmployees.removeIf(employee -> {
+                boolean b = !newEmployeeIds.contains(employee.getEmployeeId());
+                if (b) {
+                    employee.getProjects().remove(project);
+                }
+                return b;
+            });
 
             // Загружаем новых сотрудников по их ID
             Set<Employee> employeesForUpdate = new HashSet<>(employeeRepository.findAllById(newEmployeeIds));
