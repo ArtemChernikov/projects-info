@@ -8,6 +8,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -23,7 +24,7 @@ import java.util.Set;
 @Setter
 @ToString
 @Builder
-public class ProjectFullDto {
+public class ProjectUpdateDto {
 
     private Long projectId;
 
@@ -35,24 +36,6 @@ public class ProjectFullDto {
 
     private String status;
 
-    private EmployeeShortDto projectManager;
-
-    private List<EmployeeShortDto> backendDevelopers;
-
-    private List<EmployeeShortDto> frontendDevelopers;
-
-    private EmployeeShortDto fullstackDeveloper;
-
-    private EmployeeShortDto qaEngineer;
-
-    private EmployeeShortDto aqaEngineer;
-
-    private EmployeeShortDto devOps;
-
-    private EmployeeShortDto dataScientist;
-
-    private EmployeeShortDto dataAnalyst;
-
-    //private Map<String, List<EmployeeShortDto>> employeesBySpecializations;
+    private Set<Long> employeesIds = new HashSet<>();
 
 }

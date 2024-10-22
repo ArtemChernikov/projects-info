@@ -112,29 +112,50 @@ public class ProjectService {
         }
     }
 
-    private Set<EmployeeShortDto> employeesToEmployeeShortDtos(Set<Employee> employees) {
-        StringBuilder stringBuilder = new StringBuilder();
-        return employees.stream().map(employee -> {
-            stringBuilder.append(employee.getLastName());
-            stringBuilder.append(" ");
-            stringBuilder.append(employee.getFirstName());
-            stringBuilder.append(" ");
-            stringBuilder.append(employee.getPatronymicName());
-            stringBuilder.append(" ");
-            EmployeeShortDto employeeShortDto = new EmployeeShortDto(employee.getEmployeeId(), stringBuilder.toString());
-            stringBuilder.setLength(0);
-            return employeeShortDto;
-        }).collect(Collectors.toSet());
-    }
-
+    @Transactional
     public Project update(ProjectFullDto projectFullDto) {
         Project project = projectRepository.findById(projectFullDto.getProjectId())
                 .orElseThrow(() -> new RuntimeException("Project Not Found."));
+
+        Set<EmployeeShortDto> employees = new HashSet<>();
+        if (projectFullDto.getProjectManager() != null) {
+            employees.add(projectFullDto.getProjectManager());
+        }
+        if (projectFullDto.getBackendDevelopers() != null) {
+            employees.addAll(projectFullDto.getBackendDevelopers());
+        }
+        if (projectFullDto.getFrontendDevelopers() != null) {
+            employees.addAll(projectFullDto.getFrontendDevelopers());
+        }
+        if (projectFullDto.getFullstackDeveloper() != null) {
+            employees.add(projectFullDto.getFullstackDeveloper());
+        }
+        if (projectFullDto.getQaEngineer() != null) {
+            employees.add(projectFullDto.getQaEngineer());
+        }
+        if (projectFullDto.getAqaEngineer() != null) {
+            employees.add(projectFullDto.getAqaEngineer());
+        }
+        if (projectFullDto.getDevOps() != null) {
+            employees.add(projectFullDto.getDevOps());
+        }
+        if (projectFullDto.getDataScientist() != null) {
+            employees.add(projectFullDto.getDataScientist());
+        }
+        if (projectFullDto.getDataAnalyst() != null) {
+            employees.add(projectFullDto.getDataAnalyst());
+        }
+        Set<Long> employeeIds = employees.stream()
+                .map(EmployeeShortDto::getEmployeeId)
+                .collect(Collectors.toSet());
+        Set<Employee> employeesForUpdate = new HashSet<>(employeeRepository.findAllById(employeeIds));
+        employeesForUpdate.forEach(employee -> employee.getProjects().add(project));
+
         project.setName(projectFullDto.getName());
         project.setStartDate(projectFullDto.getStartDate());
         project.setEndDate(projectFullDto.getEndDate());
         project.setStatus(Status.fromDisplayName(projectFullDto.getStatus()));
-
+        project.getEmployees();
         return projectRepository.save(project);
     }
 
@@ -142,7 +163,7 @@ public class ProjectService {
         projectRepository.deleteById(id);
     }
 
-    //
+
     public Page<ProjectFullDto> getAll(Pageable pageable) {
         return projectRepository.findAll(pageable)
                 .map(project -> {

@@ -4,6 +4,7 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.combobox.MultiSelectComboBox;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
@@ -17,9 +18,6 @@ import com.vaadin.flow.component.splitlayout.SplitLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.ValidationException;
-import com.vaadin.flow.data.renderer.ComponentRenderer;
-import com.vaadin.flow.data.renderer.LitRenderer;
-import com.vaadin.flow.data.renderer.Renderer;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
@@ -29,13 +27,21 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import ru.projects.model.dto.EmployeeShortDto;
 import ru.projects.model.dto.ProjectFullDto;
+import ru.projects.model.dto.ProjectUpdateDto;
 import ru.projects.model.enums.Status;
+import ru.projects.services.EmployeeService;
 import ru.projects.services.ProjectService;
 import ru.projects.views.MainLayout;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static ru.projects.utils.Constants.AQA_ENGINEER_SPECIALIZATION_NAME;
@@ -62,6 +68,15 @@ public class ProjectsView extends Div implements BeforeEnterObserver {
     private DatePicker startDate;
     private DatePicker endDate;
     private ComboBox<String> statusesComboBox;
+    private ComboBox<EmployeeShortDto> projectManagersComboBox;
+    private MultiSelectComboBox<EmployeeShortDto> backendDevelopersComboBox;
+    private MultiSelectComboBox<EmployeeShortDto> frontendDevelopersComboBox;
+    private ComboBox<EmployeeShortDto> fullstackDevelopersComboBox;
+    private ComboBox<EmployeeShortDto> qaEngineerComboBox;
+    private ComboBox<EmployeeShortDto> aqaEngineerComboBox;
+    private ComboBox<EmployeeShortDto> devOpsComboBox;
+    private ComboBox<EmployeeShortDto> dataScientistComboBox;
+    private ComboBox<EmployeeShortDto> dataAnalystComboBox;
 
     private final Button save = new Button("Save");
     private final Button delete = new Button("Delete");
@@ -72,9 +87,11 @@ public class ProjectsView extends Div implements BeforeEnterObserver {
     private ProjectFullDto projectFullDto;
 
     private final ProjectService projectService;
+    private final EmployeeService employeeService;
 
-    public ProjectsView(ProjectService projectService) {
+    public ProjectsView(ProjectService projectService, EmployeeService employeeService) {
         this.projectService = projectService;
+        this.employeeService = employeeService;
         addClassNames("projects-view");
         createUI();
     }
@@ -102,6 +119,7 @@ public class ProjectsView extends Div implements BeforeEnterObserver {
                 this.projectFullDto = new ProjectFullDto();
             }
             binder.writeBean(this.projectFullDto);
+            setEmployeesToProject();
             projectService.update(this.projectFullDto);
             clearForm();
             refreshGrid();
@@ -116,6 +134,18 @@ public class ProjectsView extends Div implements BeforeEnterObserver {
             Notification.show("Failed to update the project. Check again that all values are valid",
                     3000, Position.TOP_CENTER).addThemeVariants(NotificationVariant.LUMO_ERROR);
         }
+    }
+
+    private void setEmployeesToProject() {
+        projectFullDto.setProjectManager(projectManagersComboBox.getValue());
+        projectFullDto.setBackendDevelopers(new ArrayList<>(backendDevelopersComboBox.getValue()));
+        projectFullDto.setFrontendDevelopers(new ArrayList<>(frontendDevelopersComboBox.getValue()));
+        projectFullDto.setFullstackDeveloper(fullstackDevelopersComboBox.getValue());
+        projectFullDto.setQaEngineer(qaEngineerComboBox.getValue());
+        projectFullDto.setAqaEngineer(aqaEngineerComboBox.getValue());
+        projectFullDto.setDevOps(devOpsComboBox.getValue());
+        projectFullDto.setDataScientist(dataScientistComboBox.getValue());
+        projectFullDto.setDataAnalyst(dataAnalystComboBox.getValue());
     }
 
     private void deleteProject() {
@@ -218,10 +248,34 @@ public class ProjectsView extends Div implements BeforeEnterObserver {
         startDate = new DatePicker("Start Date");
         endDate = new DatePicker("End Date");
         statusesComboBox = new ComboBox<>("Status");
+        projectManagersComboBox = new ComboBox<>("Project Manager");
+        backendDevelopersComboBox = new MultiSelectComboBox<>("Backend Developers");
+        frontendDevelopersComboBox = new MultiSelectComboBox<>("Frontend Developers");
+        fullstackDevelopersComboBox = new ComboBox<>("Fullstack Developer");
+        qaEngineerComboBox = new ComboBox<>("QA Engineer");
+        aqaEngineerComboBox = new ComboBox<>("AQA Engineer");
+        devOpsComboBox = new ComboBox<>("DevOps");
+        dataScientistComboBox = new ComboBox<>("Data Scientist");
+        dataAnalystComboBox = new ComboBox<>("Data Analysts");
+
         statusesComboBox.setWidth("min-content");
+        projectManagersComboBox.setWidth("min-content");
+        backendDevelopersComboBox.setWidth("min-content");
+        frontendDevelopersComboBox.setWidth("min-content");
+        fullstackDevelopersComboBox.setWidth("min-content");
+        qaEngineerComboBox.setWidth("min-content");
+        aqaEngineerComboBox.setWidth("min-content");
+        devOpsComboBox.setWidth("min-content");
+        dataScientistComboBox.setWidth("min-content");
+        dataAnalystComboBox.setWidth("min-content");
+
         setStatusesToComboBox();
+        setEmployeesToComboBox();
+
         setRequiredFields();
-        formLayout.add(name, startDate, endDate, statusesComboBox);
+        formLayout.add(name, startDate, endDate, statusesComboBox, projectManagersComboBox, backendDevelopersComboBox,
+                frontendDevelopersComboBox, fullstackDevelopersComboBox, qaEngineerComboBox, aqaEngineerComboBox,
+                devOpsComboBox, dataScientistComboBox, dataAnalystComboBox);
 
         editorDiv.add(formLayout);
         createButtonLayout(editorLayoutDiv);
@@ -254,6 +308,15 @@ public class ProjectsView extends Div implements BeforeEnterObserver {
     private void clearForm() {
         fillEditForm(null);
         statusesComboBox.clear();
+        projectManagersComboBox.clear();
+        backendDevelopersComboBox.clear();
+        frontendDevelopersComboBox.clear();
+        fullstackDevelopersComboBox.clear();
+        qaEngineerComboBox.clear();
+        aqaEngineerComboBox.clear();
+        devOpsComboBox.clear();
+        dataScientistComboBox.clear();
+        dataAnalystComboBox.clear();
     }
 
     private void fillEditForm(ProjectFullDto value) {
@@ -264,5 +327,54 @@ public class ProjectsView extends Div implements BeforeEnterObserver {
     private void setStatusesToComboBox() {
         statusesComboBox.setItems(List.of(Status.NEW.getDisplayName(), Status.IN_PROGRESS.getDisplayName(),
                 Status.FINISHED.getDisplayName()));
+    }
+
+    private void setEmployeesToComboBox() {
+        Map<String, List<EmployeeShortDto>> allEmployeesBySpecialization = employeeService.getAllEmployeesBySpecialization();
+        List<EmployeeShortDto> projectManagers = allEmployeesBySpecialization.get(PROJECT_MANAGER_SPECIALIZATION_NAME);
+        List<EmployeeShortDto> backendDevelopers = allEmployeesBySpecialization.get(BACKEND_DEVELOPER_SPECIALIZATION_NAME);
+        List<EmployeeShortDto> frontendDevelopers = allEmployeesBySpecialization.get(FRONTEND_DEVELOPER_SPECIALIZATION_NAME);
+        List<EmployeeShortDto> fullstackDevelopers = allEmployeesBySpecialization.get(FULLSTACK_DEVELOPER_SPECIALIZATION_NAME);
+        List<EmployeeShortDto> qaEngineers = allEmployeesBySpecialization.get(QA_ENGINEER_SPECIALIZATION_NAME);
+        List<EmployeeShortDto> aqaEngineers = allEmployeesBySpecialization.get(AQA_ENGINEER_SPECIALIZATION_NAME);
+        List<EmployeeShortDto> devOps = allEmployeesBySpecialization.get(DEV_OPS_SPECIALIZATION_NAME);
+        List<EmployeeShortDto> dataScientist = allEmployeesBySpecialization.get(DATA_SCIENTIST_SPECIALIZATION_NAME);
+        List<EmployeeShortDto> dataAnalysts = allEmployeesBySpecialization.get(DATA_ANALYST_SPECIALIZATION_NAME);
+        if (projectManagers != null) {
+            projectManagersComboBox.setItems(projectManagers);
+            projectManagersComboBox.setItemLabelGenerator(EmployeeShortDto::getName);
+        }
+        if (backendDevelopers != null) {
+            backendDevelopersComboBox.setItems(backendDevelopers);
+            backendDevelopersComboBox.setItemLabelGenerator(EmployeeShortDto::getName);
+        }
+        if (frontendDevelopers != null) {
+            frontendDevelopersComboBox.setItems(frontendDevelopers);
+            frontendDevelopersComboBox.setItemLabelGenerator(EmployeeShortDto::getName);
+        }
+        if (fullstackDevelopers != null) {
+            fullstackDevelopersComboBox.setItems(fullstackDevelopers);
+            fullstackDevelopersComboBox.setItemLabelGenerator(EmployeeShortDto::getName);
+        }
+        if (qaEngineers != null) {
+            qaEngineerComboBox.setItems(qaEngineers);
+            qaEngineerComboBox.setItemLabelGenerator(EmployeeShortDto::getName);
+        }
+        if (aqaEngineers != null) {
+            aqaEngineerComboBox.setItems(aqaEngineers);
+            aqaEngineerComboBox.setItemLabelGenerator(EmployeeShortDto::getName);
+        }
+        if (devOps != null) {
+            devOpsComboBox.setItems(devOps);
+            devOpsComboBox.setItemLabelGenerator(EmployeeShortDto::getName);
+        }
+        if (dataScientist != null) {
+            dataScientistComboBox.setItems(dataScientist);
+            dataScientistComboBox.setItemLabelGenerator(EmployeeShortDto::getName);
+        }
+        if (dataAnalysts != null) {
+            dataAnalystComboBox.setItems(dataAnalysts);
+            dataAnalystComboBox.setItemLabelGenerator(EmployeeShortDto::getName);
+        }
     }
 }

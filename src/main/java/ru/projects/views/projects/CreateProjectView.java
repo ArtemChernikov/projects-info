@@ -62,11 +62,11 @@ public class CreateProjectView extends Composite<VerticalLayout> {
     private MultiSelectComboBox<EmployeeShortDto> backendDevelopersComboBox;
     private MultiSelectComboBox<EmployeeShortDto> frontendDevelopersComboBox;
     private ComboBox<EmployeeShortDto> fullstackDevelopersComboBox;
-    private ComboBox<EmployeeShortDto> qaEngineerDevelopersComboBox;
-    private ComboBox<EmployeeShortDto> aqaEngineerDevelopersComboBox;
+    private ComboBox<EmployeeShortDto> qaEngineerComboBox;
+    private ComboBox<EmployeeShortDto> aqaEngineerComboBox;
     private ComboBox<EmployeeShortDto> devOpsComboBox;
-    private ComboBox<EmployeeShortDto> dataScientistsComboBox;
-    private ComboBox<EmployeeShortDto> dataAnalystsComboBox;
+    private ComboBox<EmployeeShortDto> dataScientistComboBox;
+    private ComboBox<EmployeeShortDto> dataAnalystComboBox;
     private FormLayout formLayout2Col;
     private BeanValidationBinder<ProjectCreateDto> binder;
 
@@ -109,11 +109,11 @@ public class CreateProjectView extends Composite<VerticalLayout> {
         Set<EmployeeShortDto> employees = Stream.of(
                         projectManagersComboBox.getValue(),
                         fullstackDevelopersComboBox.getValue(),
-                        qaEngineerDevelopersComboBox.getValue(),
-                        aqaEngineerDevelopersComboBox.getValue(),
+                        qaEngineerComboBox.getValue(),
+                        aqaEngineerComboBox.getValue(),
                         devOpsComboBox.getValue(),
-                        dataScientistsComboBox.getValue(),
-                        dataAnalystsComboBox.getValue()
+                        dataScientistComboBox.getValue(),
+                        dataAnalystComboBox.getValue()
                 )
                 .filter(Objects::nonNull)
                 .collect(Collectors.toSet());
@@ -165,8 +165,8 @@ public class CreateProjectView extends Composite<VerticalLayout> {
         startDate = new DatePicker("Start Date");
         initComboBoxes();
         formLayout2Col.add(name, startDate, projectManagersComboBox, backendDevelopersComboBox, frontendDevelopersComboBox,
-                fullstackDevelopersComboBox, qaEngineerDevelopersComboBox, aqaEngineerDevelopersComboBox, devOpsComboBox,
-                dataScientistsComboBox, dataAnalystsComboBox);
+                fullstackDevelopersComboBox, qaEngineerComboBox, aqaEngineerComboBox, devOpsComboBox,
+                dataScientistComboBox, dataAnalystComboBox);
     }
 
     private void initComboBoxes() {
@@ -174,11 +174,11 @@ public class CreateProjectView extends Composite<VerticalLayout> {
         backendDevelopersComboBox = new MultiSelectComboBox<>("Backend Developers");
         frontendDevelopersComboBox = new MultiSelectComboBox<>("Frontend Developers");
         fullstackDevelopersComboBox = new ComboBox<>("Fullstack Developers");
-        qaEngineerDevelopersComboBox = new ComboBox<>("QA Engineers");
-        aqaEngineerDevelopersComboBox = new ComboBox<>("AQA Engineers");
+        qaEngineerComboBox = new ComboBox<>("QA Engineers");
+        aqaEngineerComboBox = new ComboBox<>("AQA Engineers");
         devOpsComboBox = new ComboBox<>("DevOps");
-        dataScientistsComboBox = new ComboBox<>("Data Scientists");
-        dataAnalystsComboBox = new ComboBox<>("Data Analysts");
+        dataScientistComboBox = new ComboBox<>("Data Scientists");
+        dataAnalystComboBox = new ComboBox<>("Data Analysts");
         setWidthToComboBoxes();
         setEmployeesToComboBoxes();
     }
@@ -188,11 +188,11 @@ public class CreateProjectView extends Composite<VerticalLayout> {
         backendDevelopersComboBox.setWidth("min-content");
         frontendDevelopersComboBox.setWidth("min-content");
         fullstackDevelopersComboBox.setWidth("min-content");
-        qaEngineerDevelopersComboBox.setWidth("min-content");
-        aqaEngineerDevelopersComboBox.setWidth("min-content");
+        qaEngineerComboBox.setWidth("min-content");
+        aqaEngineerComboBox.setWidth("min-content");
         devOpsComboBox.setWidth("min-content");
-        dataScientistsComboBox.setWidth("min-content");
-        dataAnalystsComboBox.setWidth("min-content");
+        dataScientistComboBox.setWidth("min-content");
+        dataAnalystComboBox.setWidth("min-content");
     }
 
     private void setEmployeesToComboBoxes() {
@@ -201,11 +201,11 @@ public class CreateProjectView extends Composite<VerticalLayout> {
         setMultiSelectComboBoxItems(backendDevelopersComboBox, BACKEND_DEVELOPER_SPECIALIZATION_NAME, employees);
         setMultiSelectComboBoxItems(frontendDevelopersComboBox, FRONTEND_DEVELOPER_SPECIALIZATION_NAME, employees);
         setComboBoxItems(fullstackDevelopersComboBox, FULLSTACK_DEVELOPER_SPECIALIZATION_NAME, employees);
-        setComboBoxItems(qaEngineerDevelopersComboBox, QA_ENGINEER_SPECIALIZATION_NAME, employees);
-        setComboBoxItems(aqaEngineerDevelopersComboBox, AQA_ENGINEER_SPECIALIZATION_NAME, employees);
+        setComboBoxItems(qaEngineerComboBox, QA_ENGINEER_SPECIALIZATION_NAME, employees);
+        setComboBoxItems(aqaEngineerComboBox, AQA_ENGINEER_SPECIALIZATION_NAME, employees);
         setComboBoxItems(devOpsComboBox, DEV_OPS_SPECIALIZATION_NAME, employees);
-        setComboBoxItems(dataScientistsComboBox, DATA_SCIENTIST_SPECIALIZATION_NAME, employees);
-        setComboBoxItems(dataAnalystsComboBox, DATA_ANALYST_SPECIALIZATION_NAME, employees);
+        setComboBoxItems(dataScientistComboBox, DATA_SCIENTIST_SPECIALIZATION_NAME, employees);
+        setComboBoxItems(dataAnalystComboBox, DATA_ANALYST_SPECIALIZATION_NAME, employees);
     }
 
     private void configureValidationBinder() {
@@ -231,11 +231,11 @@ public class CreateProjectView extends Composite<VerticalLayout> {
         backendDevelopersComboBox.clear();
         frontendDevelopersComboBox.clear();
         fullstackDevelopersComboBox.clear();
-        qaEngineerDevelopersComboBox.clear();
-        aqaEngineerDevelopersComboBox.clear();
+        qaEngineerComboBox.clear();
+        aqaEngineerComboBox.clear();
         devOpsComboBox.clear();
-        dataScientistsComboBox.clear();
-        dataAnalystsComboBox.clear();
+        dataScientistComboBox.clear();
+        dataAnalystComboBox.clear();
     }
 
     private void setComboBoxItems(ComboBox<EmployeeShortDto> comboBox, String specializationName,
