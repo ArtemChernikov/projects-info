@@ -18,9 +18,11 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static ru.projects.utils.Constants.AQA_ENGINEER_SPECIALIZATION_NAME;
 import static ru.projects.utils.Constants.BACKEND_DEVELOPER_SPECIALIZATION_NAME;
@@ -80,87 +82,149 @@ public class ProjectService {
         return Optional.of(projectFullDto);
     }
 
+//    @Transactional
+//    public Project update(ProjectFullDto projectFullDto) {
+//        Project project = projectRepository.findById(projectFullDto.getProjectId())
+//                .orElseThrow(() -> new RuntimeException("Project Not Found."));
+//
+//        // Собираем новых сотрудников из DTO
+//        Set<EmployeeShortDto> newEmployees = new HashSet<>();
+//        if (projectFullDto.getProjectManager() != null) {
+//            newEmployees.add(projectFullDto.getProjectManager());
+//        }
+//        if (projectFullDto.getBackendDevelopers() != null) {
+//            newEmployees.addAll(projectFullDto.getBackendDevelopers());
+//        }
+//        if (projectFullDto.getFrontendDevelopers() != null) {
+//            newEmployees.addAll(projectFullDto.getFrontendDevelopers());
+//        }
+//        if (projectFullDto.getFullstackDeveloper() != null) {
+//            newEmployees.add(projectFullDto.getFullstackDeveloper());
+//        }
+//        if (projectFullDto.getQaEngineer() != null) {
+//            newEmployees.add(projectFullDto.getQaEngineer());
+//        }
+//        if (projectFullDto.getAqaEngineer() != null) {
+//            newEmployees.add(projectFullDto.getAqaEngineer());
+//        }
+//        if (projectFullDto.getDevOps() != null) {
+//            newEmployees.add(projectFullDto.getDevOps());
+//        }
+//        if (projectFullDto.getDataScientist() != null) {
+//            newEmployees.add(projectFullDto.getDataScientist());
+//        }
+//        if (projectFullDto.getDataAnalyst() != null) {
+//            newEmployees.add(projectFullDto.getDataAnalyst());
+//        }
+//
+//        Set<Employee> currentEmployees = project.getEmployees();
+//
+//        if (newEmployees.isEmpty()) {
+//            currentEmployees.forEach(employee -> employee.getProjects().remove(project));
+//            currentEmployees.clear();
+//            project.setEmployees(currentEmployees);
+//        } else {
+//            // Идентификаторы новых сотрудников
+//            Set<Long> newEmployeeIds = newEmployees.stream()
+//                    .map(EmployeeShortDto::getEmployeeId)
+//                    .collect(Collectors.toSet());
+//
+//            // Удаляем сотрудников, которые больше не должны быть связаны с проектом
+//            currentEmployees.removeIf(employee -> {
+//                boolean b = !newEmployeeIds.contains(employee.getEmployeeId());
+//                if (b) {
+//                    employee.getProjects().remove(project);
+//                }
+//                return b;
+//            });
+//
+//            // Загружаем новых сотрудников по их ID
+//            Set<Employee> employeesForUpdate = new HashSet<>(employeeRepository.findAllById(newEmployeeIds));
+//            employeesForUpdate.forEach(employee -> {
+//                if (!currentEmployees.contains(employee)) {
+//                    employee.getProjects().add(project); // Добавляем проект к новому сотруднику
+//                }
+//            });
+//
+//            // Объединяем текущих сотрудников с новыми
+//            currentEmployees.addAll(employeesForUpdate);
+//
+//        }
+//
+//        project.setEmployees(currentEmployees);
+//
+//        // Обновляем проект
+//        project.setName(projectFullDto.getName());
+//        project.setStartDate(projectFullDto.getStartDate());
+//        project.setEndDate(projectFullDto.getEndDate());
+//        project.setStatus(Status.fromDisplayName(projectFullDto.getStatus()));
+//
+//
+//
+//        return projectRepository.save(project);
+//    }
+
     @Transactional
     public Project update(ProjectFullDto projectFullDto) {
         Project project = projectRepository.findById(projectFullDto.getProjectId())
                 .orElseThrow(() -> new RuntimeException("Project Not Found."));
 
-        // Собираем новых сотрудников из DTO
-        Set<EmployeeShortDto> newEmployees = new HashSet<>();
-        if (projectFullDto.getProjectManager() != null) {
-            newEmployees.add(projectFullDto.getProjectManager());
-        }
+        // Собираем новых сотрудников в один Set
+        Set<EmployeeShortDto> newEmployees = Stream.of(
+                        projectFullDto.getProjectManager(),
+                        projectFullDto.getFullstackDeveloper(),
+                        projectFullDto.getQaEngineer(),
+                        projectFullDto.getAqaEngineer(),
+                        projectFullDto.getDevOps(),
+                        projectFullDto.getDataScientist(),
+                        projectFullDto.getDataAnalyst())
+                .filter(Objects::nonNull) // Убираем null значения
+                .collect(Collectors.toSet());
+
+        // Добавляем backend и frontend разработчиков
         if (projectFullDto.getBackendDevelopers() != null) {
             newEmployees.addAll(projectFullDto.getBackendDevelopers());
         }
         if (projectFullDto.getFrontendDevelopers() != null) {
             newEmployees.addAll(projectFullDto.getFrontendDevelopers());
         }
-        if (projectFullDto.getFullstackDeveloper() != null) {
-            newEmployees.add(projectFullDto.getFullstackDeveloper());
-        }
-        if (projectFullDto.getQaEngineer() != null) {
-            newEmployees.add(projectFullDto.getQaEngineer());
-        }
-        if (projectFullDto.getAqaEngineer() != null) {
-            newEmployees.add(projectFullDto.getAqaEngineer());
-        }
-        if (projectFullDto.getDevOps() != null) {
-            newEmployees.add(projectFullDto.getDevOps());
-        }
-        if (projectFullDto.getDataScientist() != null) {
-            newEmployees.add(projectFullDto.getDataScientist());
-        }
-        if (projectFullDto.getDataAnalyst() != null) {
-            newEmployees.add(projectFullDto.getDataAnalyst());
-        }
 
+        // Текущие сотрудники проекта
         Set<Employee> currentEmployees = project.getEmployees();
 
-        if (newEmployees.isEmpty()) {
-            currentEmployees.forEach(employee -> employee.getProjects().remove(project));
-            currentEmployees.clear();
-            project.setEmployees(currentEmployees);
-        } else {
-            // Идентификаторы новых сотрудников
-            Set<Long> newEmployeeIds = newEmployees.stream()
-                    .map(EmployeeShortDto::getEmployeeId)
-                    .collect(Collectors.toSet());
+        // Идентификаторы новых сотрудников
+        Set<Long> newEmployeeIds = newEmployees.stream()
+                .map(EmployeeShortDto::getEmployeeId)
+                .collect(Collectors.toSet());
 
-            // Удаляем сотрудников, которые больше не должны быть связаны с проектом
-            currentEmployees.removeIf(employee -> {
-                boolean b = !newEmployeeIds.contains(employee.getEmployeeId());
-                if (b) {
-                    employee.getProjects().remove(project);
-                }
-                return b;
-            });
+        // Удаляем сотрудников, которые больше не должны быть в проекте
+        currentEmployees.removeIf(employee -> {
+            boolean shouldRemove = !newEmployeeIds.contains(employee.getEmployeeId());
+            if (shouldRemove) {
+                employee.getProjects().remove(project);
+            }
+            return shouldRemove;
+        });
 
-            // Загружаем новых сотрудников по их ID
-            Set<Employee> employeesForUpdate = new HashSet<>(employeeRepository.findAllById(newEmployeeIds));
-            employeesForUpdate.forEach(employee -> {
-                if (!currentEmployees.contains(employee)) {
-                    employee.getProjects().add(project); // Добавляем проект к новому сотруднику
-                }
-            });
+        // Загружаем и добавляем новых сотрудников
+        Set<Employee> employeesForUpdate = new HashSet<>(employeeRepository.findAllById(newEmployeeIds));
+        employeesForUpdate.forEach(employee -> {
+            if (!currentEmployees.contains(employee)) {
+                employee.getProjects().add(project); // Добавляем проект к новому сотруднику
+            }
+        });
 
-            // Объединяем текущих сотрудников с новыми
-            currentEmployees.addAll(employeesForUpdate);
+        currentEmployees.addAll(employeesForUpdate);
 
-        }
-
-        project.setEmployees(currentEmployees);
-
-        // Обновляем проект
+        // Обновляем поля проекта
         project.setName(projectFullDto.getName());
         project.setStartDate(projectFullDto.getStartDate());
         project.setEndDate(projectFullDto.getEndDate());
         project.setStatus(Status.fromDisplayName(projectFullDto.getStatus()));
 
-
-
         return projectRepository.save(project);
     }
+
 
     @Transactional
     public void deleteById(Long id) {
