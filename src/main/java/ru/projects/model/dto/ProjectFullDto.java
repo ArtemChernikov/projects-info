@@ -8,6 +8,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -33,22 +34,22 @@ public class ProjectFullDto {
 
     private String status;
 
-    private Set<EmployeeShortDto> projectManagers;
+    private Set<EmployeeShortDto> projectManagers = new HashSet<>();
 
-    private Set<EmployeeShortDto> backendDevelopers;
+    private Set<EmployeeShortDto> backendDevelopers = new HashSet<>();
 
-    private Set<EmployeeShortDto> frontendDevelopers;
+    private Set<EmployeeShortDto> frontendDevelopers = new HashSet<>();
 
-    private Set<EmployeeShortDto> fullstackDevelopers;
+    private Set<EmployeeShortDto> fullstackDevelopers = new HashSet<>();
 
-    private Set<EmployeeShortDto> qaEngineers;
+    private Set<EmployeeShortDto> qaEngineers = new HashSet<>();
 
-    private Set<EmployeeShortDto> aqaEngineers;
+    private Set<EmployeeShortDto> aqaEngineers = new HashSet<>();
 
-    private Set<EmployeeShortDto> devOps;
+    private Set<EmployeeShortDto> devOps = new HashSet<>();
 
-    private Set<EmployeeShortDto> dataScientists;
+    private Set<EmployeeShortDto> dataScientists = new HashSet<>();
 
-    private Set<EmployeeShortDto> dataAnalysts;
+    private Set<EmployeeShortDto> dataAnalysts = new HashSet<>();
 
 }

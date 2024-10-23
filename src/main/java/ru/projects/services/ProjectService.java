@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -87,9 +88,8 @@ public class ProjectService {
     public Project update(ProjectFullDto projectFullDto) {
         Project project = projectRepository.findById(projectFullDto.getProjectId())
                 .orElseThrow(() -> new RuntimeException("Project Not Found."));
-
-        // Собираем новых сотрудников в один Set
-        Set<EmployeeShortDto> newEmployees = Stream.of(
+        Set<Employee> currentEmployees = project.getEmployees();
+        Set<Long> newEmployeeIds = Stream.of(
                         projectFullDto.getProjectManagers(),
                         projectFullDto.getBackendDevelopers(),
                         projectFullDto.getFrontendDevelopers(),
@@ -99,38 +99,19 @@ public class ProjectService {
                         projectFullDto.getDevOps(),
                         projectFullDto.getDataScientists(),
                         projectFullDto.getDataAnalysts())
+                .filter(Objects::nonNull) // Фильтруем null списки
                 .flatMap(Collection::stream)
-                .filter(Objects::nonNull)
-                .collect(Collectors.toSet());
-
-        // Текущие сотрудники проекта
-        Set<Employee> currentEmployees = project.getEmployees();
-
-        // Идентификаторы новых сотрудников
-        Set<Long> newEmployeeIds = newEmployees.stream()
                 .map(EmployeeShortDto::getEmployeeId)
                 .collect(Collectors.toSet());
 
-        // Удаляем сотрудников, которые больше не должны быть в проекте
-        currentEmployees.removeIf(employee -> {
-            boolean shouldRemove = !newEmployeeIds.contains(employee.getEmployeeId());
-            if (shouldRemove) {
-                employee.getProjects().remove(project);
-            }
-            return shouldRemove;
-        });
+        currentEmployees.removeIf(employee -> !newEmployeeIds.contains(employee.getEmployeeId())
+                && employee.getProjects().remove(project));
 
-        // Загружаем и добавляем новых сотрудников
-        Set<Employee> employeesForUpdate = new HashSet<>(employeeRepository.findAllById(newEmployeeIds));
-        employeesForUpdate.forEach(employee -> {
-            if (!currentEmployees.contains(employee)) {
-                employee.getProjects().add(project); // Добавляем проект к новому сотруднику
-            }
-        });
-
+        Set<Employee> employeesForUpdate = employeeRepository.findAllById(newEmployeeIds).stream()
+                .peek(employee -> employee.getProjects().add(project))
+                .collect(Collectors.toSet());
         currentEmployees.addAll(employeesForUpdate);
 
-        // Обновляем поля проекта
         project.setName(projectFullDto.getName());
         project.setStartDate(projectFullDto.getStartDate());
         project.setEndDate(projectFullDto.getEndDate());
@@ -145,7 +126,7 @@ public class ProjectService {
         Project project = projectRepository.findById(id).orElseThrow(() -> new RuntimeException("Project Not Found."));
 
         for (Employee employee : project.getEmployees()) {
-            employee.getProjects().remove(project);  // Удаляем проект из сотрудников
+            employee.getProjects().remove(project);
         }
         projectRepository.deleteById(id);
     }
@@ -170,33 +151,25 @@ public class ProjectService {
     private void setEmployeesToProjectFullDto(Set<Employee> employees, ProjectFullDto projectFullDto) {
         Map<String, List<EmployeeShortDto>> employeesBySpecializations = employeeService
                 .groupEmployeesBySpecializations(new ArrayList<>(employees));
-        if (employeesBySpecializations.containsKey(PROJECT_MANAGER_SPECIALIZATION_NAME)) {
-            projectFullDto.setProjectManagers(new HashSet<>(employeesBySpecializations.get(PROJECT_MANAGER_SPECIALIZATION_NAME)));
-        }
-        if (employeesBySpecializations.containsKey(BACKEND_DEVELOPER_SPECIALIZATION_NAME)) {
-            projectFullDto.setBackendDevelopers(new HashSet<>(employeesBySpecializations.get(BACKEND_DEVELOPER_SPECIALIZATION_NAME)));
-        }
-        if (employeesBySpecializations.containsKey(FRONTEND_DEVELOPER_SPECIALIZATION_NAME)) {
-            projectFullDto.setFrontendDevelopers(new HashSet<>(employeesBySpecializations.get(FRONTEND_DEVELOPER_SPECIALIZATION_NAME)));
-        }
-        if (employeesBySpecializations.containsKey(FULLSTACK_DEVELOPER_SPECIALIZATION_NAME)) {
-            projectFullDto.setFullstackDevelopers(new HashSet<>(employeesBySpecializations.get(FULLSTACK_DEVELOPER_SPECIALIZATION_NAME)));
-        }
-        if (employeesBySpecializations.containsKey(QA_ENGINEER_SPECIALIZATION_NAME)) {
-            projectFullDto.setQaEngineers(new HashSet<>(employeesBySpecializations.get(QA_ENGINEER_SPECIALIZATION_NAME)));
-        }
-        if (employeesBySpecializations.containsKey(AQA_ENGINEER_SPECIALIZATION_NAME)) {
-            projectFullDto.setAqaEngineers(new HashSet<>(employeesBySpecializations.get(AQA_ENGINEER_SPECIALIZATION_NAME)));
-        }
-        if (employeesBySpecializations.containsKey(DEV_OPS_SPECIALIZATION_NAME)) {
-            projectFullDto.setDevOps(new HashSet<>(employeesBySpecializations.get(DEV_OPS_SPECIALIZATION_NAME)));
-        }
-        if (employeesBySpecializations.containsKey(DATA_SCIENTIST_SPECIALIZATION_NAME)) {
-            projectFullDto.setDataScientists(new HashSet<>(employeesBySpecializations.get(DATA_SCIENTIST_SPECIALIZATION_NAME)));
-        }
-        if (employeesBySpecializations.containsKey(DATA_ANALYST_SPECIALIZATION_NAME)) {
-            projectFullDto.setDataAnalysts(new HashSet<>(employeesBySpecializations.get(DATA_ANALYST_SPECIALIZATION_NAME)));
-        }
+
+        Map<String, Consumer<Set<EmployeeShortDto>>> specializationSetters = Map.of(
+                PROJECT_MANAGER_SPECIALIZATION_NAME, projectFullDto::setProjectManagers,
+                BACKEND_DEVELOPER_SPECIALIZATION_NAME, projectFullDto::setBackendDevelopers,
+                FRONTEND_DEVELOPER_SPECIALIZATION_NAME, projectFullDto::setFrontendDevelopers,
+                FULLSTACK_DEVELOPER_SPECIALIZATION_NAME, projectFullDto::setFullstackDevelopers,
+                QA_ENGINEER_SPECIALIZATION_NAME, projectFullDto::setQaEngineers,
+                AQA_ENGINEER_SPECIALIZATION_NAME, projectFullDto::setAqaEngineers,
+                DEV_OPS_SPECIALIZATION_NAME, projectFullDto::setDevOps,
+                DATA_SCIENTIST_SPECIALIZATION_NAME, projectFullDto::setDataScientists,
+                DATA_ANALYST_SPECIALIZATION_NAME, projectFullDto::setDataAnalysts
+        );
+
+        specializationSetters.forEach((specialization, setter) -> {
+            List<EmployeeShortDto> employeeShortDtos = employeesBySpecializations.get(specialization);
+            if (employeeShortDtos != null) {
+                setter.accept(new HashSet<>(employeeShortDtos));
+            }
+        });
     }
 
 }
