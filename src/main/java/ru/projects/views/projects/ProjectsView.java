@@ -59,7 +59,7 @@ public class ProjectsView extends Div implements BeforeEnterObserver {
     private TextField name;
     private DatePicker startDate;
     private DatePicker endDate;
-    private ComboBox<String> statusesComboBox;
+    private ComboBox<String> status;
     private MultiSelectComboBox<EmployeeShortDto> projectManagers;
     private MultiSelectComboBox<EmployeeShortDto> backendDevelopers;
     private MultiSelectComboBox<EmployeeShortDto> frontendDevelopers;
@@ -88,6 +88,22 @@ public class ProjectsView extends Div implements BeforeEnterObserver {
         createUI();
     }
 
+    @Override
+    public void beforeEnter(BeforeEnterEvent event) {
+        Optional<Long> projectId = event.getRouteParameters().get(PROJECT_ID).map(Long::parseLong);
+        if (projectId.isPresent()) {
+            Optional<ProjectFullDto> projectFromBackend = projectService.getById(projectId.get());
+            if (projectFromBackend.isPresent()) {
+                fillEditForm(projectFromBackend.get());
+            } else {
+                Notification.show(String.format("The requested employee was not found, ID = %s", projectId.get()),
+                        3000, Position.BOTTOM_START);
+                refreshGrid();
+                event.forwardTo(ProjectsView.class);
+            }
+        }
+    }
+
     private void createUI() {
         SplitLayout splitLayout = new SplitLayout();
         createGridLayout(splitLayout);
@@ -103,6 +119,127 @@ public class ProjectsView extends Div implements BeforeEnterObserver {
         });
         save.addClickListener(clickEvent -> updateProject());
         delete.addClickListener(clickEvent -> deleteProject());
+    }
+
+    private void configureValidationBinder() {
+        binder = new BeanValidationBinder<>(ProjectFullDto.class);
+        binder.forField(name)
+                .asRequired("Project Name is required")
+                .bind(ProjectFullDto::getName, ProjectFullDto::setName);
+        binder.forField(startDate)
+                .asRequired("Start Date is required")
+                .bind(ProjectFullDto::getStartDate, ProjectFullDto::setStartDate);
+        binder.forField(endDate)
+                .bind(ProjectFullDto::getEndDate, ProjectFullDto::setEndDate);
+        binder.forField(status)
+                .asRequired("Project Status is required")
+                .bind(ProjectFullDto::getStatus, ProjectFullDto::setStatus);
+        binder.bindInstanceFields(this);
+    }
+
+    private void setRequiredFields() {
+        name.setRequiredIndicatorVisible(true);
+        startDate.setRequiredIndicatorVisible(true);
+        status.setRequiredIndicatorVisible(true);
+    }
+
+    private void configureGrid() {
+        grid.addColumn("name").setAutoWidth(true);
+        grid.addColumn("startDate").setAutoWidth(true);
+        grid.addColumn("endDate").setAutoWidth(true);
+        grid.addColumn("status").setAutoWidth(true);
+
+        grid.addColumn(ProjectEmployeeDetails.createToggleDetailsRenderer(grid));
+
+        grid.setDetailsVisibleOnClick(false);
+        grid.setItemDetailsRenderer(ProjectEmployeeDetails.createProjectDetailsRenderer());
+
+        grid.setItems(query -> projectService.getAll(
+                        PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)))
+                .stream());
+
+        grid.addThemeVariants(GridVariant.LUMO_ROW_STRIPES);
+
+        grid.asSingleSelect().addValueChangeListener(event -> {
+            if (event.getValue() != null) {
+                UI.getCurrent().navigate(String.format(PROJECT_EDIT_ROUTE_TEMPLATE, event.getValue().getProjectId()));
+            } else {
+                clearForm();
+                UI.getCurrent().navigate(ProjectsView.class);
+            }
+        });
+    }
+
+    private void createEditorLayout(SplitLayout splitLayout) {
+        Div editorLayoutDiv = new Div();
+        editorLayoutDiv.setClassName("editor-layout");
+
+        Div editorDiv = new Div();
+        editorDiv.setClassName("editor");
+        editorLayoutDiv.add(editorDiv);
+
+        FormLayout formLayout = new FormLayout();
+        initializeFields();
+        setWidthsToFields("min-content");
+
+        setStatusesToComboBox();
+        setEmployeesToComboBox();
+        setRequiredFields();
+
+        formLayout.add(name, startDate, endDate, status, projectManagers, backendDevelopers,
+                frontendDevelopers, fullstackDevelopers, qaEngineers, aqaEngineers,
+                devOps, dataScientists, dataAnalysts);
+
+        editorDiv.add(formLayout);
+        createButtonLayout(editorLayoutDiv);
+
+        splitLayout.addToSecondary(editorLayoutDiv);
+    }
+
+    private void initializeFields() {
+        name = new TextField("Project Name");
+        startDate = new DatePicker("Start Date");
+        endDate = new DatePicker("End Date");
+        status = new ComboBox<>("Status");
+        projectManagers = new MultiSelectComboBox<>("Project Manager");
+        backendDevelopers = new MultiSelectComboBox<>("Backend Developers");
+        frontendDevelopers = new MultiSelectComboBox<>("Frontend Developers");
+        fullstackDevelopers = new MultiSelectComboBox<>("Fullstack Developer");
+        qaEngineers = new MultiSelectComboBox<>("QA Engineer");
+        aqaEngineers = new MultiSelectComboBox<>("AQA Engineer");
+        devOps = new MultiSelectComboBox<>("DevOps");
+        dataScientists = new MultiSelectComboBox<>("Data Scientist");
+        dataAnalysts = new MultiSelectComboBox<>("Data Analysts");
+    }
+
+    private void setWidthsToFields(String width) {
+        status.setWidth(width);
+        projectManagers.setWidth(width);
+        backendDevelopers.setWidth(width);
+        frontendDevelopers.setWidth(width);
+        fullstackDevelopers.setWidth(width);
+        qaEngineers.setWidth(width);
+        aqaEngineers.setWidth(width);
+        devOps.setWidth(width);
+        dataScientists.setWidth(width);
+        dataAnalysts.setWidth(width);
+    }
+
+    private void createButtonLayout(Div editorLayoutDiv) {
+        HorizontalLayout buttonLayout = new HorizontalLayout();
+        buttonLayout.setClassName("button-layout");
+        save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        delete.addThemeVariants(ButtonVariant.LUMO_ERROR);
+        cancel.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+        buttonLayout.add(save, delete, cancel);
+        editorLayoutDiv.add(buttonLayout);
+    }
+
+    private void createGridLayout(SplitLayout splitLayout) {
+        Div wrapper = new Div();
+        wrapper.setClassName("grid-wrapper");
+        splitLayout.addToPrimary(wrapper);
+        wrapper.add(grid);
     }
 
     private void updateProject() {
@@ -149,154 +286,6 @@ public class ProjectsView extends Div implements BeforeEnterObserver {
         }
     }
 
-    @Override
-    public void beforeEnter(BeforeEnterEvent event) {
-        Optional<Long> projectId = event.getRouteParameters().get(PROJECT_ID).map(Long::parseLong);
-        if (projectId.isPresent()) {
-            Optional<ProjectFullDto> projectFromBackend = projectService.getById(projectId.get());
-            if (projectFromBackend.isPresent()) {
-                fillEditForm(projectFromBackend.get());
-            } else {
-                Notification.show(String.format("The requested employee was not found, ID = %s", projectId.get()),
-                        3000, Position.BOTTOM_START);
-                refreshGrid();
-                event.forwardTo(ProjectsView.class);
-            }
-        }
-    }
-
-    private void configureValidationBinder() {
-        binder = new BeanValidationBinder<>(ProjectFullDto.class);
-        binder.forField(name)
-                .asRequired("Project Name is required")
-                .bind(ProjectFullDto::getName, ProjectFullDto::setName);
-        binder.forField(startDate)
-                .asRequired("Start Date is required")
-                .bind(ProjectFullDto::getStartDate, ProjectFullDto::setStartDate);
-        binder.forField(endDate)
-                .bind(ProjectFullDto::getEndDate, ProjectFullDto::setEndDate);
-        binder.forField(statusesComboBox)
-                .asRequired("Project Status is required")
-                .bind(ProjectFullDto::getStatus, ProjectFullDto::setStatus);
-//        binder.forField(projectManagers)
-//                        .bind(ProjectFullDto::getProjectManagers, ProjectFullDto::setProjectManagers);
-//        binder.forField(backendDevelopers)
-//                        .bind(ProjectFullDto::getBackendDevelopers, ProjectFullDto::setBackendDevelopers);
-//        binder.forField(frontendDevelopers)
-//                        .bind(ProjectFullDto::getFrontendDevelopers, ProjectFullDto::setFrontendDevelopers);
-//        binder.forField(fullstackDevelopers)
-//                        .bind(ProjectFullDto::getFullstackDevelopers, ProjectFullDto::setFullstackDevelopers);
-//        binder.forField(qaEngineers)
-//                        .bind(ProjectFullDto::getQaEngineers, ProjectFullDto::setQaEngineers);
-//        binder.forField(aqaEngineers)
-//                        .bind(ProjectFullDto::getAqaEngineers, ProjectFullDto::setAqaEngineers);
-//        binder.forField(devOps)
-//                        .bind(ProjectFullDto::getDevOps, ProjectFullDto::setDevOps);
-//        binder.forField(dataScientists)
-//                        .bind(ProjectFullDto::getDataScientists, ProjectFullDto::setDataScientists);
-//        binder.forField(dataAnalysts)
-//                        .bind(ProjectFullDto::getDataAnalysts, ProjectFullDto::setDataAnalysts);
-        binder.bindInstanceFields(this);
-    }
-
-    private void setRequiredFields() {
-        name.setRequiredIndicatorVisible(true);
-        startDate.setRequiredIndicatorVisible(true);
-        statusesComboBox.setRequiredIndicatorVisible(true);
-    }
-
-    private void configureGrid() {
-        grid.addColumn("name").setAutoWidth(true);
-        grid.addColumn("startDate").setAutoWidth(true);
-        grid.addColumn("endDate").setAutoWidth(true);
-        grid.addColumn("status").setAutoWidth(true);
-
-        grid.addColumn(ProjectEmployeeDetails.createToggleDetailsRenderer(grid));
-
-        grid.setDetailsVisibleOnClick(false);
-        grid.setItemDetailsRenderer(ProjectEmployeeDetails.createProjectDetailsRenderer());
-
-        grid.setItems(query -> projectService.getAll(
-                        PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)))
-                .stream());
-
-        grid.addThemeVariants(GridVariant.LUMO_ROW_STRIPES);
-
-        grid.asSingleSelect().addValueChangeListener(event -> {
-            if (event.getValue() != null) {
-                UI.getCurrent().navigate(String.format(PROJECT_EDIT_ROUTE_TEMPLATE, event.getValue().getProjectId()));
-            } else {
-                clearForm();
-                UI.getCurrent().navigate(ProjectsView.class);
-            }
-        });
-    }
-
-    private void createEditorLayout(SplitLayout splitLayout) {
-        Div editorLayoutDiv = new Div();
-        editorLayoutDiv.setClassName("editor-layout");
-
-        Div editorDiv = new Div();
-        editorDiv.setClassName("editor");
-        editorLayoutDiv.add(editorDiv);
-
-        FormLayout formLayout = new FormLayout();
-        name = new TextField("Project Name");
-        startDate = new DatePicker("Start Date");
-        endDate = new DatePicker("End Date");
-        statusesComboBox = new ComboBox<>("Status");
-        projectManagers = new MultiSelectComboBox<>("Project Manager");
-        backendDevelopers = new MultiSelectComboBox<>("Backend Developers");
-        frontendDevelopers = new MultiSelectComboBox<>("Frontend Developers");
-        fullstackDevelopers = new MultiSelectComboBox<>("Fullstack Developer");
-        qaEngineers = new MultiSelectComboBox<>("QA Engineer");
-        aqaEngineers = new MultiSelectComboBox<>("AQA Engineer");
-        devOps = new MultiSelectComboBox<>("DevOps");
-        dataScientists = new MultiSelectComboBox<>("Data Scientist");
-        dataAnalysts = new MultiSelectComboBox<>("Data Analysts");
-
-        statusesComboBox.setWidth("min-content");
-        projectManagers.setWidth("min-content");
-        backendDevelopers.setWidth("min-content");
-        frontendDevelopers.setWidth("min-content");
-        fullstackDevelopers.setWidth("min-content");
-        qaEngineers.setWidth("min-content");
-        aqaEngineers.setWidth("min-content");
-        devOps.setWidth("min-content");
-        dataScientists.setWidth("min-content");
-        dataAnalysts.setWidth("min-content");
-
-        setStatusesToComboBox();
-        setEmployeesToComboBox();
-
-        setRequiredFields();
-        formLayout.add(name, startDate, endDate, statusesComboBox, projectManagers, backendDevelopers,
-                frontendDevelopers, fullstackDevelopers, qaEngineers, aqaEngineers,
-                devOps, dataScientists, dataAnalysts);
-
-        editorDiv.add(formLayout);
-        createButtonLayout(editorLayoutDiv);
-
-        splitLayout.addToSecondary(editorLayoutDiv);
-    }
-
-    private void createButtonLayout(Div editorLayoutDiv) {
-        HorizontalLayout buttonLayout = new HorizontalLayout();
-        buttonLayout.setClassName("button-layout");
-        save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        delete.addThemeVariants(ButtonVariant.LUMO_ERROR);
-        cancel.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
-        buttonLayout.add(save, delete, cancel);
-        editorLayoutDiv.add(buttonLayout);
-    }
-
-    private void createGridLayout(SplitLayout splitLayout) {
-        Div wrapper = new Div();
-        wrapper.setClassName("grid-wrapper");
-        splitLayout.addToPrimary(wrapper);
-        wrapper.add(grid);
-    }
-
     private void refreshGrid() {
         grid.select(null);
         grid.getDataProvider().refreshAll();
@@ -304,7 +293,7 @@ public class ProjectsView extends Div implements BeforeEnterObserver {
 
     private void clearForm() {
         fillEditForm(null);
-        statusesComboBox.clear();
+        status.clear();
         projectManagers.clear();
         backendDevelopers.clear();
         frontendDevelopers.clear();
@@ -322,56 +311,28 @@ public class ProjectsView extends Div implements BeforeEnterObserver {
     }
 
     private void setStatusesToComboBox() {
-        statusesComboBox.setItems(List.of(Status.NEW.getDisplayName(), Status.IN_PROGRESS.getDisplayName(),
+        status.setItems(List.of(Status.NEW.getDisplayName(), Status.IN_PROGRESS.getDisplayName(),
                 Status.FINISHED.getDisplayName()));
     }
 
     private void setEmployeesToComboBox() {
         Map<String, List<EmployeeShortDto>> allEmployeesBySpecialization = employeeService.getAllEmployeesBySpecialization();
-        List<EmployeeShortDto> projectManagers = allEmployeesBySpecialization.get(PROJECT_MANAGER_SPECIALIZATION_NAME);
-        List<EmployeeShortDto> backendDevelopers = allEmployeesBySpecialization.get(BACKEND_DEVELOPER_SPECIALIZATION_NAME);
-        List<EmployeeShortDto> frontendDevelopers = allEmployeesBySpecialization.get(FRONTEND_DEVELOPER_SPECIALIZATION_NAME);
-        List<EmployeeShortDto> fullstackDevelopers = allEmployeesBySpecialization.get(FULLSTACK_DEVELOPER_SPECIALIZATION_NAME);
-        List<EmployeeShortDto> qaEngineers = allEmployeesBySpecialization.get(QA_ENGINEER_SPECIALIZATION_NAME);
-        List<EmployeeShortDto> aqaEngineers = allEmployeesBySpecialization.get(AQA_ENGINEER_SPECIALIZATION_NAME);
-        List<EmployeeShortDto> devOps = allEmployeesBySpecialization.get(DEV_OPS_SPECIALIZATION_NAME);
-        List<EmployeeShortDto> dataScientist = allEmployeesBySpecialization.get(DATA_SCIENTIST_SPECIALIZATION_NAME);
-        List<EmployeeShortDto> dataAnalysts = allEmployeesBySpecialization.get(DATA_ANALYST_SPECIALIZATION_NAME);
-        if (projectManagers != null) {
-            this.projectManagers.setItems(projectManagers);
-            this.projectManagers.setItemLabelGenerator(EmployeeShortDto::getName);
-        }
-        if (backendDevelopers != null) {
-            this.backendDevelopers.setItems(backendDevelopers);
-            this.backendDevelopers.setItemLabelGenerator(EmployeeShortDto::getName);
-        }
-        if (frontendDevelopers != null) {
-            this.frontendDevelopers.setItems(frontendDevelopers);
-            this.frontendDevelopers.setItemLabelGenerator(EmployeeShortDto::getName);
-        }
-        if (fullstackDevelopers != null) {
-            this.fullstackDevelopers.setItems(fullstackDevelopers);
-            this.fullstackDevelopers.setItemLabelGenerator(EmployeeShortDto::getName);
-        }
-        if (qaEngineers != null) {
-            this.qaEngineers.setItems(qaEngineers);
-            this.qaEngineers.setItemLabelGenerator(EmployeeShortDto::getName);
-        }
-        if (aqaEngineers != null) {
-            this.aqaEngineers.setItems(aqaEngineers);
-            this.aqaEngineers.setItemLabelGenerator(EmployeeShortDto::getName);
-        }
-        if (devOps != null) {
-            this.devOps.setItems(devOps);
-            this.devOps.setItemLabelGenerator(EmployeeShortDto::getName);
-        }
-        if (dataScientist != null) {
-            dataScientists.setItems(dataScientist);
-            dataScientists.setItemLabelGenerator(EmployeeShortDto::getName);
-        }
-        if (dataAnalysts != null) {
-            this.dataAnalysts.setItems(dataAnalysts);
-            this.dataAnalysts.setItemLabelGenerator(EmployeeShortDto::getName);
+
+        setComboBoxItems(projectManagers, allEmployeesBySpecialization.get(PROJECT_MANAGER_SPECIALIZATION_NAME));
+        setComboBoxItems(backendDevelopers, allEmployeesBySpecialization.get(BACKEND_DEVELOPER_SPECIALIZATION_NAME));
+        setComboBoxItems(frontendDevelopers, allEmployeesBySpecialization.get(FRONTEND_DEVELOPER_SPECIALIZATION_NAME));
+        setComboBoxItems(fullstackDevelopers, allEmployeesBySpecialization.get(FULLSTACK_DEVELOPER_SPECIALIZATION_NAME));
+        setComboBoxItems(qaEngineers, allEmployeesBySpecialization.get(QA_ENGINEER_SPECIALIZATION_NAME));
+        setComboBoxItems(aqaEngineers, allEmployeesBySpecialization.get(AQA_ENGINEER_SPECIALIZATION_NAME));
+        setComboBoxItems(devOps, allEmployeesBySpecialization.get(DEV_OPS_SPECIALIZATION_NAME));
+        setComboBoxItems(dataScientists, allEmployeesBySpecialization.get(DATA_SCIENTIST_SPECIALIZATION_NAME));
+        setComboBoxItems(dataAnalysts, allEmployeesBySpecialization.get(DATA_ANALYST_SPECIALIZATION_NAME));
+    }
+
+    private void setComboBoxItems(MultiSelectComboBox<EmployeeShortDto> comboBox, List<EmployeeShortDto> employees) {
+        if (employees != null) {
+            comboBox.setItems(employees);
+            comboBox.setItemLabelGenerator(EmployeeShortDto::getName);
         }
     }
 }
