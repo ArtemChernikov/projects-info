@@ -9,8 +9,8 @@ import com.vaadin.flow.data.renderer.Renderer;
 import ru.projects.model.dto.EmployeeShortDto;
 import ru.projects.model.dto.ProjectFullDto;
 
-import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -65,54 +65,23 @@ public class ProjectEmployeeDetails {
         }
 
         public void setEmployees(ProjectFullDto projectFullDto) {
-            EmployeeShortDto projectManager = projectFullDto.getProjectManager();
-            Set<EmployeeShortDto> backendDevelopers = projectFullDto.getBackendDevelopers();
-            Set<EmployeeShortDto> frontendDevelopers = projectFullDto.getFrontendDevelopers();
-            EmployeeShortDto fullstackDeveloper = projectFullDto.getFullstackDeveloper();
-            EmployeeShortDto qaEngineer = projectFullDto.getQaEngineer();
-            EmployeeShortDto aqaEngineer = projectFullDto.getAqaEngineer();
-            EmployeeShortDto devOps = projectFullDto.getDevOps();
-            EmployeeShortDto dataScientist = projectFullDto.getDataScientist();
-            EmployeeShortDto dataAnalyst = projectFullDto.getDataAnalyst();
+            setEmployeeField(projectFullDto.getProjectManagers(), projectManagerField);
+            setEmployeeField(projectFullDto.getBackendDevelopers(), backendDeveloperField);
+            setEmployeeField(projectFullDto.getFrontendDevelopers(), frontendDeveloperField);
+            setEmployeeField(projectFullDto.getFullstackDevelopers(), fullstackDeveloperField);
+            setEmployeeField(projectFullDto.getQaEngineers(), qaEngineerField);
+            setEmployeeField(projectFullDto.getAqaEngineers(), aqaEngineerField);
+            setEmployeeField(projectFullDto.getDevOps(), devOpsField);
+            setEmployeeField(projectFullDto.getDataScientists(), dataScientistField);
+            setEmployeeField(projectFullDto.getDataAnalysts(), dataAnalystField);
+        }
 
-            if (projectManager != null) {
-                projectManagerField.setValue(projectManager.getName());
-            }
-            if (backendDevelopers != null) {
-                StringBuilder stringBuilder = new StringBuilder();
-                backendDevelopers.forEach(employeeShortDto -> {
-                    stringBuilder.append(employeeShortDto.getName());
-                    stringBuilder.append(", ");
-                });
-                stringBuilder.delete(stringBuilder.length() - 2, stringBuilder.length());
-                backendDeveloperField.setValue(stringBuilder.toString());
-            }
-            if (frontendDevelopers != null) {
-                StringBuilder stringBuilder = new StringBuilder();
-                frontendDevelopers.forEach(employeeShortDto -> {
-                    stringBuilder.append(employeeShortDto.getName());
-                    stringBuilder.append(", ");
-                });
-                stringBuilder.delete(stringBuilder.length() - 2, stringBuilder.length());
-                frontendDeveloperField.setValue(stringBuilder.toString());
-            }
-            if (fullstackDeveloper != null) {
-                fullstackDeveloperField.setValue(fullstackDeveloper.getName());
-            }
-            if (qaEngineer != null) {
-                qaEngineerField.setValue(qaEngineer.getName());
-            }
-            if (aqaEngineer != null) {
-                aqaEngineerField.setValue(aqaEngineer.getName());
-            }
-            if (devOps != null) {
-                devOpsField.setValue(devOps.getName());
-            }
-            if (dataScientist != null) {
-                dataScientistField.setValue(dataScientist.getName());
-            }
-            if (dataAnalyst != null) {
-                dataAnalystField.setValue(dataAnalyst.getName());
+        private void setEmployeeField(Set<EmployeeShortDto> employees, TextField field) {
+            if (employees != null && !employees.isEmpty()) {
+                String employeeNames = employees.stream()
+                        .map(EmployeeShortDto::getName)
+                        .collect(Collectors.joining(", "));
+                field.setValue(employeeNames);
             }
         }
     }

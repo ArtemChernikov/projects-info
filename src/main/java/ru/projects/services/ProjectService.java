@@ -15,6 +15,7 @@ import ru.projects.repository.EmployeeRepository;
 import ru.projects.repository.ProjectRepository;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -89,23 +90,18 @@ public class ProjectService {
 
         // Собираем новых сотрудников в один Set
         Set<EmployeeShortDto> newEmployees = Stream.of(
-                        projectFullDto.getProjectManager(),
-                        projectFullDto.getFullstackDeveloper(),
-                        projectFullDto.getQaEngineer(),
-                        projectFullDto.getAqaEngineer(),
+                        projectFullDto.getProjectManagers(),
+                        projectFullDto.getBackendDevelopers(),
+                        projectFullDto.getFrontendDevelopers(),
+                        projectFullDto.getFullstackDevelopers(),
+                        projectFullDto.getQaEngineers(),
+                        projectFullDto.getAqaEngineers(),
                         projectFullDto.getDevOps(),
-                        projectFullDto.getDataScientist(),
-                        projectFullDto.getDataAnalyst())
-                .filter(Objects::nonNull) // Убираем null значения
+                        projectFullDto.getDataScientists(),
+                        projectFullDto.getDataAnalysts())
+                .flatMap(Collection::stream)
+                .filter(Objects::nonNull)
                 .collect(Collectors.toSet());
-
-        // Добавляем backend и frontend разработчиков
-        if (projectFullDto.getBackendDevelopers() != null) {
-            newEmployees.addAll(projectFullDto.getBackendDevelopers());
-        }
-        if (projectFullDto.getFrontendDevelopers() != null) {
-            newEmployees.addAll(projectFullDto.getFrontendDevelopers());
-        }
 
         // Текущие сотрудники проекта
         Set<Employee> currentEmployees = project.getEmployees();
@@ -175,7 +171,7 @@ public class ProjectService {
         Map<String, List<EmployeeShortDto>> employeesBySpecializations = employeeService
                 .groupEmployeesBySpecializations(new ArrayList<>(employees));
         if (employeesBySpecializations.containsKey(PROJECT_MANAGER_SPECIALIZATION_NAME)) {
-            projectFullDto.setProjectManager(employeesBySpecializations.get(PROJECT_MANAGER_SPECIALIZATION_NAME).getFirst());
+            projectFullDto.setProjectManagers(new HashSet<>(employeesBySpecializations.get(PROJECT_MANAGER_SPECIALIZATION_NAME)));
         }
         if (employeesBySpecializations.containsKey(BACKEND_DEVELOPER_SPECIALIZATION_NAME)) {
             projectFullDto.setBackendDevelopers(new HashSet<>(employeesBySpecializations.get(BACKEND_DEVELOPER_SPECIALIZATION_NAME)));
@@ -184,22 +180,22 @@ public class ProjectService {
             projectFullDto.setFrontendDevelopers(new HashSet<>(employeesBySpecializations.get(FRONTEND_DEVELOPER_SPECIALIZATION_NAME)));
         }
         if (employeesBySpecializations.containsKey(FULLSTACK_DEVELOPER_SPECIALIZATION_NAME)) {
-            projectFullDto.setFullstackDeveloper(employeesBySpecializations.get(FULLSTACK_DEVELOPER_SPECIALIZATION_NAME).getFirst());
+            projectFullDto.setFullstackDevelopers(new HashSet<>(employeesBySpecializations.get(FULLSTACK_DEVELOPER_SPECIALIZATION_NAME)));
         }
         if (employeesBySpecializations.containsKey(QA_ENGINEER_SPECIALIZATION_NAME)) {
-            projectFullDto.setQaEngineer(employeesBySpecializations.get(QA_ENGINEER_SPECIALIZATION_NAME).getFirst());
+            projectFullDto.setQaEngineers(new HashSet<>(employeesBySpecializations.get(QA_ENGINEER_SPECIALIZATION_NAME)));
         }
         if (employeesBySpecializations.containsKey(AQA_ENGINEER_SPECIALIZATION_NAME)) {
-            projectFullDto.setAqaEngineer(employeesBySpecializations.get(AQA_ENGINEER_SPECIALIZATION_NAME).getFirst());
+            projectFullDto.setAqaEngineers(new HashSet<>(employeesBySpecializations.get(AQA_ENGINEER_SPECIALIZATION_NAME)));
         }
         if (employeesBySpecializations.containsKey(DEV_OPS_SPECIALIZATION_NAME)) {
-            projectFullDto.setDevOps(employeesBySpecializations.get(DEV_OPS_SPECIALIZATION_NAME).getFirst());
+            projectFullDto.setDevOps(new HashSet<>(employeesBySpecializations.get(DEV_OPS_SPECIALIZATION_NAME)));
         }
         if (employeesBySpecializations.containsKey(DATA_SCIENTIST_SPECIALIZATION_NAME)) {
-            projectFullDto.setDataScientist(employeesBySpecializations.get(DATA_SCIENTIST_SPECIALIZATION_NAME).getFirst());
+            projectFullDto.setDataScientists(new HashSet<>(employeesBySpecializations.get(DATA_SCIENTIST_SPECIALIZATION_NAME)));
         }
         if (employeesBySpecializations.containsKey(DATA_ANALYST_SPECIALIZATION_NAME)) {
-            projectFullDto.setDataAnalyst(employeesBySpecializations.get(DATA_ANALYST_SPECIALIZATION_NAME).getFirst());
+            projectFullDto.setDataAnalysts(new HashSet<>(employeesBySpecializations.get(DATA_ANALYST_SPECIALIZATION_NAME)));
         }
     }
 

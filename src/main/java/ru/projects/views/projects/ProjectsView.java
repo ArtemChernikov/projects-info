@@ -27,22 +27,14 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import ru.projects.model.dto.EmployeeShortDto;
 import ru.projects.model.dto.ProjectFullDto;
-import ru.projects.model.dto.ProjectUpdateDto;
 import ru.projects.model.enums.Status;
 import ru.projects.services.EmployeeService;
 import ru.projects.services.ProjectService;
 import ru.projects.views.MainLayout;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static ru.projects.utils.Constants.AQA_ENGINEER_SPECIALIZATION_NAME;
 import static ru.projects.utils.Constants.BACKEND_DEVELOPER_SPECIALIZATION_NAME;
@@ -68,15 +60,15 @@ public class ProjectsView extends Div implements BeforeEnterObserver {
     private DatePicker startDate;
     private DatePicker endDate;
     private ComboBox<String> statusesComboBox;
-    private ComboBox<EmployeeShortDto> projectManagersComboBox;
-    private MultiSelectComboBox<EmployeeShortDto> backendDevelopersComboBox;
-    private MultiSelectComboBox<EmployeeShortDto> frontendDevelopersComboBox;
-    private ComboBox<EmployeeShortDto> fullstackDevelopersComboBox;
-    private ComboBox<EmployeeShortDto> qaEngineerComboBox;
-    private ComboBox<EmployeeShortDto> aqaEngineerComboBox;
-    private ComboBox<EmployeeShortDto> devOpsComboBox;
-    private ComboBox<EmployeeShortDto> dataScientistComboBox;
-    private ComboBox<EmployeeShortDto> dataAnalystComboBox;
+    private MultiSelectComboBox<EmployeeShortDto> projectManagers;
+    private MultiSelectComboBox<EmployeeShortDto> backendDevelopers;
+    private MultiSelectComboBox<EmployeeShortDto> frontendDevelopers;
+    private MultiSelectComboBox<EmployeeShortDto> fullstackDevelopers;
+    private MultiSelectComboBox<EmployeeShortDto> qaEngineers;
+    private MultiSelectComboBox<EmployeeShortDto> aqaEngineers;
+    private MultiSelectComboBox<EmployeeShortDto> devOps;
+    private MultiSelectComboBox<EmployeeShortDto> dataScientists;
+    private MultiSelectComboBox<EmployeeShortDto> dataAnalysts;
 
     private final Button save = new Button("Save");
     private final Button delete = new Button("Delete");
@@ -186,24 +178,24 @@ public class ProjectsView extends Div implements BeforeEnterObserver {
         binder.forField(statusesComboBox)
                 .asRequired("Project Status is required")
                 .bind(ProjectFullDto::getStatus, ProjectFullDto::setStatus);
-        binder.forField(projectManagersComboBox)
-                        .bind(ProjectFullDto::getProjectManager, ProjectFullDto::setProjectManager);
-        binder.forField(backendDevelopersComboBox)
-                        .bind(ProjectFullDto::getBackendDevelopers, ProjectFullDto::setBackendDevelopers);
-        binder.forField(frontendDevelopersComboBox)
-                        .bind(ProjectFullDto::getFrontendDevelopers, ProjectFullDto::setFrontendDevelopers);
-        binder.forField(fullstackDevelopersComboBox)
-                        .bind(ProjectFullDto::getFullstackDeveloper, ProjectFullDto::setFullstackDeveloper);
-        binder.forField(qaEngineerComboBox)
-                        .bind(ProjectFullDto::getQaEngineer, ProjectFullDto::setQaEngineer);
-        binder.forField(aqaEngineerComboBox)
-                        .bind(ProjectFullDto::getAqaEngineer, ProjectFullDto::setAqaEngineer);
-        binder.forField(devOpsComboBox)
-                        .bind(ProjectFullDto::getDevOps, ProjectFullDto::setDevOps);
-        binder.forField(dataScientistComboBox)
-                        .bind(ProjectFullDto::getDataScientist, ProjectFullDto::setDataScientist);
-        binder.forField(dataAnalystComboBox)
-                        .bind(ProjectFullDto::getDataAnalyst, ProjectFullDto::setDataAnalyst);
+//        binder.forField(projectManagers)
+//                        .bind(ProjectFullDto::getProjectManagers, ProjectFullDto::setProjectManagers);
+//        binder.forField(backendDevelopers)
+//                        .bind(ProjectFullDto::getBackendDevelopers, ProjectFullDto::setBackendDevelopers);
+//        binder.forField(frontendDevelopers)
+//                        .bind(ProjectFullDto::getFrontendDevelopers, ProjectFullDto::setFrontendDevelopers);
+//        binder.forField(fullstackDevelopers)
+//                        .bind(ProjectFullDto::getFullstackDevelopers, ProjectFullDto::setFullstackDevelopers);
+//        binder.forField(qaEngineers)
+//                        .bind(ProjectFullDto::getQaEngineers, ProjectFullDto::setQaEngineers);
+//        binder.forField(aqaEngineers)
+//                        .bind(ProjectFullDto::getAqaEngineers, ProjectFullDto::setAqaEngineers);
+//        binder.forField(devOps)
+//                        .bind(ProjectFullDto::getDevOps, ProjectFullDto::setDevOps);
+//        binder.forField(dataScientists)
+//                        .bind(ProjectFullDto::getDataScientists, ProjectFullDto::setDataScientists);
+//        binder.forField(dataAnalysts)
+//                        .bind(ProjectFullDto::getDataAnalysts, ProjectFullDto::setDataAnalysts);
         binder.bindInstanceFields(this);
     }
 
@@ -253,34 +245,34 @@ public class ProjectsView extends Div implements BeforeEnterObserver {
         startDate = new DatePicker("Start Date");
         endDate = new DatePicker("End Date");
         statusesComboBox = new ComboBox<>("Status");
-        projectManagersComboBox = new ComboBox<>("Project Manager");
-        backendDevelopersComboBox = new MultiSelectComboBox<>("Backend Developers");
-        frontendDevelopersComboBox = new MultiSelectComboBox<>("Frontend Developers");
-        fullstackDevelopersComboBox = new ComboBox<>("Fullstack Developer");
-        qaEngineerComboBox = new ComboBox<>("QA Engineer");
-        aqaEngineerComboBox = new ComboBox<>("AQA Engineer");
-        devOpsComboBox = new ComboBox<>("DevOps");
-        dataScientistComboBox = new ComboBox<>("Data Scientist");
-        dataAnalystComboBox = new ComboBox<>("Data Analysts");
+        projectManagers = new MultiSelectComboBox<>("Project Manager");
+        backendDevelopers = new MultiSelectComboBox<>("Backend Developers");
+        frontendDevelopers = new MultiSelectComboBox<>("Frontend Developers");
+        fullstackDevelopers = new MultiSelectComboBox<>("Fullstack Developer");
+        qaEngineers = new MultiSelectComboBox<>("QA Engineer");
+        aqaEngineers = new MultiSelectComboBox<>("AQA Engineer");
+        devOps = new MultiSelectComboBox<>("DevOps");
+        dataScientists = new MultiSelectComboBox<>("Data Scientist");
+        dataAnalysts = new MultiSelectComboBox<>("Data Analysts");
 
         statusesComboBox.setWidth("min-content");
-        projectManagersComboBox.setWidth("min-content");
-        backendDevelopersComboBox.setWidth("min-content");
-        frontendDevelopersComboBox.setWidth("min-content");
-        fullstackDevelopersComboBox.setWidth("min-content");
-        qaEngineerComboBox.setWidth("min-content");
-        aqaEngineerComboBox.setWidth("min-content");
-        devOpsComboBox.setWidth("min-content");
-        dataScientistComboBox.setWidth("min-content");
-        dataAnalystComboBox.setWidth("min-content");
+        projectManagers.setWidth("min-content");
+        backendDevelopers.setWidth("min-content");
+        frontendDevelopers.setWidth("min-content");
+        fullstackDevelopers.setWidth("min-content");
+        qaEngineers.setWidth("min-content");
+        aqaEngineers.setWidth("min-content");
+        devOps.setWidth("min-content");
+        dataScientists.setWidth("min-content");
+        dataAnalysts.setWidth("min-content");
 
         setStatusesToComboBox();
         setEmployeesToComboBox();
 
         setRequiredFields();
-        formLayout.add(name, startDate, endDate, statusesComboBox, projectManagersComboBox, backendDevelopersComboBox,
-                frontendDevelopersComboBox, fullstackDevelopersComboBox, qaEngineerComboBox, aqaEngineerComboBox,
-                devOpsComboBox, dataScientistComboBox, dataAnalystComboBox);
+        formLayout.add(name, startDate, endDate, statusesComboBox, projectManagers, backendDevelopers,
+                frontendDevelopers, fullstackDevelopers, qaEngineers, aqaEngineers,
+                devOps, dataScientists, dataAnalysts);
 
         editorDiv.add(formLayout);
         createButtonLayout(editorLayoutDiv);
@@ -313,15 +305,15 @@ public class ProjectsView extends Div implements BeforeEnterObserver {
     private void clearForm() {
         fillEditForm(null);
         statusesComboBox.clear();
-        projectManagersComboBox.clear();
-        backendDevelopersComboBox.clear();
-        frontendDevelopersComboBox.clear();
-        fullstackDevelopersComboBox.clear();
-        qaEngineerComboBox.clear();
-        aqaEngineerComboBox.clear();
-        devOpsComboBox.clear();
-        dataScientistComboBox.clear();
-        dataAnalystComboBox.clear();
+        projectManagers.clear();
+        backendDevelopers.clear();
+        frontendDevelopers.clear();
+        fullstackDevelopers.clear();
+        qaEngineers.clear();
+        aqaEngineers.clear();
+        devOps.clear();
+        dataScientists.clear();
+        dataAnalysts.clear();
     }
 
     private void fillEditForm(ProjectFullDto value) {
@@ -346,40 +338,40 @@ public class ProjectsView extends Div implements BeforeEnterObserver {
         List<EmployeeShortDto> dataScientist = allEmployeesBySpecialization.get(DATA_SCIENTIST_SPECIALIZATION_NAME);
         List<EmployeeShortDto> dataAnalysts = allEmployeesBySpecialization.get(DATA_ANALYST_SPECIALIZATION_NAME);
         if (projectManagers != null) {
-            projectManagersComboBox.setItems(projectManagers);
-            projectManagersComboBox.setItemLabelGenerator(EmployeeShortDto::getName);
+            this.projectManagers.setItems(projectManagers);
+            this.projectManagers.setItemLabelGenerator(EmployeeShortDto::getName);
         }
         if (backendDevelopers != null) {
-            backendDevelopersComboBox.setItems(backendDevelopers);
-            backendDevelopersComboBox.setItemLabelGenerator(EmployeeShortDto::getName);
+            this.backendDevelopers.setItems(backendDevelopers);
+            this.backendDevelopers.setItemLabelGenerator(EmployeeShortDto::getName);
         }
         if (frontendDevelopers != null) {
-            frontendDevelopersComboBox.setItems(frontendDevelopers);
-            frontendDevelopersComboBox.setItemLabelGenerator(EmployeeShortDto::getName);
+            this.frontendDevelopers.setItems(frontendDevelopers);
+            this.frontendDevelopers.setItemLabelGenerator(EmployeeShortDto::getName);
         }
         if (fullstackDevelopers != null) {
-            fullstackDevelopersComboBox.setItems(fullstackDevelopers);
-            fullstackDevelopersComboBox.setItemLabelGenerator(EmployeeShortDto::getName);
+            this.fullstackDevelopers.setItems(fullstackDevelopers);
+            this.fullstackDevelopers.setItemLabelGenerator(EmployeeShortDto::getName);
         }
         if (qaEngineers != null) {
-            qaEngineerComboBox.setItems(qaEngineers);
-            qaEngineerComboBox.setItemLabelGenerator(EmployeeShortDto::getName);
+            this.qaEngineers.setItems(qaEngineers);
+            this.qaEngineers.setItemLabelGenerator(EmployeeShortDto::getName);
         }
         if (aqaEngineers != null) {
-            aqaEngineerComboBox.setItems(aqaEngineers);
-            aqaEngineerComboBox.setItemLabelGenerator(EmployeeShortDto::getName);
+            this.aqaEngineers.setItems(aqaEngineers);
+            this.aqaEngineers.setItemLabelGenerator(EmployeeShortDto::getName);
         }
         if (devOps != null) {
-            devOpsComboBox.setItems(devOps);
-            devOpsComboBox.setItemLabelGenerator(EmployeeShortDto::getName);
+            this.devOps.setItems(devOps);
+            this.devOps.setItemLabelGenerator(EmployeeShortDto::getName);
         }
         if (dataScientist != null) {
-            dataScientistComboBox.setItems(dataScientist);
-            dataScientistComboBox.setItemLabelGenerator(EmployeeShortDto::getName);
+            dataScientists.setItems(dataScientist);
+            dataScientists.setItemLabelGenerator(EmployeeShortDto::getName);
         }
         if (dataAnalysts != null) {
-            dataAnalystComboBox.setItems(dataAnalysts);
-            dataAnalystComboBox.setItemLabelGenerator(EmployeeShortDto::getName);
+            this.dataAnalysts.setItems(dataAnalysts);
+            this.dataAnalysts.setItemLabelGenerator(EmployeeShortDto::getName);
         }
     }
 }
