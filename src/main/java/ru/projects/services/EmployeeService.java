@@ -19,7 +19,6 @@ import ru.projects.repository.SpecializationRepository;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import static ru.projects.utils.Constants.AQA_ENGINEER_SPECIALIZATION_NAME;
@@ -90,24 +89,22 @@ public class EmployeeService {
     }
 
     public Employee update(EmployeeFullDto employeeFullDto) {
-        Specialization specialization = specializationRepository
-                .findBySpecializationName(employeeFullDto.getSpecialization())
+        Employee employee = employeeRepository
+                .findById(employeeFullDto.getEmployeeId()).orElseThrow(() -> new RuntimeException("Employee not found"));
+        Specialization specialization = specializationRepository.findBySpecializationName(employeeFullDto.getSpecialization())
                 .orElseThrow(() -> new RuntimeException("Specialization not found"));
 
-        Employee employee = Employee.builder()
-                .employeeId(employeeFullDto.getEmployeeId())
-                .role(getRoleBySpecializationName(specialization.getSpecializationName()))
-                .specialization(specialization)
-                .role(getRoleBySpecializationName(specialization.getSpecializationName()))
-                .firstName(employeeFullDto.getFirstName())
-                .lastName(employeeFullDto.getLastName())
-                .patronymicName(employeeFullDto.getPatronymicName())
-                .dateOfBirth(employeeFullDto.getDateOfBirth())
-                .phone(employeeFullDto.getPhone())
-                .email(employeeFullDto.getEmail())
-                .login(employeeFullDto.getLogin())
-                .password(passwordEncoder.encode(employeeFullDto.getPassword()))
-                .build();
+        employee.setRole(getRoleBySpecializationName(employee.getSpecialization().getSpecializationName()));
+        employee.setSpecialization(specialization);
+        employee.setFirstName(employeeFullDto.getFirstName());
+        employee.setLastName(employeeFullDto.getLastName());
+        employee.setPatronymicName(employeeFullDto.getPatronymicName());
+        employee.setDateOfBirth(employeeFullDto.getDateOfBirth());
+        employee.setPhone(employeeFullDto.getPhone());
+        employee.setEmail(employeeFullDto.getEmail());
+        employee.setLogin(employeeFullDto.getLogin());
+        employee.setPassword(getNewPassword(employeeFullDto.getPassword(), employee.getPassword()));
+
         return employeeRepository.save(employee);
     }
 
@@ -153,6 +150,10 @@ public class EmployeeService {
                             stringBuilder.setLength(0);
                             return employeeShortDto;
                         }, Collectors.toList())));
+    }
+
+    private String getNewPassword(String newPassword, String encodeOldPassword) {
+        return newPassword.equals(encodeOldPassword) ? encodeOldPassword : passwordEncoder.encode(newPassword);
     }
 
     private Role getRoleBySpecializationName(String specializationName) {
