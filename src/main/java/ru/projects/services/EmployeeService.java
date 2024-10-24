@@ -19,6 +19,7 @@ import ru.projects.repository.SpecializationRepository;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static ru.projects.utils.Constants.AQA_ENGINEER_SPECIALIZATION_NAME;
@@ -47,7 +48,6 @@ public class EmployeeService {
     private final PasswordEncoder passwordEncoder;
 
     public void save(EmployeeDto employeeDto) {
-        //TODO ОБРАБОТАТЬ
         Specialization specialization = specializationRepository
                 .findBySpecializationName(employeeDto.getSpecialization())
                 .orElseThrow(() -> new RuntimeException("Specialization not found"));
@@ -135,21 +135,31 @@ public class EmployeeService {
         return groupEmployeesBySpecializations(employees);
     }
 
+    public Set<EmployeeShortDto> getAllEmployeesByProjectId(Long projectId) {
+        StringBuilder stringBuilder = new StringBuilder();
+        return employeeRepository.findByProjectId(projectId).stream()
+                .map(employee -> employeeToEmployeeShortDto(employee, stringBuilder))
+                .collect(Collectors.toSet());
+    }
+
     public Map<String, List<EmployeeShortDto>> groupEmployeesBySpecializations(List<Employee> employees) {
         StringBuilder stringBuilder = new StringBuilder();
         return employees.stream()
                 .collect(Collectors.groupingBy(employee -> employee.getSpecialization().getSpecializationName(),
-                        Collectors.mapping(employee -> {
-                            stringBuilder.append(employee.getLastName());
-                            stringBuilder.append(" ");
-                            stringBuilder.append(employee.getFirstName());
-                            stringBuilder.append(" ");
-                            stringBuilder.append(employee.getPatronymicName());
-                            stringBuilder.append(" ");
-                            EmployeeShortDto employeeShortDto = new EmployeeShortDto(employee.getEmployeeId(), stringBuilder.toString());
-                            stringBuilder.setLength(0);
-                            return employeeShortDto;
-                        }, Collectors.toList())));
+                        Collectors.mapping(employee ->
+                                employeeToEmployeeShortDto(employee, stringBuilder), Collectors.toList())));
+    }
+
+    private EmployeeShortDto employeeToEmployeeShortDto(Employee employee, StringBuilder stringBuilder) {
+        stringBuilder.append(employee.getLastName());
+        stringBuilder.append(" ");
+        stringBuilder.append(employee.getFirstName());
+        stringBuilder.append(" ");
+        stringBuilder.append(employee.getPatronymicName());
+        stringBuilder.append(" ");
+        EmployeeShortDto employeeShortDto = new EmployeeShortDto(employee.getEmployeeId(), stringBuilder.toString());
+        stringBuilder.setLength(0);
+        return employeeShortDto;
     }
 
     private String getNewPassword(String newPassword, String encodeOldPassword) {

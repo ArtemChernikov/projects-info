@@ -10,6 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -54,4 +55,7 @@ public class Project {
 
     @ManyToMany(mappedBy = "projects", fetch = FetchType.EAGER)
     private Set<Employee> employees;
+
+    @OneToMany(mappedBy = "project")
+    private Set<Task> tasks;
 }

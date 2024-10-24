@@ -6,8 +6,11 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,6 +32,7 @@ import ru.projects.model.enums.TaskType;
 @ToString
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
+@Builder
 @Table(name = "tasks")
 public class Task {
     @Id
@@ -36,7 +40,9 @@ public class Task {
     @EqualsAndHashCode.Include
     private Long taskId;
 
-    private Long projectId;
+    @ManyToOne
+    @JoinColumn(name = "project_id")
+    private Project project;
 
     private Long developerId;
 

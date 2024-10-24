@@ -10,6 +10,7 @@ import ru.projects.model.Project;
 import ru.projects.model.dto.EmployeeShortDto;
 import ru.projects.model.dto.ProjectCreateDto;
 import ru.projects.model.dto.ProjectFullDto;
+import ru.projects.model.dto.ProjectShortDto;
 import ru.projects.model.enums.Status;
 import ru.projects.repository.EmployeeRepository;
 import ru.projects.repository.ProjectRepository;
@@ -146,6 +147,14 @@ public class ProjectService {
                     setEmployeesToProjectFullDto(employees, projectFullDto);
                     return projectFullDto;
                 });
+    }
+
+    public Set<ProjectShortDto> getAllProjectShortDtos() {
+        return projectRepository.findAll().stream()
+                .map(project -> ProjectShortDto.builder()
+                        .projectId(project.getProjectId())
+                        .name(project.getName())
+                        .build()).collect(Collectors.toSet());
     }
 
     private void setEmployeesToProjectFullDto(Set<Employee> employees, ProjectFullDto projectFullDto) {
