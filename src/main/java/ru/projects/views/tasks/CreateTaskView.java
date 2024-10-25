@@ -12,6 +12,7 @@ import com.vaadin.flow.component.orderedlayout.FlexComponent.Alignment;
 import com.vaadin.flow.component.orderedlayout.FlexComponent.JustifyContentMode;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.ValidationException;
@@ -43,9 +44,10 @@ public class CreateTaskView extends Composite<VerticalLayout> {
     private final ProjectService projectService;
     private final EmployeeService employeeService;
 
-    private ComboBox<ProjectShortDto> project;
+
     private TextField name;
-    private TextField description;
+    private TextArea description;
+    private ComboBox<ProjectShortDto> project;
     private ComboBox<EmployeeShortDto> employee;
     private ComboBox<String> taskType;
     private ComboBox<String> priority;
@@ -70,24 +72,7 @@ public class CreateTaskView extends Composite<VerticalLayout> {
         configureValidationBinder();
         setRequiredFields();
         initButtons();
-
-        // Отключаем поля до выбора проекта
         setFieldsEnabled(false);
-
-        // Обработчик события выбора проекта
-        project.addValueChangeListener(event -> {
-            ProjectShortDto selectedProject = event.getValue();
-            if (selectedProject != null) {
-                // Активируем поля
-                setFieldsEnabled(true);
-
-                // Загружаем сотрудников выбранного проекта
-                setEmployeesToComboBox(selectedProject.getProjectId());
-            } else {
-                // Отключаем поля, если проект не выбран
-                setFieldsEnabled(false);
-            }
-        });
     }
 
     private void setFieldsEnabled(boolean enabled) {
@@ -154,9 +139,10 @@ public class CreateTaskView extends Composite<VerticalLayout> {
 
     private void initFormFields() {
         name = new TextField("Task Name");
-        description = new TextField("Description");
+        description = new TextArea("Description");
         initComboBoxes();
-        formLayout2Col.add(project, name, description, taskType, priority, employee);
+        addActionForChangeProject();
+        formLayout2Col.add(project, taskType, name, priority, employee, description);
     }
 
     private void initComboBoxes() {
@@ -175,6 +161,18 @@ public class CreateTaskView extends Composite<VerticalLayout> {
         employee.setWidth("min-content");
         taskType.setWidth("min-content");
         priority.setWidth("min-content");
+    }
+
+    private void addActionForChangeProject() {
+        project.addValueChangeListener(event -> {
+            ProjectShortDto selectedProject = event.getValue();
+            if (selectedProject != null) {
+                setFieldsEnabled(true);
+                setEmployeesToComboBox(selectedProject.getProjectId());
+            } else {
+                setFieldsEnabled(false);
+            }
+        });
     }
 
     private void setProjectsToComboBox() {
