@@ -43,9 +43,9 @@ public class CreateTaskView extends Composite<VerticalLayout> {
     private final ProjectService projectService;
     private final EmployeeService employeeService;
 
+    private ComboBox<ProjectShortDto> project;
     private TextField name;
     private TextField description;
-    private ComboBox<ProjectShortDto> project;
     private ComboBox<EmployeeShortDto> employee;
     private ComboBox<String> taskType;
     private ComboBox<String> priority;
@@ -156,12 +156,12 @@ public class CreateTaskView extends Composite<VerticalLayout> {
         name = new TextField("Task Name");
         description = new TextField("Description");
         initComboBoxes();
-        formLayout2Col.add(name, description, project, employee, taskType, priority);
+        formLayout2Col.add(project, name, description, taskType, priority, employee);
     }
 
     private void initComboBoxes() {
         project = new ComboBox<>("Project");
-        employee = new ComboBox<>("Developer");
+        employee = new ComboBox<>("Employee");
         taskType = new ComboBox<>("Task Type");
         priority = new ComboBox<>("Priority");
         setWidthToComboBoxes();
