@@ -12,6 +12,8 @@ import ru.projects.model.Specialization;
 import ru.projects.model.dto.EmployeeDto;
 import ru.projects.model.dto.EmployeeFullDto;
 import ru.projects.model.dto.EmployeeShortDto;
+import ru.projects.model.enums.EnumSpecialization;
+import ru.projects.model.enums.TaskType;
 import ru.projects.repository.EmployeeRepository;
 import ru.projects.repository.RoleRepository;
 import ru.projects.repository.SpecializationRepository;
@@ -135,9 +137,11 @@ public class EmployeeService {
         return groupEmployeesBySpecializations(employees);
     }
 
-    public Set<EmployeeShortDto> getAllEmployeesByProjectId(Long projectId) {
+    public Set<EmployeeShortDto> getAllEmployeesByProjectIdAndTaskType(Long projectId, String taskType) {
         StringBuilder stringBuilder = new StringBuilder();
-        return employeeRepository.findByProjectId(projectId).stream()
+        TaskType enumTaskType = TaskType.fromDisplayName(taskType);
+        List<String> specializationNames = getEnumSpecializationsByTaskType(enumTaskType);
+        return employeeRepository.findByProjectIdAndSpecialization(projectId, specializationNames).stream()
                 .map(employee -> employeeToEmployeeShortDto(employee, stringBuilder))
                 .collect(Collectors.toSet());
     }
@@ -174,6 +178,19 @@ public class EmployeeService {
                     .findByRoleName(TESTER_ROLE_NAME);
             case PROJECT_MANAGER_SPECIALIZATION_NAME -> roleRepository.findByRoleName(PROJECT_MANAGER_ROLE_NAME);
             default -> roleRepository.findByRoleName(USER_ROLE_NAME);
+        };
+    }
+
+    private List<String> getEnumSpecializationsByTaskType(TaskType taskType) {
+        return switch (taskType) {
+            case DEVELOPMENT -> List.of(EnumSpecialization.BACKEND_DEVELOPER.getSpecializationName(),
+                    EnumSpecialization.FRONTEND_DEVELOPER.getSpecializationName(),
+                    EnumSpecialization.FULLSTACK_DEVELOPER.getSpecializationName());
+            case TESTING -> List.of(EnumSpecialization.QA_ENGINEER.getSpecializationName(),
+                    EnumSpecialization.AQA_ENGINEER.getSpecializationName());
+            case DEV_OPS -> List.of(EnumSpecialization.DEV_OPS.getSpecializationName());
+            case DATA_SCIENCE -> List.of(EnumSpecialization.DATA_SCIENTIST.getSpecializationName());
+            case DATA_ANALYSIS -> List.of(EnumSpecialization.DATA_ANALYST.getSpecializationName());
         };
     }
 

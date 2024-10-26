@@ -14,6 +14,8 @@ import java.util.Set;
 public interface EmployeeRepository extends JpaRepository<Employee, Long>, JpaSpecificationExecutor<Employee> {
     List<Employee> findAllByRole_RoleName(String roleName);
 
-    @Query("SELECT e FROM Employee e JOIN e.projects p WHERE p.projectId = :projectId")
-    Set<Employee> findByProjectId(@Param("projectId") Long projectId);
+    @Query("SELECT e FROM Employee e JOIN e.projects p WHERE p.projectId = :projectId" +
+            " and e.specialization.specializationName IN :specializations")
+    Set<Employee> findByProjectIdAndSpecialization(@Param("projectId") Long projectId,
+                                                   @Param("specializations") List<String> specializations);
 }

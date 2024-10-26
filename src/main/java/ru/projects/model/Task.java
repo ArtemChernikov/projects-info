@@ -50,8 +50,10 @@ public class Task {
 
     private String description;
 
+    @Enumerated(EnumType.STRING)
     private TaskType taskType;
 
+    @Enumerated(EnumType.STRING)
     private Priority priority;
 
     @Enumerated(EnumType.STRING)

@@ -8,7 +8,7 @@ public enum TaskType {
     TESTING("Testing"),
     DEV_OPS("DevOps"),
     DATA_SCIENCE("Data Science"),
-    DATA_ANALYSIS("Data Analysis"),;
+    DATA_ANALYSIS("Data Analysis");
 
     private final String displayName;
 

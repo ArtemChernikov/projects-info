@@ -30,4 +30,13 @@ public enum EnumSpecialization {
         this.specializationName = specializationName;
     }
 
+    public static EnumSpecialization fromSpecializationName(String specializationName) {
+        for (EnumSpecialization enumSpecialization : EnumSpecialization.values()) {
+            if (enumSpecialization.getSpecializationName().equalsIgnoreCase(specializationName)) {
+                return enumSpecialization;
+            }
+        }
+        throw new IllegalArgumentException("No specialization found with specializationName: " + specializationName);
+    }
+
 }

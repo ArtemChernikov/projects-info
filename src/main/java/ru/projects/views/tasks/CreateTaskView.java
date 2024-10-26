@@ -29,6 +29,7 @@ import ru.projects.services.ProjectService;
 import ru.projects.services.TaskService;
 import ru.projects.views.MainLayout;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -73,17 +74,17 @@ public class CreateTaskView extends Composite<VerticalLayout> {
         setRequiredFields();
         initButtons();
         setFieldsEnabled(false);
+        taskType.setEnabled(false);
     }
 
     private void setFieldsEnabled(boolean enabled) {
         name.setEnabled(enabled);
         description.setEnabled(enabled);
         employee.setEnabled(enabled);
-        taskType.setEnabled(enabled);
         priority.setEnabled(enabled);
     }
 
-    private void saveProject() {
+    private void saveTask() {
         try {
             if (this.taskCreateDto == null) {
                 this.taskCreateDto = new TaskCreateDto();
@@ -107,7 +108,7 @@ public class CreateTaskView extends Composite<VerticalLayout> {
         layoutRow.setAlignItems(Alignment.CENTER);
         layoutRow.setJustifyContentMode(JustifyContentMode.CENTER);
 
-        Button buttonSave = new Button("Save", event -> saveProject());
+        Button buttonSave = new Button("Save", event -> saveTask());
         buttonSave.setWidth("min-content");
         buttonSave.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
@@ -126,7 +127,7 @@ public class CreateTaskView extends Composite<VerticalLayout> {
         layoutColumn2.setMaxWidth("800px");
         layoutColumn2.setHeight("1600px");
 
-        H3 h3 = new H3("Project Information");
+        H3 h3 = new H3("Task Information");
         h3.setWidth("100%");
 
         formLayout2Col = new FormLayout();
@@ -142,6 +143,7 @@ public class CreateTaskView extends Composite<VerticalLayout> {
         description = new TextArea("Description");
         initComboBoxes();
         addActionForChangeProject();
+        addActionForChangeTaskType();
         formLayout2Col.add(project, taskType, name, priority, employee, description);
     }
 
@@ -166,9 +168,23 @@ public class CreateTaskView extends Composite<VerticalLayout> {
     private void addActionForChangeProject() {
         project.addValueChangeListener(event -> {
             ProjectShortDto selectedProject = event.getValue();
-            if (selectedProject != null) {
+            if (selectedProject != null && taskType.getValue() == null) {
+                taskType.setEnabled(true);
+            } else if (selectedProject != null && taskType.getValue() != null) {
+                setEmployeesToComboBox(selectedProject.getProjectId(), taskType.getValue());
+            } else {
+                setFieldsEnabled(false);
+                taskType.setEnabled(false);
+            }
+        });
+    }
+
+    private void addActionForChangeTaskType() {
+        taskType.addValueChangeListener(event -> {
+            String selectedTaskType = event.getValue();
+            if (selectedTaskType != null) {
                 setFieldsEnabled(true);
-                setEmployeesToComboBox(selectedProject.getProjectId());
+                setEmployeesToComboBox(project.getValue().getProjectId(), taskType.getValue());
             } else {
                 setFieldsEnabled(false);
             }
@@ -181,8 +197,9 @@ public class CreateTaskView extends Composite<VerticalLayout> {
         project.setItemLabelGenerator(ProjectShortDto::getName);
     }
 
-    private void setEmployeesToComboBox(Long projectId) {
-        Set<EmployeeShortDto> employeesByProjectId = employeeService.getAllEmployeesByProjectId(projectId);
+    private void setEmployeesToComboBox(Long projectId, String taskType) {
+        Set<EmployeeShortDto> employeesByProjectId = employeeService
+                .getAllEmployeesByProjectIdAndTaskType(projectId, taskType);
         employee.setItems(employeesByProjectId);
         employee.setItemLabelGenerator(EmployeeShortDto::getName);
     }
@@ -193,20 +210,29 @@ public class CreateTaskView extends Composite<VerticalLayout> {
     }
 
     private void setPrioritiesToComboBox() {
-        priority.setItems(Set.of(Priority.HIGH.getDisplayName(), Priority.MEDIUM.getDisplayName(), Priority.LOW.getDisplayName()));
+        priority.setItems(List.of(Priority.HIGH.getDisplayName(), Priority.MEDIUM.getDisplayName(), Priority.LOW.getDisplayName()));
     }
 
     private void configureValidationBinder() {
         binder = new BeanValidationBinder<>(TaskCreateDto.class);
+        binder.forField(project)
+                .asRequired("Project is required")
+                .bind(TaskCreateDto::getProject, TaskCreateDto::setProject);
         binder.forField(name)
                 .asRequired("Task Name is required")
                 .bind(TaskCreateDto::getName, TaskCreateDto::setName);
+        binder.forField(description)
+                .asRequired("Description is required")
+                .bind(TaskCreateDto::getDescription, TaskCreateDto::setDescription);
         binder.forField(taskType)
                 .asRequired("Task Type is required")
                 .bind(TaskCreateDto::getTaskType, TaskCreateDto::setTaskType);
         binder.forField(priority)
                 .asRequired("Priority is required")
-                .bind(TaskCreateDto::getTaskType, TaskCreateDto::setTaskType);
+                .bind(TaskCreateDto::getPriority, TaskCreateDto::setPriority);
+        binder.forField(employee)
+                .asRequired("Employee is required")
+                .bind(TaskCreateDto::getEmployee, TaskCreateDto::setEmployee);
         binder.bindInstanceFields(this);
     }
 

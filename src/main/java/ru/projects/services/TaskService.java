@@ -9,6 +9,7 @@ import ru.projects.model.Task;
 import ru.projects.model.dto.EmployeeDto;
 import ru.projects.model.dto.TaskCreateDto;
 import ru.projects.model.enums.Priority;
+import ru.projects.model.enums.Status;
 import ru.projects.model.enums.TaskType;
 import ru.projects.repository.TaskRepository;
 
@@ -30,6 +31,7 @@ public class TaskService {
                 .developerId(taskCreateDto.getEmployee().getEmployeeId())
                 .taskType(TaskType.fromDisplayName(taskCreateDto.getTaskType()))
                 .priority(Priority.fromDisplayName(taskCreateDto.getPriority()))
+                .status(Status.NEW)
                 .build();
         taskRepository.save(task);
     }
