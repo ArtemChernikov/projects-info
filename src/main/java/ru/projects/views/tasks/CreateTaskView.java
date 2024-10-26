@@ -64,7 +64,7 @@ public class CreateTaskView extends Composite<VerticalLayout> {
         this.employeeService = employeeService;
 
         getContent().setWidth("100%");
-        getContent().getStyle().set("flex-grow", "1");
+        getContent().setHeight("100%");
         getContent().setJustifyContentMode(JustifyContentMode.START);
         getContent().setAlignItems(Alignment.CENTER);
 

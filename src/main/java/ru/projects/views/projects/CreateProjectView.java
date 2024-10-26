@@ -75,7 +75,7 @@ public class CreateProjectView extends Composite<VerticalLayout> {
         this.projectService = projectService;
 
         getContent().setWidth("100%");
-        getContent().getStyle().set("flex-grow", "1");
+        getContent().setHeight("100%");
         getContent().setJustifyContentMode(JustifyContentMode.START);
         getContent().setAlignItems(Alignment.CENTER);
 
