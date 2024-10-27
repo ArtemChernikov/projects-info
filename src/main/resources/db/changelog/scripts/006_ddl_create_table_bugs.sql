@@ -1,4 +1,4 @@
-CREATE TABLE bugs
+CREATE TABLE IF NOT EXISTS bugs
 (
     bug_id      BIGSERIAL PRIMARY KEY,
     task_id     BIGINT      NOT NULL,

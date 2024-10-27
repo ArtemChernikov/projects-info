@@ -44,7 +44,9 @@ public class Task {
     @JoinColumn(name = "project_id")
     private Project project;
 
-    private Long developerId;
+    @ManyToOne
+    @JoinColumn(name = "employee_id")
+    private Employee employee;
 
     private String name;
 
