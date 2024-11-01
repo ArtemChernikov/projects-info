@@ -1,0 +1,272 @@
+package ru.projects.views.tasks;
+
+import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.grid.GridVariant;
+import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.notification.Notification.Position;
+import com.vaadin.flow.component.notification.NotificationVariant;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.splitlayout.SplitLayout;
+import com.vaadin.flow.component.textfield.TextArea;
+import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.binder.BeanValidationBinder;
+import com.vaadin.flow.data.binder.ValidationException;
+import com.vaadin.flow.router.BeforeEnterEvent;
+import com.vaadin.flow.router.BeforeEnterObserver;
+import com.vaadin.flow.router.PageTitle;
+import com.vaadin.flow.router.Route;
+import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
+import ru.projects.model.dto.EmployeeShortDto;
+import ru.projects.model.dto.TaskFullDto;
+import ru.projects.services.SpecializationService;
+import ru.projects.services.TaskService;
+import ru.projects.views.MainLayout;
+import ru.projects.views.projects.ProjectsView;
+
+import java.util.List;
+import java.util.Optional;
+
+@PageTitle("Tasks")
+@Route(value = "tasks/:taskID?/:action?(edit)", layout = MainLayout.class)
+//@RolesAllowed("ADMIN")
+public class TasksView extends Div implements BeforeEnterObserver {
+
+    private static final String TASK_ID = "taskID";
+    private static final String TASK_EDIT_ROUTE_TEMPLATE = "tasks/%s/edit";
+
+    private final Grid<TaskFullDto> grid = new Grid<>(TaskFullDto.class, false);
+
+    private TextField name;
+    private TextArea description;
+    private ComboBox<EmployeeShortDto> employee;
+    private ComboBox<String> taskType;
+    private ComboBox<String> priority;
+    private ComboBox<String> status;
+
+    private final Button save = new Button("Save");
+    private final Button delete = new Button("Delete");
+    private final Button cancel = new Button("Cancel");
+
+    private BeanValidationBinder<TaskFullDto> binder;
+
+    private TaskFullDto task;
+
+    private final TaskService taskService;
+    private final SpecializationService specializationService;
+
+    public TasksView(TaskService taskService, SpecializationService specializationService) {
+        this.taskService = taskService;
+        this.specializationService = specializationService;
+        addClassNames("tasks-view");
+        createUI();
+    }
+
+    private void createUI() {
+        SplitLayout splitLayout = new SplitLayout();
+        createGridLayout(splitLayout);
+        createEditorLayout(splitLayout);
+        add(splitLayout);
+
+        configureGrid();
+        configureValidationBinder();
+
+        cancel.addClickListener(clickEvent -> {
+            clearForm();
+            refreshGrid();
+        });
+        save.addClickListener(clickEvent -> updateEmployee());
+        delete.addClickListener(clickEvent -> deleteEmployee());
+    }
+
+    private void updateEmployee() {
+        try {
+            if (this.task == null) {
+                this.task = new TaskFullDto();
+            }
+            binder.writeBean(this.task);
+            //taskService.update(this.task);
+            clearForm();
+            refreshGrid();
+            Notification.show("The employee has been updated.", 3000, Position.TOP_CENTER)
+                    .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+            UI.getCurrent().navigate(TasksView.class);
+        } catch (ObjectOptimisticLockingFailureException exception) {
+            Notification.show(
+                    "Error updating the employee. Somebody else has updated the record while you were making changes.",
+                    3000, Position.TOP_CENTER).addThemeVariants(NotificationVariant.LUMO_ERROR);
+        } catch (ValidationException validationException) {
+            Notification.show("Failed to update the employee. Check again that all values are valid",
+                    3000, Position.TOP_CENTER).addThemeVariants(NotificationVariant.LUMO_ERROR);
+        }
+    }
+
+    private void deleteEmployee() {
+        try {
+            if (this.task == null) {
+                this.task = new TaskFullDto();
+            }
+            binder.writeBean(this.task);
+            //taskService.deleteById(this.task.getTaskId());
+            clearForm();
+            refreshGrid();
+            Notification.show("The employee has been removed.", 3000, Position.TOP_CENTER)
+                    .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+            UI.getCurrent().navigate(TasksView.class);
+        } catch (ObjectOptimisticLockingFailureException exception) {
+            Notification.show(
+                    "Error updating the data. Somebody else has updated the record while you were making changes.",
+                    3000, Position.TOP_CENTER).addThemeVariants(NotificationVariant.LUMO_ERROR);
+        } catch (ValidationException validationException) {
+            Notification.show("Failed to delete employee. Check again that all values are valid",
+                    3000, Position.TOP_CENTER);
+        }
+    }
+
+    @Override
+    public void beforeEnter(BeforeEnterEvent event) {
+        Optional<Long> employeeId = event.getRouteParameters().get(TASK_ID).map(Long::parseLong);
+        if (employeeId.isPresent()) {
+            Optional<TaskFullDto> taskFromBackend = taskService.getById(employeeId.get());
+            if (taskFromBackend.isPresent()) {
+                fillEditForm(taskFromBackend.get());
+            } else {
+                Notification.show(String.format("The requested employee was not found, ID = %s", employeeId.get()),
+                        3000, Position.BOTTOM_START);
+                refreshGrid();
+                event.forwardTo(TasksView.class);
+            }
+        }
+    }
+
+    private void configureValidationBinder() {
+        binder = new BeanValidationBinder<>(TaskFullDto.class);
+        binder.forField(name)
+                .asRequired("Task Name is required")
+                .bind(TaskFullDto::getName, TaskFullDto::setName);
+        binder.forField(description)
+                .asRequired("Description is required")
+                .bind(TaskFullDto::getDescription, TaskFullDto::setDescription);
+        binder.forField(employee)
+                .asRequired("Employee is required")
+                .bind(TaskFullDto::getEmployee, TaskFullDto::setEmployee);
+        binder.forField(taskType)
+                .asRequired("Task Type is required")
+                .bind(TaskFullDto::getTaskType, TaskFullDto::setTaskType);
+        binder.forField(priority)
+                .asRequired("Priority is required")
+                .bind(TaskFullDto::getPriority, TaskFullDto::setPriority);
+        binder.forField(status)
+                .asRequired("Status is required")
+                .bind(TaskFullDto::getStatus, TaskFullDto::setStatus);
+        binder.bindInstanceFields(this);
+    }
+
+    private void setRequiredFields() {
+        name.setRequiredIndicatorVisible(true);
+        description.setRequiredIndicatorVisible(true);
+        employee.setRequiredIndicatorVisible(true);
+        taskType.setRequiredIndicatorVisible(true);
+        priority.setRequiredIndicatorVisible(true);
+        status.setRequiredIndicatorVisible(true);
+    }
+
+    private void configureGrid() {
+        grid.addColumn("name").setAutoWidth(true);
+        grid.addColumn("description").setAutoWidth(true);
+        grid.addColumn("project").setAutoWidth(true);
+        grid.addColumn("taskType").setAutoWidth(true);
+        grid.addColumn("priority").setAutoWidth(true);
+        grid.addColumn("status").setAutoWidth(true);
+        grid.setItems(query -> taskService.getAll(
+                        PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)))
+                .stream());
+        grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
+
+        grid.asSingleSelect().addValueChangeListener(event -> {
+            if (event.getValue() != null) {
+                UI.getCurrent().navigate(String.format(TASK_EDIT_ROUTE_TEMPLATE, event.getValue().getTaskId()));
+            } else {
+                clearForm();
+                UI.getCurrent().navigate(ProjectsView.class);
+            }
+        });
+    }
+
+    private void createEditorLayout(SplitLayout splitLayout) {
+        Div editorLayoutDiv = new Div();
+        editorLayoutDiv.setClassName("editor-layout");
+
+        Div editorDiv = new Div();
+        editorDiv.setClassName("editor");
+        editorLayoutDiv.add(editorDiv);
+
+        FormLayout formLayout = new FormLayout();
+        name = new TextField("First Name");
+
+        name = new TextField("Task name");
+        description = new TextArea("Description");
+        employee = new ComboBox<>("Employee");
+        taskType = new ComboBox<>("Task Type");
+        priority = new ComboBox<>("Priority");
+        status = new ComboBox<>("Status");
+
+        employee.setWidth("min-content");
+        taskType.setWidth("min-content");
+        priority.setWidth("min-content");
+        status.setWidth("min-content");
+
+        setSpecializationsToComboBox();
+        setRequiredFields();
+        formLayout.add(name, description, employee, taskType, priority, status);
+
+        editorDiv.add(formLayout);
+        createButtonLayout(editorLayoutDiv);
+
+        splitLayout.addToSecondary(editorLayoutDiv);
+    }
+
+    private void createButtonLayout(Div editorLayoutDiv) {
+        HorizontalLayout buttonLayout = new HorizontalLayout();
+        buttonLayout.setClassName("button-layout");
+        save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        delete.addThemeVariants(ButtonVariant.LUMO_ERROR);
+        cancel.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+        buttonLayout.add(save, delete, cancel);
+        editorLayoutDiv.add(buttonLayout);
+    }
+
+    private void createGridLayout(SplitLayout splitLayout) {
+        Div wrapper = new Div();
+        wrapper.setClassName("grid-wrapper");
+        splitLayout.addToPrimary(wrapper);
+        wrapper.add(grid);
+    }
+
+    private void refreshGrid() {
+        grid.select(null);
+        grid.getDataProvider().refreshAll();
+    }
+
+    private void clearForm() {
+        fillEditForm(null);
+        status.clear();
+    }
+
+    private void fillEditForm(TaskFullDto value) {
+        this.task = value;
+        binder.readBean(this.task);
+    }
+
+    private void setSpecializationsToComboBox() {
+        List<String> specializations = specializationService.getAllSpecializationsNames();
+        status.setItems(specializations);
+    }
+}

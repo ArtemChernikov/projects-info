@@ -154,7 +154,7 @@ public class EmployeeService {
                                 employeeToEmployeeShortDto(employee, stringBuilder), Collectors.toList())));
     }
 
-    private EmployeeShortDto employeeToEmployeeShortDto(Employee employee, StringBuilder stringBuilder) {
+    public EmployeeShortDto employeeToEmployeeShortDto(Employee employee, StringBuilder stringBuilder) {
         stringBuilder.append(employee.getLastName());
         stringBuilder.append(" ");
         stringBuilder.append(employee.getFirstName());

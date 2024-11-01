@@ -1,17 +1,21 @@
 package ru.projects.services;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.projects.model.Employee;
 import ru.projects.model.Project;
-import ru.projects.model.Specialization;
 import ru.projects.model.Task;
-import ru.projects.model.dto.EmployeeDto;
+import ru.projects.model.dto.ProjectShortDto;
 import ru.projects.model.dto.TaskCreateDto;
+import ru.projects.model.dto.TaskFullDto;
 import ru.projects.model.enums.Priority;
 import ru.projects.model.enums.Status;
 import ru.projects.model.enums.TaskType;
 import ru.projects.repository.TaskRepository;
+
+import java.util.Optional;
 
 /**
  * @author Artem Chernikov
@@ -22,17 +26,52 @@ import ru.projects.repository.TaskRepository;
 @RequiredArgsConstructor
 public class TaskService {
     private final TaskRepository taskRepository;
+    private final EmployeeService employeeService;
 
     public void save(TaskCreateDto taskCreateDto) {
         Task task = Task.builder()
                 .name(taskCreateDto.getName())
                 .description(taskCreateDto.getDescription())
                 .project(Project.builder().projectId(taskCreateDto.getProject().getProjectId()).build())
-                .developerId(taskCreateDto.getEmployee().getEmployeeId())
+                .employee(Employee.builder().employeeId(taskCreateDto.getEmployee().getEmployeeId()).build())
                 .taskType(TaskType.fromDisplayName(taskCreateDto.getTaskType()))
                 .priority(Priority.fromDisplayName(taskCreateDto.getPriority()))
                 .status(Status.NEW)
                 .build();
         taskRepository.save(task);
+    }
+
+    public Optional<TaskFullDto> getById(Long id) {
+        Optional<Task> optionalTask = taskRepository.findById(id);
+        if (optionalTask.isEmpty()) {
+            return Optional.empty();
+        }
+        Task task = optionalTask.get();
+        TaskFullDto taskFullDto = TaskFullDto.builder()
+                .taskId(task.getTaskId())
+                .name(task.getName())
+                .description(task.getDescription())
+                .project(new ProjectShortDto(task.getProject().getProjectId(), task.getProject().getName()))
+                .employee(employeeService.employeeToEmployeeShortDto(task.getEmployee(), new StringBuilder()))
+                .taskType(task.getTaskType().getDisplayName())
+                .priority(task.getPriority().getDisplayName())
+                .status(task.getStatus().getDisplayName())
+                .build();
+        return Optional.of(taskFullDto);
+    }
+
+    public Page<TaskFullDto> getAll(Pageable pageable) {
+        StringBuilder stringBuilder = new StringBuilder();
+        return taskRepository.findAll(pageable)
+                .map(task -> {
+                    Employee employee = task.getEmployee();
+                    Project project = task.getProject();
+                    return new TaskFullDto(task.getTaskId(),
+                            task.getName(), task.getDescription(),
+                            new ProjectShortDto(project.getProjectId(), project.getName()),
+                            employeeService.employeeToEmployeeShortDto(employee, stringBuilder),
+                            task.getTaskType().getDisplayName(), task.getPriority().getDisplayName(),
+                            task.getStatus().getDisplayName());
+                });
     }
 }
