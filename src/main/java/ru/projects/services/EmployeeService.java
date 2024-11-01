@@ -6,34 +6,20 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import ru.projects.mapper.EmployeeMapper;
 import ru.projects.model.Employee;
-import ru.projects.model.Role;
 import ru.projects.model.Specialization;
 import ru.projects.model.dto.EmployeeDto;
 import ru.projects.model.dto.EmployeeFullDto;
 import ru.projects.model.dto.EmployeeShortDto;
-import ru.projects.model.enums.EnumSpecialization;
 import ru.projects.model.enums.TaskType;
 import ru.projects.repository.EmployeeRepository;
-import ru.projects.repository.RoleRepository;
-import ru.projects.repository.SpecializationRepository;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import static ru.projects.utils.Constants.AQA_ENGINEER_SPECIALIZATION_NAME;
-import static ru.projects.utils.Constants.BACKEND_DEVELOPER_SPECIALIZATION_NAME;
-import static ru.projects.utils.Constants.DEVELOPER_ROLE_NAME;
-import static ru.projects.utils.Constants.FRONTEND_DEVELOPER_SPECIALIZATION_NAME;
-import static ru.projects.utils.Constants.FULLSTACK_DEVELOPER_SPECIALIZATION_NAME;
-import static ru.projects.utils.Constants.PROJECT_MANAGER_ROLE_NAME;
-import static ru.projects.utils.Constants.PROJECT_MANAGER_SPECIALIZATION_NAME;
-import static ru.projects.utils.Constants.QA_ENGINEER_SPECIALIZATION_NAME;
-import static ru.projects.utils.Constants.TESTER_ROLE_NAME;
-import static ru.projects.utils.Constants.USER_ROLE_NAME;
 
 /**
  * @author Artem Chernikov
@@ -45,28 +31,14 @@ import static ru.projects.utils.Constants.USER_ROLE_NAME;
 public class EmployeeService {
 
     private final EmployeeRepository employeeRepository;
-    private final SpecializationRepository specializationRepository;
-    private final RoleRepository roleRepository;
+    private final SpecializationService specializationService;
+    private final RoleService roleService;
     private final PasswordEncoder passwordEncoder;
+    private final EmployeeMapper employeeMapper;
 
     public void save(EmployeeDto employeeDto) {
-        Specialization specialization = specializationRepository
-                .findBySpecializationName(employeeDto.getSpecialization())
-                .orElseThrow(() -> new RuntimeException("Specialization not found"));
-
-        Employee newEmployee = Employee.builder()
-                .role(getRoleBySpecializationName(specialization.getSpecializationName()))
-                .specialization(specialization)
-                .firstName(employeeDto.getFirstName())
-                .lastName(employeeDto.getLastName())
-                .patronymicName(employeeDto.getPatronymicName())
-                .dateOfBirth(employeeDto.getDateOfBirth())
-                .phone(employeeDto.getPhone())
-                .email(employeeDto.getEmail())
-                .login(employeeDto.getLogin())
-                .password(passwordEncoder.encode(employeeDto.getPassword()))
-                .build();
-        employeeRepository.save(newEmployee);
+        Employee employee = employeeMapper.employeeDtoToEmployee(employeeDto);
+        employeeRepository.save(employee);
     }
 
     public Optional<EmployeeFullDto> getById(Long id) {
@@ -75,28 +47,16 @@ public class EmployeeService {
             return Optional.empty();
         }
         Employee employee = optionalEmployee.get();
-        EmployeeFullDto employeeFullDto = EmployeeFullDto.builder()
-                .employeeId(employee.getEmployeeId())
-                .specialization(employee.getSpecialization().getSpecializationName())
-                .firstName(employee.getFirstName())
-                .lastName(employee.getLastName())
-                .patronymicName(employee.getPatronymicName())
-                .dateOfBirth(employee.getDateOfBirth())
-                .phone(employee.getPhone())
-                .email(employee.getEmail())
-                .login(employee.getLogin())
-                .password(employee.getPassword())
-                .build();
+        EmployeeFullDto employeeFullDto = employeeMapper.employeeToEmployeeFullDto(employee);
         return Optional.of(employeeFullDto);
     }
 
     public Employee update(EmployeeFullDto employeeFullDto) {
         Employee employee = employeeRepository
                 .findById(employeeFullDto.getEmployeeId()).orElseThrow(() -> new RuntimeException("Employee not found"));
-        Specialization specialization = specializationRepository.findBySpecializationName(employeeFullDto.getSpecialization())
-                .orElseThrow(() -> new RuntimeException("Specialization not found"));
+        Specialization specialization = specializationService.getSpecializationByName(employeeFullDto.getSpecialization());
 
-        employee.setRole(getRoleBySpecializationName(employee.getSpecialization().getSpecializationName()));
+        employee.setRole(roleService.getRoleBySpecializationName(employee.getSpecialization().getSpecializationName()));
         employee.setSpecialization(specialization);
         employee.setFirstName(employeeFullDto.getFirstName());
         employee.setLastName(employeeFullDto.getLastName());
@@ -116,11 +76,7 @@ public class EmployeeService {
 
     public Page<EmployeeFullDto> getAll(Pageable pageable) {
         return employeeRepository.findAll(pageable)
-                .map(employee -> new EmployeeFullDto(employee.getEmployeeId(),
-                        employee.getSpecialization().getSpecializationName(),
-                        employee.getFirstName(), employee.getLastName(), employee.getPatronymicName(),
-                        employee.getDateOfBirth(), employee.getPhone(), employee.getEmail(),
-                        employee.getLogin(), employee.getPassword()));
+                .map(employeeMapper::employeeToEmployeeFullDto);
     }
 
     public Page<EmployeeDto> getAllByFilter(Pageable pageable, Specification<Employee> filter) {
@@ -140,7 +96,7 @@ public class EmployeeService {
     public Set<EmployeeShortDto> getAllEmployeesByProjectIdAndTaskType(Long projectId, String taskType) {
         StringBuilder stringBuilder = new StringBuilder();
         TaskType enumTaskType = TaskType.fromDisplayName(taskType);
-        List<String> specializationNames = getEnumSpecializationsByTaskType(enumTaskType);
+        List<String> specializationNames = specializationService.getEnumSpecializationsByTaskType(enumTaskType);
         return employeeRepository.findByProjectIdAndSpecialization(projectId, specializationNames).stream()
                 .map(employee -> employeeToEmployeeShortDto(employee, stringBuilder))
                 .collect(Collectors.toSet());
@@ -168,30 +124,6 @@ public class EmployeeService {
 
     private String getNewPassword(String newPassword, String encodeOldPassword) {
         return newPassword.equals(encodeOldPassword) ? encodeOldPassword : passwordEncoder.encode(newPassword);
-    }
-
-    private Role getRoleBySpecializationName(String specializationName) {
-        return switch (specializationName) {
-            case FULLSTACK_DEVELOPER_SPECIALIZATION_NAME, BACKEND_DEVELOPER_SPECIALIZATION_NAME,
-                 FRONTEND_DEVELOPER_SPECIALIZATION_NAME -> roleRepository.findByRoleName(DEVELOPER_ROLE_NAME);
-            case QA_ENGINEER_SPECIALIZATION_NAME, AQA_ENGINEER_SPECIALIZATION_NAME -> roleRepository
-                    .findByRoleName(TESTER_ROLE_NAME);
-            case PROJECT_MANAGER_SPECIALIZATION_NAME -> roleRepository.findByRoleName(PROJECT_MANAGER_ROLE_NAME);
-            default -> roleRepository.findByRoleName(USER_ROLE_NAME);
-        };
-    }
-
-    private List<String> getEnumSpecializationsByTaskType(TaskType taskType) {
-        return switch (taskType) {
-            case DEVELOPMENT -> List.of(EnumSpecialization.BACKEND_DEVELOPER.getSpecializationName(),
-                    EnumSpecialization.FRONTEND_DEVELOPER.getSpecializationName(),
-                    EnumSpecialization.FULLSTACK_DEVELOPER.getSpecializationName());
-            case TESTING -> List.of(EnumSpecialization.QA_ENGINEER.getSpecializationName(),
-                    EnumSpecialization.AQA_ENGINEER.getSpecializationName());
-            case DEV_OPS -> List.of(EnumSpecialization.DEV_OPS.getSpecializationName());
-            case DATA_SCIENCE -> List.of(EnumSpecialization.DATA_SCIENTIST.getSpecializationName());
-            case DATA_ANALYSIS -> List.of(EnumSpecialization.DATA_ANALYST.getSpecializationName());
-        };
     }
 
 }
