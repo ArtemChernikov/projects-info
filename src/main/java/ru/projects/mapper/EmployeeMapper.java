@@ -9,6 +9,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import ru.projects.model.Employee;
 import ru.projects.model.dto.EmployeeDto;
 import ru.projects.model.dto.EmployeeFullDto;
+import ru.projects.model.dto.EmployeeShortDto;
 import ru.projects.services.RoleService;
 import ru.projects.services.SpecializationService;
 
@@ -29,7 +30,18 @@ public abstract class EmployeeMapper {
     @Mapping(target = "password", expression = "java(passwordEncoder.encode(employeeDto.getPassword()))")
     public abstract Employee employeeDtoToEmployee(EmployeeDto employeeDto);
 
+    @Mapping(target = "specialization", source = "specialization.specializationName")
+    public abstract EmployeeDto employeeToEmployeeDto(Employee employee);
+
     @Mapping(target = "specialization", expression = "java(employee.getSpecialization().getSpecializationName())")
     public abstract EmployeeFullDto employeeToEmployeeFullDto(Employee employee);
+
+    @Mapping(target = "name", expression = "java(getFullName(employee))")
+    public abstract EmployeeShortDto employeeToEmployeeShortDto(Employee employee);
+
+    protected String getFullName(Employee employee) {
+        return String.join(" ", employee.getLastName(), employee.getFirstName(), employee.getPatronymicName());
+
+    }
 
 }

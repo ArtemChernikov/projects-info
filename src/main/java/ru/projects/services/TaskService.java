@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import ru.projects.mapper.EmployeeMapper;
 import ru.projects.model.Employee;
 import ru.projects.model.Project;
 import ru.projects.model.Task;
@@ -27,6 +28,7 @@ import java.util.Optional;
 public class TaskService {
     private final TaskRepository taskRepository;
     private final EmployeeService employeeService;
+    private final EmployeeMapper employeeMapper;
 
     public void save(TaskCreateDto taskCreateDto) {
         Task task = Task.builder()
@@ -52,7 +54,7 @@ public class TaskService {
                 .name(task.getName())
                 .description(task.getDescription())
                 .project(new ProjectShortDto(task.getProject().getProjectId(), task.getProject().getName()))
-                .employee(employeeService.employeeToEmployeeShortDto(task.getEmployee(), new StringBuilder()))
+                .employee(employeeMapper.employeeToEmployeeShortDto(task.getEmployee()))
                 .taskType(task.getTaskType().getDisplayName())
                 .priority(task.getPriority().getDisplayName())
                 .status(task.getStatus().getDisplayName())
@@ -69,7 +71,7 @@ public class TaskService {
                     return new TaskFullDto(task.getTaskId(),
                             task.getName(), task.getDescription(),
                             new ProjectShortDto(project.getProjectId(), project.getName()),
-                            employeeService.employeeToEmployeeShortDto(employee, stringBuilder),
+                            employeeMapper.employeeToEmployeeShortDto(employee),
                             task.getTaskType().getDisplayName(), task.getPriority().getDisplayName(),
                             task.getStatus().getDisplayName());
                 });

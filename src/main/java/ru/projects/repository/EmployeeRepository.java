@@ -18,4 +18,6 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long>, JpaSp
             " and e.specialization.specializationName IN :specializations")
     Set<Employee> findByProjectIdAndSpecialization(@Param("projectId") Long projectId,
                                                    @Param("specializations") List<String> specializations);
+
+    boolean existsByEmployeeId(Long employeeId);
 }

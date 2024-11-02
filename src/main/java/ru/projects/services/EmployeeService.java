@@ -71,6 +71,9 @@ public class EmployeeService {
     }
 
     public void deleteById(Long id) {
+        if (!employeeRepository.existsById(id)) {
+            throw new RuntimeException("Employee not found");
+        }
         employeeRepository.deleteById(id);
     }
 
@@ -81,11 +84,7 @@ public class EmployeeService {
 
     public Page<EmployeeDto> getAllByFilter(Pageable pageable, Specification<Employee> filter) {
         return employeeRepository.findAll(filter, pageable)
-                .map(employee -> new EmployeeDto(
-                        employee.getSpecialization().getSpecializationName(),
-                        employee.getFirstName(), employee.getLastName(), employee.getPatronymicName(),
-                        employee.getDateOfBirth(), employee.getPhone(), employee.getEmail(),
-                        employee.getLogin(), employee.getPassword()));
+                .map(employeeMapper::employeeToEmployeeDto);
     }
 
     public Map<String, List<EmployeeShortDto>> getAllEmployeesBySpecialization() {
@@ -94,32 +93,17 @@ public class EmployeeService {
     }
 
     public Set<EmployeeShortDto> getAllEmployeesByProjectIdAndTaskType(Long projectId, String taskType) {
-        StringBuilder stringBuilder = new StringBuilder();
         TaskType enumTaskType = TaskType.fromDisplayName(taskType);
         List<String> specializationNames = specializationService.getEnumSpecializationsByTaskType(enumTaskType);
         return employeeRepository.findByProjectIdAndSpecialization(projectId, specializationNames).stream()
-                .map(employee -> employeeToEmployeeShortDto(employee, stringBuilder))
+                .map(employeeMapper::employeeToEmployeeShortDto)
                 .collect(Collectors.toSet());
     }
 
     public Map<String, List<EmployeeShortDto>> groupEmployeesBySpecializations(List<Employee> employees) {
-        StringBuilder stringBuilder = new StringBuilder();
         return employees.stream()
                 .collect(Collectors.groupingBy(employee -> employee.getSpecialization().getSpecializationName(),
-                        Collectors.mapping(employee ->
-                                employeeToEmployeeShortDto(employee, stringBuilder), Collectors.toList())));
-    }
-
-    public EmployeeShortDto employeeToEmployeeShortDto(Employee employee, StringBuilder stringBuilder) {
-        stringBuilder.append(employee.getLastName());
-        stringBuilder.append(" ");
-        stringBuilder.append(employee.getFirstName());
-        stringBuilder.append(" ");
-        stringBuilder.append(employee.getPatronymicName());
-        stringBuilder.append(" ");
-        EmployeeShortDto employeeShortDto = new EmployeeShortDto(employee.getEmployeeId(), stringBuilder.toString());
-        stringBuilder.setLength(0);
-        return employeeShortDto;
+                        Collectors.mapping(employeeMapper::employeeToEmployeeShortDto, Collectors.toList())));
     }
 
     private String getNewPassword(String newPassword, String encodeOldPassword) {
