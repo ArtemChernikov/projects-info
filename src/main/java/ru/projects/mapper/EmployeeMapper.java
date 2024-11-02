@@ -39,6 +39,8 @@ public abstract class EmployeeMapper {
     @Mapping(target = "name", expression = "java(getFullName(employee))")
     public abstract EmployeeShortDto employeeToEmployeeShortDto(Employee employee);
 
+    public abstract Employee employeeShortDtoToEmployee(EmployeeShortDto employeeShortDto);
+
     protected String getFullName(Employee employee) {
         return String.join(" ", employee.getLastName(), employee.getFirstName(), employee.getPatronymicName());
 
