@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import ru.projects.mapper.ProjectMapper;
 import ru.projects.model.Employee;
 import ru.projects.model.Project;
 import ru.projects.model.dto.EmployeeShortDto;
@@ -49,22 +50,11 @@ public class ProjectService {
     private final EmployeeService employeeService;
     private final ProjectRepository projectRepository;
     private final EmployeeRepository employeeRepository;
+    private final ProjectMapper projectMapper;
 
     @Transactional
     public void save(ProjectCreateDto projectCreateDto) {
-        Set<EmployeeShortDto> employees = projectCreateDto.getEmployees();
-        Set<Long> employeeIds = employees.stream()
-                .map(EmployeeShortDto::getEmployeeId)
-                .collect(Collectors.toSet());
-        Set<Employee> employeesForSave = new HashSet<>(employeeRepository.findAllById(employeeIds));
-
-        Project newProject = Project.builder()
-                .name(projectCreateDto.getName())
-                .startDate(projectCreateDto.getStartDate())
-                .status(Status.NEW)
-                .employees(employeesForSave)
-                .build();
-        employeesForSave.forEach(employee -> employee.getProjects().add(newProject));
+        Project newProject = projectMapper.projectCreateDtoToProject(projectCreateDto);
         projectRepository.save(newProject);
     }
 

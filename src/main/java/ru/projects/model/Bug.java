@@ -35,7 +35,7 @@ public class Bug {
 
     private Long taskId;
 
-    private Long testerId;
+    private Long employeeId;
 
     private String description;
 
