@@ -1,17 +1,21 @@
 package ru.projects.mapper;
 
-import lombok.RequiredArgsConstructor;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.Named;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import ru.projects.model.Employee;
 import ru.projects.model.dto.EmployeeDto;
 import ru.projects.model.dto.EmployeeFullDto;
 import ru.projects.model.dto.EmployeeShortDto;
+import ru.projects.repository.EmployeeRepository;
 import ru.projects.services.RoleService;
 import ru.projects.services.SpecializationService;
+
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Mapper(componentModel = "spring")
 public abstract class EmployeeMapper {
@@ -21,6 +25,9 @@ public abstract class EmployeeMapper {
 
     @Autowired
     protected SpecializationService specializationService;
+
+    @Autowired
+    protected EmployeeRepository employeeRepository;
 
     @Autowired
     protected PasswordEncoder passwordEncoder;
@@ -39,11 +46,18 @@ public abstract class EmployeeMapper {
     @Mapping(target = "name", expression = "java(getFullName(employee))")
     public abstract EmployeeShortDto employeeToEmployeeShortDto(Employee employee);
 
-    public abstract Employee employeeShortDtoToEmployee(EmployeeShortDto employeeShortDto);
+    public abstract Employee employeeShortDtoToEmployeeWithOnlyId(EmployeeShortDto employeeShortDto);
+
+    @Named("employeesShortDtoToEmployees")
+    public Set<Employee> employeesShortDtoToEmployees(Set<EmployeeShortDto> employeesShortDto) {
+        Set<Long> employeeIds = employeesShortDto.stream()
+                .map(EmployeeShortDto::getEmployeeId)
+                .collect(Collectors.toSet());
+        return new HashSet<>(employeeRepository.findAllById(employeeIds));
+    }
 
     protected String getFullName(Employee employee) {
         return String.join(" ", employee.getLastName(), employee.getFirstName(), employee.getPatronymicName());
-
     }
 
 }
