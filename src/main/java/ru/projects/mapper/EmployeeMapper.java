@@ -36,6 +36,10 @@ public abstract class EmployeeMapper {
     @Mapping(target = "specialization", expression = "java(employee.getSpecialization().getSpecializationName())")
     public abstract EmployeeFullDto employeeToEmployeeFullDto(Employee employee);
 
+    @Mapping(target = "role", expression = "java(roleService.getRoleBySpecializationName(employeeFullDto.getSpecialization()))")
+    @Mapping(target = "specialization", expression = "java(specializationService.getSpecializationByName(employeeFullDto.getSpecialization()))")
+    public abstract Employee employeeFullDtoToEmployee(EmployeeFullDto employeeFullDto);
+
     @Mapping(target = "name", expression = "java(getFullName(employee))")
     public abstract EmployeeShortDto employeeToEmployeeShortDto(Employee employee);
 

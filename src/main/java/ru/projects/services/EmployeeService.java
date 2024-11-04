@@ -8,7 +8,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.projects.mapper.EmployeeMapper;
 import ru.projects.model.Employee;
-import ru.projects.model.Specialization;
 import ru.projects.model.dto.EmployeeDto;
 import ru.projects.model.dto.EmployeeFullDto;
 import ru.projects.model.dto.EmployeeShortDto;
@@ -52,22 +51,11 @@ public class EmployeeService {
     }
 
     public Employee update(EmployeeFullDto employeeFullDto) {
-        Employee employee = employeeRepository
+        Employee oldEmployee = employeeRepository
                 .findById(employeeFullDto.getEmployeeId()).orElseThrow(() -> new RuntimeException("Employee not found"));
-        Specialization specialization = specializationService.getSpecializationByName(employeeFullDto.getSpecialization());
-
-        employee.setRole(roleService.getRoleBySpecializationName(employee.getSpecialization().getSpecializationName()));
-        employee.setSpecialization(specialization);
-        employee.setFirstName(employeeFullDto.getFirstName());
-        employee.setLastName(employeeFullDto.getLastName());
-        employee.setPatronymicName(employeeFullDto.getPatronymicName());
-        employee.setDateOfBirth(employeeFullDto.getDateOfBirth());
-        employee.setPhone(employeeFullDto.getPhone());
-        employee.setEmail(employeeFullDto.getEmail());
-        employee.setLogin(employeeFullDto.getLogin());
-        employee.setPassword(getNewPassword(employeeFullDto.getPassword(), employee.getPassword()));
-
-        return employeeRepository.save(employee);
+        Employee employeeForUpdate = employeeMapper.employeeFullDtoToEmployee(employeeFullDto);
+        employeeForUpdate.setPassword(getPasswordForUpdate(employeeFullDto.getPassword(), oldEmployee.getPassword()));
+        return employeeRepository.save(employeeForUpdate);
     }
 
     public void deleteById(Long id) {
@@ -106,7 +94,7 @@ public class EmployeeService {
                         Collectors.mapping(employeeMapper::employeeToEmployeeShortDto, Collectors.toList())));
     }
 
-    private String getNewPassword(String newPassword, String encodeOldPassword) {
+    private String getPasswordForUpdate(String newPassword, String encodeOldPassword) {
         return newPassword.equals(encodeOldPassword) ? encodeOldPassword : passwordEncoder.encode(newPassword);
     }
 
