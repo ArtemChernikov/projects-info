@@ -27,12 +27,6 @@ public class SpecializationService {
                 .orElseThrow(() -> new RuntimeException("Specialization not found"));
     }
 
-    public List<SpecializationDto> getAllSpecializationsDto() {
-        return specializationRepository.findAll().stream()
-                .map(specialization -> new SpecializationDto(specialization.getSpecializationName()))
-                .toList();
-    }
-
     public List<String> getAllSpecializationsNames() {
         return specializationRepository.findAll().stream()
                 .map(Specialization::getSpecializationName)

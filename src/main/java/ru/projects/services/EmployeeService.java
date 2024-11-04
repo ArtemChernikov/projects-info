@@ -31,7 +31,6 @@ public class EmployeeService {
 
     private final EmployeeRepository employeeRepository;
     private final SpecializationService specializationService;
-    private final RoleService roleService;
     private final PasswordEncoder passwordEncoder;
     private final EmployeeMapper employeeMapper;
 
