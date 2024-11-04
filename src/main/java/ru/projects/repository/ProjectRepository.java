@@ -6,4 +6,7 @@ import ru.projects.model.Project;
 
 @Repository
 public interface ProjectRepository extends JpaRepository<Project, Long> {
+
+    boolean existsByProjectId(Long id);
+
 }

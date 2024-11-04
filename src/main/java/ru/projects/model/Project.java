@@ -9,6 +9,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
@@ -54,7 +55,12 @@ public class Project {
     @Enumerated(EnumType.STRING)
     private Status status;
 
-    @ManyToMany(mappedBy = "projects", fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "projects_employees",
+            joinColumns = {@JoinColumn(name = "project_id")},
+            inverseJoinColumns = {@JoinColumn(name = "employee_id")}
+    )
     private Set<Employee> employees;
 
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL)

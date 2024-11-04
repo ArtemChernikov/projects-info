@@ -28,5 +28,6 @@ hs_err_pid*
 .idea
 *.iml
 
+src/main/frontend/generated
 target
 out

@@ -192,7 +192,7 @@ public class CreateTaskView extends Composite<VerticalLayout> {
     }
 
     private void setProjectsToComboBox() {
-        Set<ProjectShortDto> projectShortDtos = projectService.getAllProjectShortDtos();
+        Set<ProjectShortDto> projectShortDtos = projectService.getAllProjectsShortDto();
         project.setItems(projectShortDtos);
         project.setItemLabelGenerator(ProjectShortDto::getName);
     }

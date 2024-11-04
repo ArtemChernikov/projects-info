@@ -65,11 +65,6 @@ public class Employee {
 
     private String password;
 
-    @ManyToMany
-    @JoinTable(
-            name = "projects_employees",
-            joinColumns = {@JoinColumn(name = "employee_id")},
-            inverseJoinColumns = {@JoinColumn(name = "project_id")}
-    )
+    @ManyToMany(mappedBy = "employees")
     private Set<Project> projects = new HashSet<>();
 }
