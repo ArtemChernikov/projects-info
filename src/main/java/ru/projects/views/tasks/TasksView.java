@@ -26,13 +26,17 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import ru.projects.model.dto.EmployeeShortDto;
 import ru.projects.model.dto.TaskFullDto;
-import ru.projects.services.SpecializationService;
+import ru.projects.model.dto.TaskViewDto;
+import ru.projects.model.enums.Priority;
+import ru.projects.model.enums.Status;
+import ru.projects.services.EmployeeService;
 import ru.projects.services.TaskService;
 import ru.projects.views.MainLayout;
 import ru.projects.views.projects.ProjectsView;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @PageTitle("Tasks")
 @Route(value = "tasks/:taskID?/:action?(edit)", layout = MainLayout.class)
@@ -42,12 +46,11 @@ public class TasksView extends Div implements BeforeEnterObserver {
     private static final String TASK_ID = "taskID";
     private static final String TASK_EDIT_ROUTE_TEMPLATE = "tasks/%s/edit";
 
-    private final Grid<TaskFullDto> grid = new Grid<>(TaskFullDto.class, false);
+    private final Grid<TaskViewDto> grid = new Grid<>(TaskViewDto.class, false);
 
     private TextField name;
     private TextArea description;
     private ComboBox<EmployeeShortDto> employee;
-    private ComboBox<String> taskType;
     private ComboBox<String> priority;
     private ComboBox<String> status;
 
@@ -60,11 +63,11 @@ public class TasksView extends Div implements BeforeEnterObserver {
     private TaskFullDto task;
 
     private final TaskService taskService;
-    private final SpecializationService specializationService;
+    private final EmployeeService employeeService;
 
-    public TasksView(TaskService taskService, SpecializationService specializationService) {
+    public TasksView(TaskService taskService, EmployeeService employeeService) {
         this.taskService = taskService;
-        this.specializationService = specializationService;
+        this.employeeService = employeeService;
         addClassNames("tasks-view");
         createUI();
     }
@@ -134,9 +137,13 @@ public class TasksView extends Div implements BeforeEnterObserver {
     public void beforeEnter(BeforeEnterEvent event) {
         Optional<Long> employeeId = event.getRouteParameters().get(TASK_ID).map(Long::parseLong);
         if (employeeId.isPresent()) {
-            Optional<TaskFullDto> taskFromBackend = taskService.getById(employeeId.get());
-            if (taskFromBackend.isPresent()) {
-                fillEditForm(taskFromBackend.get());
+            Optional<TaskFullDto> optionalTaskFromBackend = taskService.getById(employeeId.get());
+            if (optionalTaskFromBackend.isPresent()) {
+                TaskFullDto taskFromBackend = optionalTaskFromBackend.get();
+                setEmployeesToComboBox(taskFromBackend.getProject().getProjectId(), taskFromBackend.getTaskType());
+                setPrioritiesToComboBox();
+                setStatusesToComboBox();
+                fillEditForm(taskFromBackend);
             } else {
                 Notification.show(String.format("The requested employee was not found, ID = %s", employeeId.get()),
                         3000, Position.BOTTOM_START);
@@ -157,9 +164,6 @@ public class TasksView extends Div implements BeforeEnterObserver {
         binder.forField(employee)
                 .asRequired("Employee is required")
                 .bind(TaskFullDto::getEmployee, TaskFullDto::setEmployee);
-        binder.forField(taskType)
-                .asRequired("Task Type is required")
-                .bind(TaskFullDto::getTaskType, TaskFullDto::setTaskType);
         binder.forField(priority)
                 .asRequired("Priority is required")
                 .bind(TaskFullDto::getPriority, TaskFullDto::setPriority);
@@ -173,7 +177,6 @@ public class TasksView extends Div implements BeforeEnterObserver {
         name.setRequiredIndicatorVisible(true);
         description.setRequiredIndicatorVisible(true);
         employee.setRequiredIndicatorVisible(true);
-        taskType.setRequiredIndicatorVisible(true);
         priority.setRequiredIndicatorVisible(true);
         status.setRequiredIndicatorVisible(true);
     }
@@ -182,6 +185,7 @@ public class TasksView extends Div implements BeforeEnterObserver {
         grid.addColumn("name").setAutoWidth(true);
         grid.addColumn("description").setAutoWidth(true);
         grid.addColumn("project").setAutoWidth(true);
+        grid.addColumn("employee").setAutoWidth(true);
         grid.addColumn("taskType").setAutoWidth(true);
         grid.addColumn("priority").setAutoWidth(true);
         grid.addColumn("status").setAutoWidth(true);
@@ -195,7 +199,7 @@ public class TasksView extends Div implements BeforeEnterObserver {
                 UI.getCurrent().navigate(String.format(TASK_EDIT_ROUTE_TEMPLATE, event.getValue().getTaskId()));
             } else {
                 clearForm();
-                UI.getCurrent().navigate(ProjectsView.class);
+                UI.getCurrent().navigate(TasksView.class);
             }
         });
     }
@@ -214,18 +218,15 @@ public class TasksView extends Div implements BeforeEnterObserver {
         name = new TextField("Task name");
         description = new TextArea("Description");
         employee = new ComboBox<>("Employee");
-        taskType = new ComboBox<>("Task Type");
         priority = new ComboBox<>("Priority");
         status = new ComboBox<>("Status");
 
         employee.setWidth("min-content");
-        taskType.setWidth("min-content");
         priority.setWidth("min-content");
         status.setWidth("min-content");
 
-        setSpecializationsToComboBox();
         setRequiredFields();
-        formLayout.add(name, description, employee, taskType, priority, status);
+        formLayout.add(name, description, employee, priority, status);
 
         editorDiv.add(formLayout);
         createButtonLayout(editorLayoutDiv);
@@ -265,8 +266,17 @@ public class TasksView extends Div implements BeforeEnterObserver {
         binder.readBean(this.task);
     }
 
-    private void setSpecializationsToComboBox() {
-        List<String> specializations = specializationService.getAllSpecializationsNames();
-        status.setItems(specializations);
+    private void setEmployeesToComboBox(Long projectId, String taskType) {
+        Set<EmployeeShortDto> employees = employeeService.getAllEmployeesByProjectIdAndTaskType(projectId, taskType);
+        employee.setItems(employees);
+        employee.setItemLabelGenerator(EmployeeShortDto::getName);
+    }
+
+    private void setStatusesToComboBox() {
+        status.setItems(List.of(Status.NEW.getDisplayName(), Status.IN_PROGRESS.getDisplayName(), Status.FINISHED.getDisplayName()));
+    }
+
+    private void setPrioritiesToComboBox() {
+        priority.setItems(List.of(Priority.HIGH.getDisplayName(), Priority.MEDIUM.getDisplayName(), Priority.LOW.getDisplayName()));
     }
 }

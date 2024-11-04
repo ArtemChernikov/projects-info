@@ -8,6 +8,7 @@ import ru.projects.mapper.TaskMapper;
 import ru.projects.model.Task;
 import ru.projects.model.dto.TaskCreateDto;
 import ru.projects.model.dto.TaskFullDto;
+import ru.projects.model.dto.TaskViewDto;
 import ru.projects.repository.TaskRepository;
 
 import java.util.Optional;
@@ -38,8 +39,8 @@ public class TaskService {
         return Optional.of(taskFullDto);
     }
 
-    public Page<TaskFullDto> getAll(Pageable pageable) {
+    public Page<TaskViewDto> getAll(Pageable pageable) {
         return taskRepository.findAll(pageable)
-                .map(taskMapper::taskToTaskFullDto);
+                .map(taskMapper::taskToTaskViewDto);
     }
 }

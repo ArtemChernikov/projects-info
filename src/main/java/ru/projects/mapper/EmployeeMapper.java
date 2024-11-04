@@ -40,14 +40,14 @@ public abstract class EmployeeMapper {
     @Mapping(target = "specialization", expression = "java(specializationService.getSpecializationByName(employeeFullDto.getSpecialization()))")
     public abstract Employee employeeFullDtoToEmployee(EmployeeFullDto employeeFullDto);
 
-    @Mapping(target = "name", expression = "java(getFullName(employee))")
+    @Mapping(target = "name", expression = "java(getEmployeeFullName(employee))")
     public abstract EmployeeShortDto employeeToEmployeeShortDto(Employee employee);
 
     public abstract Employee employeeShortDtoToEmployeeWithOnlyId(EmployeeShortDto employeeShortDto);
 
     public abstract Set<Employee> employeesShortDtoToEmployeesWithOnlyId(Set<EmployeeShortDto> employeesShortDto);
 
-    protected String getFullName(Employee employee) {
+    public String getEmployeeFullName(Employee employee) {
         return String.join(" ", employee.getLastName(), employee.getFirstName(), employee.getPatronymicName());
     }
 
