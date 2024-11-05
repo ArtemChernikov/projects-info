@@ -108,5 +108,4 @@ public abstract class ProjectMapper {
 
     public abstract Project projectShortDtoToProjectWithOnlyId(ProjectShortDto projectShortDto);
 
-
 }

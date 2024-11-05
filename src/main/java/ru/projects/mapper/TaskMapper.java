@@ -28,6 +28,11 @@ public abstract class TaskMapper {
     @Mapping(target = "status", expression = "java(task.getStatus().getDisplayName())")
     public abstract TaskFullDto taskToTaskFullDto(Task task);
 
+    @Mapping(target = "taskType", expression = "java(TaskType.fromDisplayName(taskFullDto.getTaskType()))")
+    @Mapping(target = "priority", expression = "java(Priority.fromDisplayName(taskFullDto.getPriority()))")
+    @Mapping(target = "status", expression = "java(Status.fromDisplayName(taskFullDto.getStatus()))")
+    public abstract Task taskFullDtoToTask(TaskFullDto taskFullDto);
+
     @Mapping(target = "project", source = "project.name")
     @Mapping(target = "employee", expression = "java(employeeMapper.getEmployeeFullName(task.getEmployee()))")
     @Mapping(target = "taskType", expression = "java(task.getTaskType().getDisplayName())")

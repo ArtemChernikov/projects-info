@@ -6,4 +6,7 @@ import ru.projects.model.Task;
 
 @Repository
 public interface TaskRepository extends JpaRepository<Task, Long> {
+
+    boolean existsByTaskId(Long id);
+
 }

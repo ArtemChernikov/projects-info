@@ -29,6 +29,19 @@ public class TaskService {
         taskRepository.save(task);
     }
 
+    public Task update(TaskFullDto taskFullDto) {
+        checkTaskExistsById(taskFullDto.getTaskId());
+        Task task = taskMapper.taskFullDtoToTask(taskFullDto);
+        return taskRepository.save(task);
+    }
+
+    public void deleteById(Long id) {
+        if (!taskRepository.existsById(id)) {
+            throw new RuntimeException("Task not found");
+        }
+        taskRepository.deleteById(id);
+    }
+
     public Optional<TaskFullDto> getById(Long id) {
         Optional<Task> optionalTask = taskRepository.findById(id);
         if (optionalTask.isEmpty()) {
@@ -42,5 +55,11 @@ public class TaskService {
     public Page<TaskViewDto> getAll(Pageable pageable) {
         return taskRepository.findAll(pageable)
                 .map(taskMapper::taskToTaskViewDto);
+    }
+
+    private void checkTaskExistsById(Long taskId) {
+        if (!taskRepository.existsById(taskId)) {
+            throw new RuntimeException("Task Not Found.");
+        }
     }
 }

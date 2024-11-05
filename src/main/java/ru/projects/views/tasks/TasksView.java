@@ -32,7 +32,6 @@ import ru.projects.model.enums.Status;
 import ru.projects.services.EmployeeService;
 import ru.projects.services.TaskService;
 import ru.projects.views.MainLayout;
-import ru.projects.views.projects.ProjectsView;
 
 import java.util.List;
 import java.util.Optional;
@@ -95,7 +94,7 @@ public class TasksView extends Div implements BeforeEnterObserver {
                 this.task = new TaskFullDto();
             }
             binder.writeBean(this.task);
-            //taskService.update(this.task);
+            taskService.update(this.task);
             clearForm();
             refreshGrid();
             Notification.show("The employee has been updated.", 3000, Position.TOP_CENTER)
@@ -117,7 +116,7 @@ public class TasksView extends Div implements BeforeEnterObserver {
                 this.task = new TaskFullDto();
             }
             binder.writeBean(this.task);
-            //taskService.deleteById(this.task.getTaskId());
+            taskService.deleteById(this.task.getTaskId());
             clearForm();
             refreshGrid();
             Notification.show("The employee has been removed.", 3000, Position.TOP_CENTER)
@@ -183,12 +182,16 @@ public class TasksView extends Div implements BeforeEnterObserver {
 
     private void configureGrid() {
         grid.addColumn("name").setAutoWidth(true);
-        grid.addColumn("description").setAutoWidth(true);
         grid.addColumn("project").setAutoWidth(true);
         grid.addColumn("employee").setAutoWidth(true);
         grid.addColumn("taskType").setAutoWidth(true);
         grid.addColumn("priority").setAutoWidth(true);
         grid.addColumn("status").setAutoWidth(true);
+
+        grid.addColumn(TaskDescriptionDetails.createToggleDetailsRenderer(grid));
+        grid.setDetailsVisibleOnClick(false);
+        grid.setItemDetailsRenderer(TaskDescriptionDetails.createTaskDetailsRenderer());
+
         grid.setItems(query -> taskService.getAll(
                         PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)))
                 .stream());
