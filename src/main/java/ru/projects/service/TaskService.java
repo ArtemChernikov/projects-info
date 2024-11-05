@@ -1,4 +1,4 @@
-package ru.projects.services;
+package ru.projects.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

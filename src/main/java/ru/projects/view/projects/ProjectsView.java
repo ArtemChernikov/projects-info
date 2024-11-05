@@ -1,4 +1,4 @@
-package ru.projects.views.projects;
+package ru.projects.view.projects;
 
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
@@ -28,23 +28,23 @@ import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import ru.projects.model.dto.EmployeeShortDto;
 import ru.projects.model.dto.ProjectFullDto;
 import ru.projects.model.enums.Status;
-import ru.projects.services.EmployeeService;
-import ru.projects.services.ProjectService;
-import ru.projects.views.MainLayout;
+import ru.projects.service.EmployeeService;
+import ru.projects.service.ProjectService;
+import ru.projects.view.MainLayout;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static ru.projects.utils.Constants.AQA_ENGINEER_SPECIALIZATION_NAME;
-import static ru.projects.utils.Constants.BACKEND_DEVELOPER_SPECIALIZATION_NAME;
-import static ru.projects.utils.Constants.DATA_ANALYST_SPECIALIZATION_NAME;
-import static ru.projects.utils.Constants.DATA_SCIENTIST_SPECIALIZATION_NAME;
-import static ru.projects.utils.Constants.DEV_OPS_SPECIALIZATION_NAME;
-import static ru.projects.utils.Constants.FRONTEND_DEVELOPER_SPECIALIZATION_NAME;
-import static ru.projects.utils.Constants.FULLSTACK_DEVELOPER_SPECIALIZATION_NAME;
-import static ru.projects.utils.Constants.PROJECT_MANAGER_SPECIALIZATION_NAME;
-import static ru.projects.utils.Constants.QA_ENGINEER_SPECIALIZATION_NAME;
+import static ru.projects.util.Constants.AQA_ENGINEER_SPECIALIZATION_NAME;
+import static ru.projects.util.Constants.BACKEND_DEVELOPER_SPECIALIZATION_NAME;
+import static ru.projects.util.Constants.DATA_ANALYST_SPECIALIZATION_NAME;
+import static ru.projects.util.Constants.DATA_SCIENTIST_SPECIALIZATION_NAME;
+import static ru.projects.util.Constants.DEV_OPS_SPECIALIZATION_NAME;
+import static ru.projects.util.Constants.FRONTEND_DEVELOPER_SPECIALIZATION_NAME;
+import static ru.projects.util.Constants.FULLSTACK_DEVELOPER_SPECIALIZATION_NAME;
+import static ru.projects.util.Constants.PROJECT_MANAGER_SPECIALIZATION_NAME;
+import static ru.projects.util.Constants.QA_ENGINEER_SPECIALIZATION_NAME;
 
 @PageTitle("All Projects")
 @Route(value = "projects/:projectID?/:action?(edit)", layout = MainLayout.class)

@@ -1,4 +1,4 @@
-package ru.projects.views.tasks;
+package ru.projects.view.tasks;
 
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
@@ -29,9 +29,9 @@ import ru.projects.model.dto.TaskFullDto;
 import ru.projects.model.dto.TaskViewDto;
 import ru.projects.model.enums.Priority;
 import ru.projects.model.enums.Status;
-import ru.projects.services.EmployeeService;
-import ru.projects.services.TaskService;
-import ru.projects.views.MainLayout;
+import ru.projects.service.EmployeeService;
+import ru.projects.service.TaskService;
+import ru.projects.view.MainLayout;
 
 import java.util.List;
 import java.util.Optional;

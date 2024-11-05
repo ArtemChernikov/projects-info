@@ -8,8 +8,8 @@ import ru.projects.model.Employee;
 import ru.projects.model.dto.EmployeeDto;
 import ru.projects.model.dto.EmployeeFullDto;
 import ru.projects.model.dto.EmployeeShortDto;
-import ru.projects.services.RoleService;
-import ru.projects.services.SpecializationService;
+import ru.projects.service.RoleService;
+import ru.projects.service.SpecializationService;
 
 import java.util.Set;
 

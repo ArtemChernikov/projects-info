@@ -2,15 +2,15 @@ package ru.projects.model.enums;
 
 import lombok.Getter;
 
-import static ru.projects.utils.Constants.AQA_ENGINEER_SPECIALIZATION_NAME;
-import static ru.projects.utils.Constants.BACKEND_DEVELOPER_SPECIALIZATION_NAME;
-import static ru.projects.utils.Constants.DATA_ANALYST_SPECIALIZATION_NAME;
-import static ru.projects.utils.Constants.DATA_SCIENTIST_SPECIALIZATION_NAME;
-import static ru.projects.utils.Constants.DEV_OPS_SPECIALIZATION_NAME;
-import static ru.projects.utils.Constants.FRONTEND_DEVELOPER_SPECIALIZATION_NAME;
-import static ru.projects.utils.Constants.FULLSTACK_DEVELOPER_SPECIALIZATION_NAME;
-import static ru.projects.utils.Constants.PROJECT_MANAGER_SPECIALIZATION_NAME;
-import static ru.projects.utils.Constants.QA_ENGINEER_SPECIALIZATION_NAME;
+import static ru.projects.util.Constants.AQA_ENGINEER_SPECIALIZATION_NAME;
+import static ru.projects.util.Constants.BACKEND_DEVELOPER_SPECIALIZATION_NAME;
+import static ru.projects.util.Constants.DATA_ANALYST_SPECIALIZATION_NAME;
+import static ru.projects.util.Constants.DATA_SCIENTIST_SPECIALIZATION_NAME;
+import static ru.projects.util.Constants.DEV_OPS_SPECIALIZATION_NAME;
+import static ru.projects.util.Constants.FRONTEND_DEVELOPER_SPECIALIZATION_NAME;
+import static ru.projects.util.Constants.FULLSTACK_DEVELOPER_SPECIALIZATION_NAME;
+import static ru.projects.util.Constants.PROJECT_MANAGER_SPECIALIZATION_NAME;
+import static ru.projects.util.Constants.QA_ENGINEER_SPECIALIZATION_NAME;
 
 @Getter
 public enum EnumSpecialization {

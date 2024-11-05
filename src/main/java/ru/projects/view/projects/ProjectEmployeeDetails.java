@@ -1,4 +1,4 @@
-package ru.projects.views.projects;
+package ru.projects.view.projects;
 
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;

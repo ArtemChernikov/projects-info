@@ -13,7 +13,7 @@ import ru.projects.model.dto.ProjectCreateDto;
 import ru.projects.model.dto.ProjectFullDto;
 import ru.projects.model.dto.ProjectShortDto;
 import ru.projects.model.enums.Status;
-import ru.projects.services.EmployeeService;
+import ru.projects.service.EmployeeService;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -26,15 +26,15 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static ru.projects.utils.Constants.AQA_ENGINEER_SPECIALIZATION_NAME;
-import static ru.projects.utils.Constants.BACKEND_DEVELOPER_SPECIALIZATION_NAME;
-import static ru.projects.utils.Constants.DATA_ANALYST_SPECIALIZATION_NAME;
-import static ru.projects.utils.Constants.DATA_SCIENTIST_SPECIALIZATION_NAME;
-import static ru.projects.utils.Constants.DEV_OPS_SPECIALIZATION_NAME;
-import static ru.projects.utils.Constants.FRONTEND_DEVELOPER_SPECIALIZATION_NAME;
-import static ru.projects.utils.Constants.FULLSTACK_DEVELOPER_SPECIALIZATION_NAME;
-import static ru.projects.utils.Constants.PROJECT_MANAGER_SPECIALIZATION_NAME;
-import static ru.projects.utils.Constants.QA_ENGINEER_SPECIALIZATION_NAME;
+import static ru.projects.util.Constants.AQA_ENGINEER_SPECIALIZATION_NAME;
+import static ru.projects.util.Constants.BACKEND_DEVELOPER_SPECIALIZATION_NAME;
+import static ru.projects.util.Constants.DATA_ANALYST_SPECIALIZATION_NAME;
+import static ru.projects.util.Constants.DATA_SCIENTIST_SPECIALIZATION_NAME;
+import static ru.projects.util.Constants.DEV_OPS_SPECIALIZATION_NAME;
+import static ru.projects.util.Constants.FRONTEND_DEVELOPER_SPECIALIZATION_NAME;
+import static ru.projects.util.Constants.FULLSTACK_DEVELOPER_SPECIALIZATION_NAME;
+import static ru.projects.util.Constants.PROJECT_MANAGER_SPECIALIZATION_NAME;
+import static ru.projects.util.Constants.QA_ENGINEER_SPECIALIZATION_NAME;
 
 @Mapper(componentModel = "spring", imports = {Status.class}, uses = {EmployeeMapper.class},
         builder = @Builder(disableBuilder = true))

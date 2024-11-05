@@ -1,4 +1,4 @@
-package ru.projects.utils;
+package ru.projects.util;
 
 /**
  * @author Artem Chernikov

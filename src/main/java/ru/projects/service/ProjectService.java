@@ -1,4 +1,4 @@
-package ru.projects.services;
+package ru.projects.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;

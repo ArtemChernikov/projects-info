@@ -1,8 +1,8 @@
-package ru.projects.views;
+package ru.projects.view;
 
-import ru.projects.views.employees.AdminEmployeesView;
-import ru.projects.views.employees.CreateEmployeeView;
-import ru.projects.views.employees.EmployeesView;
+import ru.projects.view.employees.AdminEmployeesView;
+import ru.projects.view.employees.CreateEmployeeView;
+import ru.projects.view.employees.EmployeesView;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.html.Footer;
@@ -15,10 +15,10 @@ import com.vaadin.flow.component.sidenav.SideNavItem;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import org.vaadin.lineawesome.LineAwesomeIcon;
-import ru.projects.views.projects.CreateProjectView;
-import ru.projects.views.projects.ProjectsView;
-import ru.projects.views.tasks.CreateTaskView;
-import ru.projects.views.tasks.TasksView;
+import ru.projects.view.projects.CreateProjectView;
+import ru.projects.view.projects.ProjectsView;
+import ru.projects.view.tasks.CreateTaskView;
+import ru.projects.view.tasks.TasksView;
 
 /**
  * The main view is a top-level placeholder for other views.

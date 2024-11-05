@@ -1,4 +1,4 @@
-package ru.projects.views.employees;
+package ru.projects.view.employees;
 
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
@@ -31,9 +31,9 @@ import java.util.Optional;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import ru.projects.model.dto.EmployeeFullDto;
-import ru.projects.services.EmployeeService;
-import ru.projects.services.SpecializationService;
-import ru.projects.views.MainLayout;
+import ru.projects.service.EmployeeService;
+import ru.projects.service.SpecializationService;
+import ru.projects.view.MainLayout;
 
 @PageTitle("Admin Employees")
 @Route(value = "admin-employees/:employeeID?/:action?(edit)", layout = MainLayout.class)

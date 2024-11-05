@@ -1,20 +1,20 @@
-package ru.projects.services;
+package ru.projects.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.projects.model.Role;
 import ru.projects.repository.RoleRepository;
 
-import static ru.projects.utils.Constants.AQA_ENGINEER_SPECIALIZATION_NAME;
-import static ru.projects.utils.Constants.BACKEND_DEVELOPER_SPECIALIZATION_NAME;
-import static ru.projects.utils.Constants.DEVELOPER_ROLE_NAME;
-import static ru.projects.utils.Constants.FRONTEND_DEVELOPER_SPECIALIZATION_NAME;
-import static ru.projects.utils.Constants.FULLSTACK_DEVELOPER_SPECIALIZATION_NAME;
-import static ru.projects.utils.Constants.PROJECT_MANAGER_ROLE_NAME;
-import static ru.projects.utils.Constants.PROJECT_MANAGER_SPECIALIZATION_NAME;
-import static ru.projects.utils.Constants.QA_ENGINEER_SPECIALIZATION_NAME;
-import static ru.projects.utils.Constants.TESTER_ROLE_NAME;
-import static ru.projects.utils.Constants.USER_ROLE_NAME;
+import static ru.projects.util.Constants.AQA_ENGINEER_SPECIALIZATION_NAME;
+import static ru.projects.util.Constants.BACKEND_DEVELOPER_SPECIALIZATION_NAME;
+import static ru.projects.util.Constants.DEVELOPER_ROLE_NAME;
+import static ru.projects.util.Constants.FRONTEND_DEVELOPER_SPECIALIZATION_NAME;
+import static ru.projects.util.Constants.FULLSTACK_DEVELOPER_SPECIALIZATION_NAME;
+import static ru.projects.util.Constants.PROJECT_MANAGER_ROLE_NAME;
+import static ru.projects.util.Constants.PROJECT_MANAGER_SPECIALIZATION_NAME;
+import static ru.projects.util.Constants.QA_ENGINEER_SPECIALIZATION_NAME;
+import static ru.projects.util.Constants.TESTER_ROLE_NAME;
+import static ru.projects.util.Constants.USER_ROLE_NAME;
 
 /**
  * @author Artem Chernikov

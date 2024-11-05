@@ -1,4 +1,4 @@
-package ru.projects.views.employees;
+package ru.projects.view.employees;
 
 import com.vaadin.flow.component.Composite;
 import com.vaadin.flow.component.button.Button;
@@ -22,9 +22,9 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility.Gap;
 import ru.projects.model.dto.EmployeeDto;
-import ru.projects.services.EmployeeService;
-import ru.projects.services.SpecializationService;
-import ru.projects.views.MainLayout;
+import ru.projects.service.EmployeeService;
+import ru.projects.service.SpecializationService;
+import ru.projects.view.MainLayout;
 
 import java.util.List;
 

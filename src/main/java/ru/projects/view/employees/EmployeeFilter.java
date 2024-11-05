@@ -1,4 +1,4 @@
-package ru.projects.views.employees;
+package ru.projects.view.employees;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Text;
@@ -19,7 +19,7 @@ import jakarta.persistence.criteria.Root;
 import org.springframework.data.jpa.domain.Specification;
 import ru.projects.model.Employee;
 import ru.projects.model.Specialization;
-import ru.projects.services.SpecializationService;
+import ru.projects.service.SpecializationService;
 
 import java.util.ArrayList;
 import java.util.List;

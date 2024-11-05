@@ -1,4 +1,4 @@
-package ru.projects.views.employees;
+package ru.projects.view.employees;
 /**
  * @author Artem Chernikov
  * @version 1.0
@@ -20,9 +20,9 @@ import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import org.springframework.data.domain.PageRequest;
 import ru.projects.model.dto.EmployeeDto;
-import ru.projects.services.EmployeeService;
-import ru.projects.services.SpecializationService;
-import ru.projects.views.MainLayout;
+import ru.projects.service.EmployeeService;
+import ru.projects.service.SpecializationService;
+import ru.projects.view.MainLayout;
 
 @PageTitle("Employees")
 @Route(value = "", layout = MainLayout.class)

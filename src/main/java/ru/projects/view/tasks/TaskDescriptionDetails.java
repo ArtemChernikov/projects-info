@@ -1,4 +1,4 @@
-package ru.projects.views.tasks;
+package ru.projects.view.tasks;
 
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;

@@ -1,4 +1,4 @@
-package ru.projects.views.projects;
+package ru.projects.view.projects;
 
 import com.vaadin.flow.component.Composite;
 import com.vaadin.flow.component.button.Button;
@@ -21,9 +21,9 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility.Gap;
 import ru.projects.model.dto.EmployeeShortDto;
 import ru.projects.model.dto.ProjectCreateDto;
-import ru.projects.services.EmployeeService;
-import ru.projects.services.ProjectService;
-import ru.projects.views.MainLayout;
+import ru.projects.service.EmployeeService;
+import ru.projects.service.ProjectService;
+import ru.projects.view.MainLayout;
 
 import java.util.Collection;
 import java.util.List;
@@ -33,15 +33,15 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static ru.projects.utils.Constants.AQA_ENGINEER_SPECIALIZATION_NAME;
-import static ru.projects.utils.Constants.BACKEND_DEVELOPER_SPECIALIZATION_NAME;
-import static ru.projects.utils.Constants.DATA_ANALYST_SPECIALIZATION_NAME;
-import static ru.projects.utils.Constants.DATA_SCIENTIST_SPECIALIZATION_NAME;
-import static ru.projects.utils.Constants.DEV_OPS_SPECIALIZATION_NAME;
-import static ru.projects.utils.Constants.FRONTEND_DEVELOPER_SPECIALIZATION_NAME;
-import static ru.projects.utils.Constants.FULLSTACK_DEVELOPER_SPECIALIZATION_NAME;
-import static ru.projects.utils.Constants.PROJECT_MANAGER_SPECIALIZATION_NAME;
-import static ru.projects.utils.Constants.QA_ENGINEER_SPECIALIZATION_NAME;
+import static ru.projects.util.Constants.AQA_ENGINEER_SPECIALIZATION_NAME;
+import static ru.projects.util.Constants.BACKEND_DEVELOPER_SPECIALIZATION_NAME;
+import static ru.projects.util.Constants.DATA_ANALYST_SPECIALIZATION_NAME;
+import static ru.projects.util.Constants.DATA_SCIENTIST_SPECIALIZATION_NAME;
+import static ru.projects.util.Constants.DEV_OPS_SPECIALIZATION_NAME;
+import static ru.projects.util.Constants.FRONTEND_DEVELOPER_SPECIALIZATION_NAME;
+import static ru.projects.util.Constants.FULLSTACK_DEVELOPER_SPECIALIZATION_NAME;
+import static ru.projects.util.Constants.PROJECT_MANAGER_SPECIALIZATION_NAME;
+import static ru.projects.util.Constants.QA_ENGINEER_SPECIALIZATION_NAME;
 
 /**
  * @author Artem Chernikov

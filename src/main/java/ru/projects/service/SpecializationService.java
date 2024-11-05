@@ -1,15 +1,13 @@
-package ru.projects.services;
+package ru.projects.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.projects.model.Specialization;
-import ru.projects.model.dto.SpecializationDto;
 import ru.projects.model.enums.EnumSpecialization;
 import ru.projects.model.enums.TaskType;
 import ru.projects.repository.SpecializationRepository;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * @author Artem Chernikov
