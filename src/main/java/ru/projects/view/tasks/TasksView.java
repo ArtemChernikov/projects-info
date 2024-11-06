@@ -22,6 +22,7 @@ import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
+import jakarta.annotation.security.RolesAllowed;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import ru.projects.model.dto.EmployeeShortDto;
@@ -39,7 +40,7 @@ import java.util.Set;
 
 @PageTitle("Tasks")
 @Route(value = "tasks/:taskID?/:action?(edit)", layout = MainLayout.class)
-//@RolesAllowed("ADMIN")
+@RolesAllowed(value = {"ROLE_ADMIN"})
 public class TasksView extends Div implements BeforeEnterObserver {
 
     private static final String TASK_ID = "taskID";

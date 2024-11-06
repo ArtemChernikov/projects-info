@@ -21,6 +21,7 @@ import com.vaadin.flow.data.binder.ValidationException;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility.Gap;
+import jakarta.annotation.security.RolesAllowed;
 import ru.projects.model.dto.EmployeeDto;
 import ru.projects.service.EmployeeService;
 import ru.projects.service.SpecializationService;
@@ -35,6 +36,7 @@ import java.util.List;
  */
 @PageTitle("Create Employee")
 @Route(value = "create-employee", layout = MainLayout.class)
+@RolesAllowed(value = {"ROLE_ADMIN"})
 public class CreateEmployeeView extends Composite<VerticalLayout> {
 
     private final EmployeeService employeeService;

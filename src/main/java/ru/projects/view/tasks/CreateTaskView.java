@@ -19,6 +19,7 @@ import com.vaadin.flow.data.binder.ValidationException;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility.Gap;
+import jakarta.annotation.security.RolesAllowed;
 import ru.projects.model.dto.EmployeeShortDto;
 import ru.projects.model.dto.ProjectShortDto;
 import ru.projects.model.dto.TaskCreateDto;
@@ -39,6 +40,7 @@ import java.util.Set;
  */
 @PageTitle("Create Task")
 @Route(value = "create-task", layout = MainLayout.class)
+@RolesAllowed(value = {"ROLE_ADMIN"})
 public class CreateTaskView extends Composite<VerticalLayout> {
 
     private final TaskService taskService;

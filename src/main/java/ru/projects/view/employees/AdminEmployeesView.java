@@ -24,10 +24,7 @@ import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
-
-import java.util.List;
-import java.util.Optional;
-
+import jakarta.annotation.security.RolesAllowed;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import ru.projects.model.dto.EmployeeFullDto;
@@ -35,9 +32,12 @@ import ru.projects.service.EmployeeService;
 import ru.projects.service.SpecializationService;
 import ru.projects.view.MainLayout;
 
+import java.util.List;
+import java.util.Optional;
+
 @PageTitle("Admin Employees")
 @Route(value = "admin-employees/:employeeID?/:action?(edit)", layout = MainLayout.class)
-//@RolesAllowed("ADMIN")
+@RolesAllowed(value = {"ROLE_ADMIN"})
 public class AdminEmployeesView extends Div implements BeforeEnterObserver {
 
     private static final String EMPLOYEE_ID = "employeeID";

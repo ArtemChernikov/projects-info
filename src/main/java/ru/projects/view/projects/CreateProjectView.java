@@ -19,6 +19,7 @@ import com.vaadin.flow.data.binder.ValidationException;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility.Gap;
+import jakarta.annotation.security.RolesAllowed;
 import ru.projects.model.dto.EmployeeShortDto;
 import ru.projects.model.dto.ProjectCreateDto;
 import ru.projects.service.EmployeeService;
@@ -50,6 +51,7 @@ import static ru.projects.util.Constants.QA_ENGINEER_SPECIALIZATION_NAME;
  */
 @PageTitle("Create Project")
 @Route(value = "create-project", layout = MainLayout.class)
+@RolesAllowed(value = {"ROLE_ADMIN"})
 public class CreateProjectView extends Composite<VerticalLayout> {
 
     private final ProjectService projectService;

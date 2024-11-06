@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 import ru.projects.model.Employee;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @Repository
@@ -20,4 +21,6 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long>, JpaSp
                                                    @Param("specializations") List<String> specializations);
 
     boolean existsByEmployeeId(Long employeeId);
+
+    Employee findByLogin(String login);
 }

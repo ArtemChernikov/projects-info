@@ -23,6 +23,7 @@ import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
+import jakarta.annotation.security.RolesAllowed;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import ru.projects.model.dto.EmployeeShortDto;
@@ -48,7 +49,7 @@ import static ru.projects.util.Constants.QA_ENGINEER_SPECIALIZATION_NAME;
 
 @PageTitle("All Projects")
 @Route(value = "projects/:projectID?/:action?(edit)", layout = MainLayout.class)
-//@RolesAllowed("ADMIN")
+@RolesAllowed(value = {"ROLE_ADMIN"})
 public class ProjectsView extends Div implements BeforeEnterObserver {
 
     private static final String PROJECT_ID = "projectID";
