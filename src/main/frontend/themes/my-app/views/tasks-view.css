@@ -39,4 +39,6 @@
   gap: var(--lumo-space-m);
 }
 
-
+.tasks-view .grid-wrapper {
+  width: 100%;
+}
