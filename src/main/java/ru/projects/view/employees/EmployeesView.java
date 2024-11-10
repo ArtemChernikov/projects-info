@@ -29,7 +29,7 @@ import ru.projects.view.MainLayout;
 @PageTitle("Employees")
 @Route(value = "employees", layout = MainLayout.class)
 @Uses(Icon.class)
-@RolesAllowed(value = {"ROLE_USER"})
+@RolesAllowed(value = {"ROLE_ADMIN", "ROLE_PM"})
 @Menu(order = 1, icon = "line-awesome/svg/user.svg")
 public class EmployeesView extends Div {
 
