@@ -18,6 +18,7 @@ import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.ValidationException;
+import com.vaadin.flow.router.Menu;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility.Gap;
@@ -37,6 +38,7 @@ import java.util.List;
 @PageTitle("Create Employee")
 @Route(value = "create-employee", layout = MainLayout.class)
 @RolesAllowed(value = {"ROLE_ADMIN"})
+@Menu(order = 3, icon = "line-awesome/svg/user.svg")
 public class CreateEmployeeView extends Composite<VerticalLayout> {
 
     private final EmployeeService employeeService;

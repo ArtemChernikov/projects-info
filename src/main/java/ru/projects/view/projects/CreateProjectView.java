@@ -16,6 +16,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.ValidationException;
+import com.vaadin.flow.router.Menu;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility.Gap;
@@ -51,7 +52,8 @@ import static ru.projects.util.Constants.QA_ENGINEER_SPECIALIZATION_NAME;
  */
 @PageTitle("Create Project")
 @Route(value = "create-project", layout = MainLayout.class)
-@RolesAllowed(value = {"ROLE_ADMIN"})
+@RolesAllowed(value = {"ROLE_ADMIN", "ROLE_PM"})
+@Menu(order = 5, icon = "line-awesome/svg/user.svg")
 public class CreateProjectView extends Composite<VerticalLayout> {
 
     private final ProjectService projectService;

@@ -20,6 +20,7 @@ import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.ValidationException;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
+import com.vaadin.flow.router.Menu;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
@@ -49,7 +50,8 @@ import static ru.projects.util.Constants.QA_ENGINEER_SPECIALIZATION_NAME;
 
 @PageTitle("All Projects")
 @Route(value = "projects/:projectID?/:action?(edit)", layout = MainLayout.class)
-@RolesAllowed(value = {"ROLE_ADMIN"})
+@RolesAllowed(value = {"ROLE_ADMIN", "ROLE_PM"})
+@Menu(order = 4, icon = "line-awesome/svg/user.svg")
 public class ProjectsView extends Div implements BeforeEnterObserver {
 
     private static final String PROJECT_ID = "projectID";

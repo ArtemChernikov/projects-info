@@ -11,6 +11,7 @@ import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Header;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.SvgIcon;
 import com.vaadin.flow.component.menubar.MenuBar;
 import com.vaadin.flow.component.orderedlayout.Scroller;
 import com.vaadin.flow.component.sidenav.SideNav;
@@ -19,11 +20,13 @@ import com.vaadin.flow.router.Layout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.server.auth.AccessAnnotationChecker;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
+import com.vaadin.flow.server.menu.MenuConfiguration;
+import com.vaadin.flow.server.menu.MenuEntry;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import org.vaadin.lineawesome.LineAwesomeIcon;
 import ru.projects.model.Employee;
 import ru.projects.security.AuthenticatedEmployee;
-import ru.projects.view.employees.AdminEmployeesView;
+import ru.projects.view.employees.EditEmployeesView;
 import ru.projects.view.employees.CreateEmployeeView;
 import ru.projects.view.employees.EmployeesView;
 import ru.projects.view.projects.CreateProjectView;
@@ -31,6 +34,7 @@ import ru.projects.view.projects.ProjectsView;
 import ru.projects.view.tasks.CreateTaskView;
 import ru.projects.view.tasks.TasksView;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -75,15 +79,26 @@ public class MainLayout extends AppLayout {
 
     private SideNav createNavigation() {
         SideNav nav = new SideNav();
-        if (accessChecker.hasAccess(AdminEmployeesView.class)) {
-            nav.addItem(new SideNavItem("Employees", EmployeesView.class, LineAwesomeIcon.FILTER_SOLID.create()));
-            nav.addItem(new SideNavItem("Create Employee", CreateEmployeeView.class, LineAwesomeIcon.USER.create()));
-            nav.addItem(new SideNavItem("Admin Employees", AdminEmployeesView.class, LineAwesomeIcon.COLUMNS_SOLID.create()));
-            nav.addItem(new SideNavItem("Create Project", CreateProjectView.class, LineAwesomeIcon.PROJECT_DIAGRAM_SOLID.create()));
-            nav.addItem(new SideNavItem("Projects", ProjectsView.class, LineAwesomeIcon.COLUMNS_SOLID.create()));
-            nav.addItem(new SideNavItem("Create Task", CreateTaskView.class, LineAwesomeIcon.PROJECT_DIAGRAM_SOLID.create()));
-            nav.addItem(new SideNavItem("Tasks", TasksView.class, LineAwesomeIcon.COLUMNS_SOLID.create()));
-        }
+//        if (accessChecker.hasAccess(EditEmployeesView.class)) {
+//            nav.addItem(new SideNavItem("Employees", EmployeesView.class, LineAwesomeIcon.FILTER_SOLID.create()));
+//            nav.addItem(new SideNavItem("Create Employee", CreateEmployeeView.class, LineAwesomeIcon.USER.create()));
+//            nav.addItem(new SideNavItem("Edit Employees", EditEmployeesView.class, LineAwesomeIcon.COLUMNS_SOLID.create()));
+//            nav.addItem(new SideNavItem("Create Project", CreateProjectView.class, LineAwesomeIcon.PROJECT_DIAGRAM_SOLID.create()));
+//            nav.addItem(new SideNavItem("Projects", ProjectsView.class, LineAwesomeIcon.COLUMNS_SOLID.create()));
+//            nav.addItem(new SideNavItem("Create Task", CreateTaskView.class, LineAwesomeIcon.PROJECT_DIAGRAM_SOLID.create()));
+//            nav.addItem(new SideNavItem("Tasks", TasksView.class, LineAwesomeIcon.COLUMNS_SOLID.create()));
+//        }
+//        return nav;
+
+        List<MenuEntry> menuEntries = MenuConfiguration.getMenuEntries();
+        menuEntries.forEach(entry -> {
+            if (entry.icon() != null) {
+                nav.addItem(new SideNavItem(entry.title(), entry.path(), new SvgIcon(entry.icon())));
+            } else {
+                nav.addItem(new SideNavItem(entry.title(), entry.path()));
+            }
+        });
+
         return nav;
     }
 

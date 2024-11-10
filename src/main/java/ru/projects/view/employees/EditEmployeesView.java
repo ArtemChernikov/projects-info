@@ -21,6 +21,7 @@ import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.ValidationException;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
+import com.vaadin.flow.router.Menu;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
@@ -35,13 +36,14 @@ import ru.projects.view.MainLayout;
 import java.util.List;
 import java.util.Optional;
 
-@PageTitle("Admin Employees")
-@Route(value = "admin-employees/:employeeID?/:action?(edit)", layout = MainLayout.class)
+@PageTitle("Employees")
+@Route(value = "edit-employees/:employeeID?/:action?(edit)", layout = MainLayout.class)
 @RolesAllowed(value = {"ROLE_ADMIN"})
-public class AdminEmployeesView extends Div implements BeforeEnterObserver {
+@Menu(order = 2, icon = "line-awesome/svg/user.svg")
+public class EditEmployeesView extends Div implements BeforeEnterObserver {
 
     private static final String EMPLOYEE_ID = "employeeID";
-    private static final String EMPLOYEE_EDIT_ROUTE_TEMPLATE = "admin-employees/%s/edit";
+    private static final String EMPLOYEE_EDIT_ROUTE_TEMPLATE = "edit-employees/%s/edit";
 
     private final Grid<EmployeeFullDto> grid = new Grid<>(EmployeeFullDto.class, false);
 
@@ -66,10 +68,10 @@ public class AdminEmployeesView extends Div implements BeforeEnterObserver {
     private final EmployeeService employeeService;
     private final SpecializationService specializationService;
 
-    public AdminEmployeesView(EmployeeService employeeService, SpecializationService specializationService) {
+    public EditEmployeesView(EmployeeService employeeService, SpecializationService specializationService) {
         this.employeeService = employeeService;
         this.specializationService = specializationService;
-        addClassNames("admin-employees-view");
+        addClassNames("edit-employees-view");
         createUI();
     }
 
@@ -101,7 +103,7 @@ public class AdminEmployeesView extends Div implements BeforeEnterObserver {
             refreshGrid();
             Notification.show("The employee has been updated.", 3000, Position.TOP_CENTER)
                     .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
-            UI.getCurrent().navigate(AdminEmployeesView.class);
+            UI.getCurrent().navigate(EditEmployeesView.class);
         } catch (ObjectOptimisticLockingFailureException exception) {
             Notification.show(
                     "Error updating the employee. Somebody else has updated the record while you were making changes.",
@@ -123,7 +125,7 @@ public class AdminEmployeesView extends Div implements BeforeEnterObserver {
             refreshGrid();
             Notification.show("The employee has been removed.", 3000, Position.TOP_CENTER)
                     .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
-            UI.getCurrent().navigate(AdminEmployeesView.class);
+            UI.getCurrent().navigate(EditEmployeesView.class);
         } catch (ObjectOptimisticLockingFailureException exception) {
             Notification.show(
                     "Error updating the data. Somebody else has updated the record while you were making changes.",
@@ -145,7 +147,7 @@ public class AdminEmployeesView extends Div implements BeforeEnterObserver {
                 Notification.show(String.format("The requested employee was not found, ID = %s", employeeId.get()),
                         3000, Notification.Position.BOTTOM_START);
                 refreshGrid();
-                event.forwardTo(AdminEmployeesView.class);
+                event.forwardTo(EditEmployeesView.class);
             }
         }
     }
@@ -213,7 +215,7 @@ public class AdminEmployeesView extends Div implements BeforeEnterObserver {
                 UI.getCurrent().navigate(String.format(EMPLOYEE_EDIT_ROUTE_TEMPLATE, event.getValue().getEmployeeId()));
             } else {
                 clearForm();
-                UI.getCurrent().navigate(AdminEmployeesView.class);
+                UI.getCurrent().navigate(EditEmployeesView.class);
             }
         });
     }

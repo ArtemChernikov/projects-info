@@ -16,6 +16,7 @@ import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.ValidationException;
+import com.vaadin.flow.router.Menu;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility.Gap;
@@ -40,7 +41,8 @@ import java.util.Set;
  */
 @PageTitle("Create Task")
 @Route(value = "create-task", layout = MainLayout.class)
-@RolesAllowed(value = {"ROLE_ADMIN"})
+@RolesAllowed(value = {"ROLE_ADMIN", "ROLE_PM"})
+@Menu(order = 7, icon = "line-awesome/svg/user.svg")
 public class CreateTaskView extends Composite<VerticalLayout> {
 
     private final TaskService taskService;

@@ -1,9 +1,4 @@
 package ru.projects.view.employees;
-/**
- * @author Artem Chernikov
- * @version 1.0
- * @since 19.10.2024
- */
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.dependency.Uses;
@@ -14,6 +9,7 @@ import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.router.Menu;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
@@ -25,21 +21,25 @@ import ru.projects.service.EmployeeService;
 import ru.projects.service.SpecializationService;
 import ru.projects.view.MainLayout;
 
+/**
+ * @author Artem Chernikov
+ * @version 1.0
+ * @since 19.10.2024
+ */
 @PageTitle("Employees")
-@Route(value = "", layout = MainLayout.class)
+@Route(value = "employees", layout = MainLayout.class)
 @Uses(Icon.class)
-@RolesAllowed(value = {"ROLE_ADMIN"})
+@RolesAllowed(value = {"ROLE_USER"})
+@Menu(order = 1, icon = "line-awesome/svg/user.svg")
 public class EmployeesView extends Div {
 
     private Grid<EmployeeDto> grid;
 
     private EmployeeFilter employeeFilter;
     private final EmployeeService employeeService;
-    private final SpecializationService specializationService;
 
     public EmployeesView(EmployeeService employeeService, SpecializationService specializationService) {
         this.employeeService = employeeService;
-        this.specializationService = specializationService;
         setSizeFull();
         addClassNames("employees-view");
 
