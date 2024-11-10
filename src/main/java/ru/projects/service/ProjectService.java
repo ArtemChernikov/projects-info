@@ -68,6 +68,10 @@ public class ProjectService {
         return projectMapper.projectsToProjectsShortDto(projectRepository.findAll());
     }
 
+    public Set<ProjectShortDto> getAllProjectShortDtoByEmployeeId(Long employeeId) {
+        return projectMapper.projectsToProjectsShortDto(projectRepository.findByEmployees_EmployeeId(employeeId));
+    }
+
     private void checkProjectExistsById(Long projectId) {
         if (!projectRepository.existsById(projectId)) {
             throw new RuntimeException("Project Not Found.");

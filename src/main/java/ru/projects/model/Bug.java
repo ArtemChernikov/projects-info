@@ -1,9 +1,13 @@
 package ru.projects.model;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -33,13 +37,17 @@ public class Bug {
     @EqualsAndHashCode.Include
     private Long bugId;
 
-    private Long projectId;
+    @OneToOne
+    @JoinColumn(name = "project_id")
+    private Project project;
 
     private String name;
 
     private String description;
 
+    @Enumerated(EnumType.STRING)
     private Priority priority;
 
+    @Enumerated(EnumType.STRING)
     private Status status;
 }

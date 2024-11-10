@@ -6,6 +6,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import ru.projects.model.Project;
 
+import java.util.List;
+
 @Repository
 public interface ProjectRepository extends JpaRepository<Project, Long> {
 
@@ -13,4 +15,5 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
 
     Page<Project> findByEmployees_EmployeeId(Pageable pageable, Long employeeId);
 
+    List<Project> findByEmployees_EmployeeId(Long employeeId);
 }
