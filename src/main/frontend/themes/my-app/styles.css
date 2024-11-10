@@ -3,6 +3,7 @@
 @import url('./views/edit-employees-view.css');
 @import url('./views/projects-view.css');
 @import url('./views/tasks-view.css');
+@import url('./views/employee-tasks-view.css');
     [theme~="dark"] {
     --lumo-base-color: hsl(214, 36%, 7%);
 

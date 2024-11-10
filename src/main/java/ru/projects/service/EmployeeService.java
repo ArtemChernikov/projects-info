@@ -4,6 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.projects.mapper.EmployeeMapper;
@@ -91,6 +94,18 @@ public class EmployeeService {
         return employees.stream()
                 .collect(Collectors.groupingBy(employee -> employee.getSpecialization().getSpecializationName(),
                         Collectors.mapping(employeeMapper::employeeToEmployeeShortDto, Collectors.toList())));
+    }
+
+    public Employee getCurrentEmployee() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated()) {
+            Object principal = authentication.getPrincipal();
+            if (principal instanceof UserDetails) {
+                String username = ((UserDetails) principal).getUsername();
+                return employeeRepository.findByLogin(username);
+            }
+        }
+        return null;
     }
 
     private String getPasswordForUpdate(String newPassword, String encodeOldPassword) {

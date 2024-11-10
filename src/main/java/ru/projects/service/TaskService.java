@@ -9,6 +9,7 @@ import ru.projects.model.Task;
 import ru.projects.model.dto.TaskCreateDto;
 import ru.projects.model.dto.TaskFullDto;
 import ru.projects.model.dto.TaskViewDto;
+import ru.projects.model.enums.Status;
 import ru.projects.repository.TaskRepository;
 
 import java.util.Optional;
@@ -55,6 +56,18 @@ public class TaskService {
     public Page<TaskViewDto> getAll(Pageable pageable) {
         return taskRepository.findAll(pageable)
                 .map(taskMapper::taskToTaskViewDto);
+    }
+
+    public Page<TaskViewDto> getAllByEmployeeId(Pageable pageable, Long employeeId) {
+        return taskRepository.findAllByEmployee_EmployeeId(pageable, employeeId)
+                .map(taskMapper::taskToTaskViewDto);
+    }
+
+    public void updateStatusById(Long taskId, String status) {
+        Task task = taskRepository.findById(taskId).orElseThrow(() -> new RuntimeException("Task not found"));
+        Status newStatus = Status.fromDisplayName(status);
+        task.setStatus(newStatus);
+        taskRepository.save(task);
     }
 
     private void checkTaskExistsById(Long taskId) {
