@@ -1,11 +1,10 @@
 CREATE TABLE IF NOT EXISTS bugs
 (
     bug_id      BIGSERIAL PRIMARY KEY,
-    task_id     BIGINT      NOT NULL,
-    employee_id BIGINT      NOT NULL,
+    project_id  BIGINT      NOT NULL,
+    name        varchar(50) NOT NULL,
     description TEXT        NOT NULL,
     priority    VARCHAR(50) NOT NULL,
     status      VARCHAR(50) NOT NULL,
-    CONSTRAINT fk_task FOREIGN KEY (task_id) REFERENCES tasks (task_id),
-    CONSTRAINT fk_tester FOREIGN KEY (employee_id) REFERENCES employees (employee_id)
+    CONSTRAINT fk_project FOREIGN KEY (project_id) REFERENCES projects (project_id)
 );

@@ -33,9 +33,9 @@ public class Bug {
     @EqualsAndHashCode.Include
     private Long bugId;
 
-    private Long taskId;
+    private Long projectId;
 
-    private Long employeeId;
+    private String name;
 
     private String description;
 
