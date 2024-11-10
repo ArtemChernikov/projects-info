@@ -6,9 +6,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.projects.mapper.TaskMapper;
 import ru.projects.model.Task;
-import ru.projects.model.dto.TaskCreateDto;
-import ru.projects.model.dto.TaskFullDto;
-import ru.projects.model.dto.TaskViewDto;
+import ru.projects.model.dto.task.TaskCreateDto;
+import ru.projects.model.dto.task.TaskFullDto;
+import ru.projects.model.dto.task.TaskViewDto;
 import ru.projects.model.enums.Status;
 import ru.projects.repository.TaskRepository;
 

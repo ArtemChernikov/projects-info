@@ -28,7 +28,7 @@ import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
 import jakarta.annotation.security.RolesAllowed;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
-import ru.projects.model.dto.EmployeeFullDto;
+import ru.projects.model.dto.employee.EmployeeFullDto;
 import ru.projects.service.EmployeeService;
 import ru.projects.service.SpecializationService;
 import ru.projects.view.MainLayout;

@@ -7,9 +7,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.projects.mapper.ProjectMapper;
 import ru.projects.model.Project;
-import ru.projects.model.dto.ProjectCreateDto;
-import ru.projects.model.dto.ProjectFullDto;
-import ru.projects.model.dto.ProjectShortDto;
+import ru.projects.model.dto.project.ProjectCreateDto;
+import ru.projects.model.dto.project.ProjectFullDto;
+import ru.projects.model.dto.project.ProjectShortDto;
 import ru.projects.repository.ProjectRepository;
 
 import java.util.Optional;

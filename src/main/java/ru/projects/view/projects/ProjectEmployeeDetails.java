@@ -6,8 +6,8 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.data.renderer.LitRenderer;
 import com.vaadin.flow.data.renderer.Renderer;
-import ru.projects.model.dto.EmployeeShortDto;
-import ru.projects.model.dto.ProjectFullDto;
+import ru.projects.model.dto.employee.EmployeeShortDto;
+import ru.projects.model.dto.project.ProjectFullDto;
 
 import java.util.Set;
 import java.util.stream.Collectors;

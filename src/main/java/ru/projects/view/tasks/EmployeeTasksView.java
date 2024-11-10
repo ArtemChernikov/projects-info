@@ -14,7 +14,7 @@ import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
 import jakarta.annotation.security.RolesAllowed;
 import org.springframework.data.domain.PageRequest;
 import ru.projects.model.Employee;
-import ru.projects.model.dto.TaskViewDto;
+import ru.projects.model.dto.task.TaskViewDto;
 import ru.projects.model.enums.Status;
 import ru.projects.service.EmployeeService;
 import ru.projects.service.TaskService;

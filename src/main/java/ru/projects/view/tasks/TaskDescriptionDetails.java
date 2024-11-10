@@ -6,7 +6,7 @@ import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.data.renderer.LitRenderer;
 import com.vaadin.flow.data.renderer.Renderer;
-import ru.projects.model.dto.TaskViewDto;
+import ru.projects.model.dto.task.TaskViewDto;
 
 /**
  * @author Artem Chernikov

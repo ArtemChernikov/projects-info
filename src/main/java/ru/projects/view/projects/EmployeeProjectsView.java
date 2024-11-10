@@ -11,7 +11,7 @@ import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
 import jakarta.annotation.security.RolesAllowed;
 import org.springframework.data.domain.PageRequest;
 import ru.projects.model.Employee;
-import ru.projects.model.dto.ProjectFullDto;
+import ru.projects.model.dto.project.ProjectFullDto;
 import ru.projects.service.EmployeeService;
 import ru.projects.service.ProjectService;
 import ru.projects.view.MainLayout;

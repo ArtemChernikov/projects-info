@@ -8,10 +8,10 @@ import org.mapstruct.MappingTarget;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.projects.model.Employee;
 import ru.projects.model.Project;
-import ru.projects.model.dto.EmployeeShortDto;
-import ru.projects.model.dto.ProjectCreateDto;
-import ru.projects.model.dto.ProjectFullDto;
-import ru.projects.model.dto.ProjectShortDto;
+import ru.projects.model.dto.employee.EmployeeShortDto;
+import ru.projects.model.dto.project.ProjectCreateDto;
+import ru.projects.model.dto.project.ProjectFullDto;
+import ru.projects.model.dto.project.ProjectShortDto;
 import ru.projects.model.enums.Status;
 import ru.projects.service.EmployeeService;
 

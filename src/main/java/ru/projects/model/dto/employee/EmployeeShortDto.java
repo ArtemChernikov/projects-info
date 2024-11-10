@@ -1,4 +1,4 @@
-package ru.projects.model.dto;
+package ru.projects.model.dto.employee;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,7 +10,7 @@ import lombok.ToString;
 /**
  * @author Artem Chernikov
  * @version 1.0
- * @since 31.10.2024
+ * @since 19.10.2024
  */
 @AllArgsConstructor
 @NoArgsConstructor
@@ -18,22 +18,9 @@ import lombok.ToString;
 @Setter
 @ToString
 @Builder
-public class TaskFullDto {
+public class EmployeeShortDto {
 
-    private Long taskId;
+    private Long employeeId;
 
     private String name;
-
-    private String description;
-
-    private ProjectShortDto project;
-
-    private EmployeeShortDto employee;
-
-    private String taskType;
-
-    private String priority;
-
-    private String status;
-
 }

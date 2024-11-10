@@ -1,4 +1,4 @@
-package ru.projects.model.dto;
+package ru.projects.model.dto.project;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import ru.projects.model.dto.employee.EmployeeShortDto;
 
 import java.time.LocalDate;
 import java.util.HashSet;

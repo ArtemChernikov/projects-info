@@ -1,11 +1,14 @@
-package ru.projects.model.dto;
+package ru.projects.model.dto.project;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import ru.projects.model.dto.employee.EmployeeShortDto;
+
+import java.time.LocalDate;
+import java.util.Set;
 
 /**
  * @author Artem Chernikov
@@ -17,10 +20,12 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-@Builder
-public class EmployeeShortDto {
-
-    private Long employeeId;
+public class ProjectCreateDto {
 
     private String name;
+
+    private LocalDate startDate;
+
+    private Set<EmployeeShortDto> employees;
+
 }

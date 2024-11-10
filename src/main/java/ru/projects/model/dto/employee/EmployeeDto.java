@@ -1,4 +1,4 @@
-package ru.projects.model.dto;
+package ru.projects.model.dto.employee;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,9 +20,7 @@ import java.time.LocalDate;
 @Setter
 @ToString
 @Builder
-public class EmployeeFullDto {
-
-    private Long employeeId;
+public class EmployeeDto {
 
     private String specialization;
 

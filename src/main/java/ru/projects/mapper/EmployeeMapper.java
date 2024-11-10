@@ -5,9 +5,9 @@ import org.mapstruct.Mapping;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import ru.projects.model.Employee;
-import ru.projects.model.dto.EmployeeDto;
-import ru.projects.model.dto.EmployeeFullDto;
-import ru.projects.model.dto.EmployeeShortDto;
+import ru.projects.model.dto.employee.EmployeeDto;
+import ru.projects.model.dto.employee.EmployeeFullDto;
+import ru.projects.model.dto.employee.EmployeeShortDto;
 import ru.projects.service.RoleService;
 import ru.projects.service.SpecializationService;
 

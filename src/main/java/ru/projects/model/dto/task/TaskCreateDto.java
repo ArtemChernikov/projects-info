@@ -1,39 +1,35 @@
-package ru.projects.model.dto;
+package ru.projects.model.dto.task;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import ru.projects.model.dto.employee.EmployeeShortDto;
+import ru.projects.model.dto.project.ProjectShortDto;
 
 /**
  * @author Artem Chernikov
  * @version 1.0
- * @since 31.10.2024
+ * @since 19.10.2024
  */
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
 @ToString
-@Builder
-public class TaskViewDto {
-
-    private Long taskId;
+public class TaskCreateDto {
 
     private String name;
 
     private String description;
 
-    private String project;
+    private ProjectShortDto project;
 
-    private String employee;
+    private EmployeeShortDto employee;
 
     private String taskType;
 
     private String priority;
-
-    private String status;
 
 }
