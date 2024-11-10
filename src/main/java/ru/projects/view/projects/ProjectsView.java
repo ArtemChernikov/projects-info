@@ -153,7 +153,6 @@ public class ProjectsView extends Div implements BeforeEnterObserver {
         grid.addColumn("status").setAutoWidth(true);
 
         grid.addColumn(ProjectEmployeeDetails.createToggleDetailsRenderer(grid));
-
         grid.setDetailsVisibleOnClick(false);
         grid.setItemDetailsRenderer(ProjectEmployeeDetails.createProjectDetailsRenderer());
 

@@ -59,6 +59,11 @@ public class ProjectService {
                 .map(projectMapper::projectToProjectFullDto);
     }
 
+    public Page<ProjectFullDto> getAllByEmployeeId(Pageable pageable, Long employeeId) {
+        return projectRepository.findByEmployees_EmployeeId(pageable, employeeId)
+                .map(projectMapper::projectToProjectFullDto);
+    }
+
     public Set<ProjectShortDto> getAllProjectsShortDto() {
         return projectMapper.projectsToProjectsShortDto(projectRepository.findAll());
     }

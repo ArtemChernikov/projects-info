@@ -20,7 +20,7 @@ import ru.projects.service.EmployeeService;
 import ru.projects.service.TaskService;
 import ru.projects.view.MainLayout;
 
-@PageTitle("Tasks")
+@PageTitle("My tasks")
 @Route(value = "employee-tasks", layout = MainLayout.class)
 @RolesAllowed(value = {"ROLE_USER", "ROLE_DEV", "ROLE_TEST"})
 @Menu(order = 8, icon = "line-awesome/svg/user.svg")
