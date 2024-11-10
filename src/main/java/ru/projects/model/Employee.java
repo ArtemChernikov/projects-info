@@ -1,6 +1,7 @@
 package ru.projects.model;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -65,6 +66,6 @@ public class Employee {
 
     private String password;
 
-    @ManyToMany(mappedBy = "employees")
+    @ManyToMany(mappedBy = "employees", fetch = FetchType.EAGER)
     private Set<Project> projects = new HashSet<>();
 }
