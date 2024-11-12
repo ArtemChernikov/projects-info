@@ -40,7 +40,7 @@ import java.util.Set;
  */
 @PageTitle("Create bug")
 @Route(value = "create-bug", layout = MainLayout.class)
-@RolesAllowed(value = {"ROLE_PM", "ROLE_DEV", "ROLE_TEST"})
+@RolesAllowed(value = {"ROLE_TEST"})
 @Menu(order = 9, icon = "line-awesome/svg/user.svg")
 public class EmployeeCreateBugView extends Composite<VerticalLayout> {
 
