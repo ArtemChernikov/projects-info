@@ -1,5 +1,7 @@
 package ru.projects.view;
 
+import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Paragraph;
@@ -32,6 +34,10 @@ public class HomeView extends VerticalLayout {
         header.addClassNames(Margin.Top.XLARGE, Margin.Bottom.MEDIUM);
         add(header);
         add(new Paragraph("This is a place where you can work 🤗"));
+
+        Button downloadButton = new Button("Скачать XML");
+        downloadButton.addClickListener(event -> UI.getCurrent().getPage().open("/api/download/employees"));
+        add(downloadButton);
 
         setSizeFull();
         setJustifyContentMode(JustifyContentMode.CENTER);

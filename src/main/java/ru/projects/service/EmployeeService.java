@@ -72,6 +72,10 @@ public class EmployeeService {
                 .map(employeeMapper::employeeToEmployeeFullDto);
     }
 
+    public List<EmployeeFullDto> getAll() {
+        return employeeMapper.employeesToEmployeesFullDto(employeeRepository.findAll());
+    }
+
     public Page<EmployeeDto> getAllByFilter(Pageable pageable, Specification<Employee> filter) {
         return employeeRepository.findAll(filter, pageable)
                 .map(employeeMapper::employeeToEmployeeDto);

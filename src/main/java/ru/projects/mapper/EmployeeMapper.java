@@ -11,6 +11,7 @@ import ru.projects.model.dto.employee.EmployeeShortDto;
 import ru.projects.service.RoleService;
 import ru.projects.service.SpecializationService;
 
+import java.util.List;
 import java.util.Set;
 
 @Mapper(componentModel = "spring")
@@ -35,6 +36,8 @@ public abstract class EmployeeMapper {
 
     @Mapping(target = "specialization", expression = "java(employee.getSpecialization().getSpecializationName())")
     public abstract EmployeeFullDto employeeToEmployeeFullDto(Employee employee);
+
+    public abstract List<EmployeeFullDto> employeesToEmployeesFullDto(List<Employee> employees);
 
     @Mapping(target = "role", expression = "java(roleService.getRoleBySpecializationName(employeeFullDto.getSpecialization()))")
     @Mapping(target = "specialization", expression = "java(specializationService.getSpecializationByName(employeeFullDto.getSpecialization()))")
