@@ -8,7 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ru.projects.service.EmployeeExportService;
+import ru.projects.service.TasksExportService;
 
 import java.io.ByteArrayInputStream;
 
@@ -16,19 +16,19 @@ import java.io.ByteArrayInputStream;
 @RequestMapping("api")
 public class FileDownloadController {
 
-    private final EmployeeExportService exportService;
+    private final TasksExportService exportService;
 
     @Autowired
-    public FileDownloadController(EmployeeExportService exportService) {
+    public FileDownloadController(TasksExportService exportService) {
         this.exportService = exportService;
     }
 
     @GetMapping("/download/employees")
-    public ResponseEntity<InputStreamResource> downloadEmployeesXml() throws Exception {
+    public ResponseEntity<InputStreamResource> downloadEmployeesXml() {
         ByteArrayInputStream excelStream = exportService.generateExcelReport();
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=developers_report.xlsx");
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=tasks_report.xlsx");
 
         return ResponseEntity.ok()
                 .headers(headers)

@@ -11,6 +11,8 @@ import ru.projects.model.enums.Priority;
 import ru.projects.model.enums.Status;
 import ru.projects.model.enums.TaskType;
 
+import java.util.List;
+
 @Mapper(componentModel = "spring", uses = {EmployeeMapper.class, ProjectMapper.class},
         imports = {TaskType.class, Priority.class, Status.class})
 public abstract class TaskMapper {
@@ -27,6 +29,8 @@ public abstract class TaskMapper {
     @Mapping(target = "priority", expression = "java(task.getPriority().getDisplayName())")
     @Mapping(target = "status", expression = "java(task.getStatus().getDisplayName())")
     public abstract TaskFullDto taskToTaskFullDto(Task task);
+
+    public abstract List<TaskFullDto> tasksToTaskFullDtos(List<Task> tasks);
 
     @Mapping(target = "taskType", expression = "java(TaskType.fromDisplayName(taskFullDto.getTaskType()))")
     @Mapping(target = "priority", expression = "java(Priority.fromDisplayName(taskFullDto.getPriority()))")

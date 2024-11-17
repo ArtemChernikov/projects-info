@@ -35,7 +35,7 @@ public class HomeView extends VerticalLayout {
         add(header);
         add(new Paragraph("This is a place where you can work 🤗"));
 
-        Button downloadButton = new Button("Скачать XML");
+        Button downloadButton = new Button("Download tasks report");
         downloadButton.addClickListener(event -> UI.getCurrent().getPage().open("/api/download/employees"));
         add(downloadButton);
 

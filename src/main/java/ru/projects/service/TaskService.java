@@ -12,6 +12,7 @@ import ru.projects.model.dto.task.TaskViewDto;
 import ru.projects.model.enums.Status;
 import ru.projects.repository.TaskRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -61,6 +62,10 @@ public class TaskService {
     public Page<TaskViewDto> getAllByEmployeeId(Pageable pageable, Long employeeId) {
         return taskRepository.findAllByEmployee_EmployeeId(pageable, employeeId)
                 .map(taskMapper::taskToTaskViewDto);
+    }
+
+    public List<TaskFullDto> getAllByOrderProjectName() {
+        return taskMapper.tasksToTaskFullDtos(taskRepository.findAllByOrderByProject_NameAsc());
     }
 
     public void updateStatusById(Long taskId, String status) {

@@ -14,4 +14,6 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
     boolean existsByTaskId(Long id);
 
     Page<Task> findAllByEmployee_EmployeeId(Pageable pageable, Long employeeId);
+
+    List<Task> findAllByOrderByProject_NameAsc();
 }
