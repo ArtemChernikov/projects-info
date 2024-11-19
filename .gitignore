@@ -12,6 +12,7 @@
 
 # Database
 *.db
+backup.sql
 
 # Package Files #
 *.jar

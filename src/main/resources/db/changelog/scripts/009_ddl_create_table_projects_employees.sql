@@ -1,4 +1,4 @@
-CREATE TABLE projects_employees
+CREATE TABLE IF NOT EXISTS projects_employees
 (
     id          BIGSERIAL PRIMARY KEY,
     project_id  BIGINT NOT NULL,
