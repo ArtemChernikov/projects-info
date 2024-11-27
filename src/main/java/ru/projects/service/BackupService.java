@@ -1,6 +1,7 @@
 package ru.projects.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -15,6 +16,7 @@ import java.io.IOException;
 @Slf4j
 public class BackupService {
 
+    @Scheduled(cron = "* * 8 * * ?")
     public void createBackup() throws IOException {
         log.info("Service Create backup");
         ProcessBuilder processBuilder = new ProcessBuilder(
