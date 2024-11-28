@@ -4,8 +4,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Artem Chernikov
@@ -24,6 +27,7 @@ public class BackupService {
                 "-U", "postgres",
                 "-h", "localhost",
                 "-p", "5432",
+                "--clean",
                 "projects-info"
         );
 
@@ -33,19 +37,19 @@ public class BackupService {
 
         Process process = processBuilder.start();
         try {
-            int exitCode = process.waitFor();
-            if (exitCode == 0) {
+            boolean isSuccess = process.waitFor(60, TimeUnit.SECONDS);
+            if (isSuccess) {
                 System.out.println("Backup created successfully at " + "./db/backup.sql");
             } else {
-                System.err.println("Backup failed with exit code " + exitCode);
+                System.err.println("Backup failed");
             }
-            process.getInputStream().close();
-            process.getErrorStream().close();
-            process.getOutputStream().close();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new IOException("Backup process was interrupted", e);
         }
+        process.getInputStream().close();
+        process.getErrorStream().close();
+        process.getOutputStream().close();
     }
 
     public void restoreBackup() throws IOException {
@@ -63,18 +67,20 @@ public class BackupService {
 
         Process process = processBuilder.start();
         try {
-            int exitCode = process.waitFor();
-            if (exitCode == 0) {
-                System.out.println("Database restored successfully from " + "./backup");
+            boolean isSuccess = process.waitFor(60, TimeUnit.SECONDS); // Увеличен таймаут
+
+            if (isSuccess) {
+                System.out.println("Database restored successfully from " + "./backup.sql");
             } else {
-                System.err.println("Restore failed with exit code " + exitCode);
+                throw new IOException("Restore failed.");
             }
-            process.getInputStream().close();
-            process.getErrorStream().close();
-            process.getOutputStream().close();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new IOException("Restore process was interrupted", e);
+        } finally {
+            process.getInputStream().close();
+            process.getErrorStream().close();
+            process.getOutputStream().close();
         }
     }
 }

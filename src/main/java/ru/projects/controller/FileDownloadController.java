@@ -13,7 +13,7 @@ import ru.projects.service.TasksExportService;
 import java.io.ByteArrayInputStream;
 
 @RestController
-@RequestMapping("api")
+@RequestMapping("/api/download")
 public class FileDownloadController {
 
     private final TasksExportService exportService;
@@ -23,7 +23,7 @@ public class FileDownloadController {
         this.exportService = exportService;
     }
 
-    @GetMapping("/download/employees")
+    @GetMapping("/employees")
     public ResponseEntity<InputStreamResource> downloadEmployeesXml() {
         ByteArrayInputStream excelStream = exportService.generateExcelReport();
 

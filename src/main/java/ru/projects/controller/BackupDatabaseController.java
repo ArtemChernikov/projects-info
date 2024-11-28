@@ -3,6 +3,7 @@ package ru.projects.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.projects.service.BackupService;
 
@@ -15,20 +16,19 @@ import java.io.IOException;
  */
 @RequiredArgsConstructor
 @RestController
+@RequestMapping("/api/database")
 @Slf4j
-public class TestController {
+public class BackupDatabaseController {
 
     private final BackupService backupService;
 
-    @GetMapping("/api/backup")
+    @GetMapping("/backup")
     public void backup() throws IOException {
-        log.info("controller backup");
         backupService.createBackup();
     }
 
-    @GetMapping("/api/restore")
+    @GetMapping("/restore")
     public void restore() throws IOException {
-        log.info("controller restore");
         backupService.restoreBackup();
     }
 }
