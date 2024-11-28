@@ -12,7 +12,7 @@ import com.vaadin.flow.router.Menu;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility.Margin;
-import jakarta.annotation.security.PermitAll;
+import jakarta.annotation.security.RolesAllowed;
 import org.springframework.security.core.context.SecurityContextHolder;
 import ru.projects.service.BackupService;
 
@@ -26,7 +26,7 @@ import java.io.IOException;
 @PageTitle("Home Page")
 @Route("")
 @Menu(order = 0, icon = "line-awesome/svg/file.svg")
-@PermitAll
+@RolesAllowed(value = {"ROLE_ADMIN", "ROLE_USER", "ROLE_PM", "ROLE_DEV", "ROLE_TEST"})
 public class HomeView extends VerticalLayout {
 
     private BackupService backupService;
