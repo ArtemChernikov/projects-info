@@ -47,11 +47,9 @@ public class MainLayout extends AppLayout {
     private H1 viewTitle;
 
     private AuthenticatedEmployee authenticatedEmployee;
-    private AccessAnnotationChecker accessChecker;
 
-    public MainLayout(AuthenticatedEmployee authenticatedEmployee, AccessAnnotationChecker accessChecker) {
+    public MainLayout(AuthenticatedEmployee authenticatedEmployee) {
         this.authenticatedEmployee = authenticatedEmployee;
-        this.accessChecker = accessChecker;
         setPrimarySection(Section.DRAWER);
         addDrawerContent();
         addHeaderContent();
@@ -79,17 +77,6 @@ public class MainLayout extends AppLayout {
 
     private SideNav createNavigation() {
         SideNav nav = new SideNav();
-//        if (accessChecker.hasAccess(EditEmployeesView.class)) {
-//            nav.addItem(new SideNavItem("Employees", EmployeesView.class, LineAwesomeIcon.FILTER_SOLID.create()));
-//            nav.addItem(new SideNavItem("Create Employee", CreateEmployeeView.class, LineAwesomeIcon.USER.create()));
-//            nav.addItem(new SideNavItem("Edit Employees", EditEmployeesView.class, LineAwesomeIcon.COLUMNS_SOLID.create()));
-//            nav.addItem(new SideNavItem("Create Project", CreateProjectView.class, LineAwesomeIcon.PROJECT_DIAGRAM_SOLID.create()));
-//            nav.addItem(new SideNavItem("Projects", ProjectsView.class, LineAwesomeIcon.COLUMNS_SOLID.create()));
-//            nav.addItem(new SideNavItem("Create Task", CreateTaskView.class, LineAwesomeIcon.PROJECT_DIAGRAM_SOLID.create()));
-//            nav.addItem(new SideNavItem("Tasks", TasksView.class, LineAwesomeIcon.COLUMNS_SOLID.create()));
-//        }
-//        return nav;
-
         List<MenuEntry> menuEntries = MenuConfiguration.getMenuEntries();
         menuEntries.forEach(entry -> {
             if (entry.icon() != null) {
