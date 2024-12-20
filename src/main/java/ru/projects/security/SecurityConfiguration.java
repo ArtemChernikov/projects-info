@@ -24,39 +24,6 @@ public class SecurityConfiguration extends VaadinWebSecurity {
 
     private final UserDetailsServiceImpl userDetailsServiceImpl;
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
-    @Bean
-    public InMemoryUserDetailsManager inMemoryUserDetailsManager(PasswordEncoder passwordEncoder) {
-        UserDetails admin = User.builder()
-                .username("admin")
-                .password(passwordEncoder.encode("12345"))
-                .roles("ADMIN")
-                .build();
-
-        return new InMemoryUserDetailsManager(admin);
-    }
-
-    @Bean
-    public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
-        DaoAuthenticationProvider inMemoryAuthProvider = new DaoAuthenticationProvider();
-        inMemoryAuthProvider.setUserDetailsService(inMemoryUserDetailsManager(passwordEncoder()));
-        inMemoryAuthProvider.setPasswordEncoder(passwordEncoder());
-
-        DaoAuthenticationProvider dbAuthProvider = new DaoAuthenticationProvider();
-        dbAuthProvider.setUserDetailsService(userDetailsServiceImpl);
-        dbAuthProvider.setPasswordEncoder(passwordEncoder());
-
-        return http.getSharedObject(AuthenticationManagerBuilder.class)
-                .authenticationProvider(inMemoryAuthProvider)
-                .authenticationProvider(dbAuthProvider)
-                .build();
-    }
-
-
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(
@@ -73,6 +40,48 @@ public class SecurityConfiguration extends VaadinWebSecurity {
 
         super.configure(http);
         setLoginView(http, LoginView.class);
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
+        return http.getSharedObject(AuthenticationManagerBuilder.class)
+                .authenticationProvider(dbAuthProvider())
+                .authenticationProvider(inMemoryAuthProvider())
+                .build();
+    }
+
+    @Bean
+    public DaoAuthenticationProvider dbAuthProvider() {
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        provider.setUserDetailsService(userDetailsServiceImpl);
+        provider.setPasswordEncoder(passwordEncoder());
+        provider.setHideUserNotFoundExceptions(false);
+        return provider;
+    }
+
+    @Bean
+    public DaoAuthenticationProvider inMemoryAuthProvider() {
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        provider.setUserDetailsService(inMemoryUserDetailsManager(passwordEncoder()));
+        provider.setPasswordEncoder(passwordEncoder());
+        provider.setHideUserNotFoundExceptions(false);
+        return provider;
+    }
+
+    @Bean
+    public InMemoryUserDetailsManager inMemoryUserDetailsManager(PasswordEncoder passwordEncoder) {
+        UserDetails admin = User.builder()
+                .username("admin")
+                .password(passwordEncoder.encode("12345"))
+                .roles("ADMIN")
+                .build();
+
+        return new InMemoryUserDetailsManager(admin);
     }
 
 }
