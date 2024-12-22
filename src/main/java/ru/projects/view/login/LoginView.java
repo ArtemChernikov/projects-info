@@ -9,17 +9,17 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.internal.RouteUtil;
 import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
-import ru.projects.security.AuthenticatedEmployee;
+import ru.projects.security.AuthenticatedUser;
 
 @AnonymousAllowed
 @PageTitle("Login")
 @Route(value = "login")
 public class LoginView extends LoginOverlay implements BeforeEnterObserver {
 
-    private final AuthenticatedEmployee authenticatedEmployee;
+    private final AuthenticatedUser authenticatedUser;
 
-    public LoginView(AuthenticatedEmployee authenticatedEmployee) {
-        this.authenticatedEmployee = authenticatedEmployee;
+    public LoginView(AuthenticatedUser authenticatedUser) {
+        this.authenticatedUser = authenticatedUser;
         setAction(RouteUtil.getRoutePath(VaadinService.getCurrent().getContext(), getClass()));
 
         LoginI18n i18n = LoginI18n.createDefault();
@@ -35,7 +35,7 @@ public class LoginView extends LoginOverlay implements BeforeEnterObserver {
 
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
-        if (authenticatedEmployee.get().isPresent()) {
+        if (authenticatedUser.get().isPresent()) {
             setOpened(false);
             event.forwardTo("");
         }

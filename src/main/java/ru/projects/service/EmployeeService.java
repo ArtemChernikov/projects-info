@@ -11,11 +11,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.projects.mapper.EmployeeMapper;
 import ru.projects.model.Employee;
+import ru.projects.model.User;
 import ru.projects.model.dto.employee.EmployeeDto;
 import ru.projects.model.dto.employee.EmployeeFullDto;
 import ru.projects.model.dto.employee.EmployeeShortDto;
 import ru.projects.model.enums.TaskType;
 import ru.projects.repository.EmployeeRepository;
+import ru.projects.repository.TaskRepository;
 
 import java.util.List;
 import java.util.Map;
@@ -33,6 +35,7 @@ import java.util.stream.Collectors;
 public class EmployeeService {
 
     private final EmployeeRepository employeeRepository;
+    private final TaskRepository taskRepository;
     private final SpecializationService specializationService;
     private final PasswordEncoder passwordEncoder;
     private final EmployeeMapper employeeMapper;
@@ -54,9 +57,15 @@ public class EmployeeService {
 
     public Employee update(EmployeeFullDto employeeFullDto) {
         Employee oldEmployee = employeeRepository
-                .findById(employeeFullDto.getEmployeeId()).orElseThrow(() -> new RuntimeException("Employee not found"));
+                .findById(employeeFullDto.getEmployeeId())
+                .orElseThrow(() -> new RuntimeException("Employee not found"));
         Employee employeeForUpdate = employeeMapper.employeeFullDtoToEmployee(employeeFullDto);
-        employeeForUpdate.setPassword(getPasswordForUpdate(employeeFullDto.getPassword(), oldEmployee.getPassword()));
+        employeeForUpdate.setTasks(oldEmployee.getTasks());
+
+        User user = oldEmployee.getUser();
+        user.setUsername(employeeFullDto.getUsername());
+        user.setPassword(getPasswordForUpdate(employeeFullDto.getPassword(), oldEmployee.getUser().getPassword()));
+        employeeForUpdate.setUser(user);
         return employeeRepository.save(employeeForUpdate);
     }
 
@@ -104,9 +113,10 @@ public class EmployeeService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.isAuthenticated()) {
             Object principal = authentication.getPrincipal();
-            if (principal instanceof UserDetails) {
-                String username = ((UserDetails) principal).getUsername();
-                return employeeRepository.findByLogin(username);
+            if (principal instanceof UserDetails userDetails) {
+                String username = userDetails.getUsername();
+                return employeeRepository.findByUser_Username(username)
+                        .orElseThrow(() -> new RuntimeException("Employee not found"));
             }
         }
         return null;

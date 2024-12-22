@@ -53,7 +53,7 @@ public class EditEmployeesView extends Div implements BeforeEnterObserver {
     private DatePicker dateOfBirth;
     private TextField phone;
     private EmailField email;
-    private TextField login;
+    private TextField username;
     private PasswordField password;
     private ComboBox<String> specializationsComboBox;
 
@@ -172,9 +172,9 @@ public class EditEmployeesView extends Div implements BeforeEnterObserver {
         binder.forField(email)
                 .asRequired("Email is required")
                 .bind(EmployeeFullDto::getEmail, EmployeeFullDto::setEmail);
-        binder.forField(login)
-                .asRequired("Login is required")
-                .bind(EmployeeFullDto::getLogin, EmployeeFullDto::setLogin);
+        binder.forField(username)
+                .asRequired("Username is required")
+                .bind(EmployeeFullDto::getUsername, EmployeeFullDto::setUsername);
         binder.forField(password)
                 .asRequired("Password is required")
                 .bind(EmployeeFullDto::getPassword, EmployeeFullDto::setPassword);
@@ -191,7 +191,7 @@ public class EditEmployeesView extends Div implements BeforeEnterObserver {
         dateOfBirth.setRequiredIndicatorVisible(true);
         phone.setRequiredIndicatorVisible(true);
         email.setRequiredIndicatorVisible(true);
-        login.setRequiredIndicatorVisible(true);
+        username.setRequiredIndicatorVisible(true);
         password.setRequiredIndicatorVisible(true);
         specializationsComboBox.setRequiredIndicatorVisible(true);
     }
@@ -203,7 +203,7 @@ public class EditEmployeesView extends Div implements BeforeEnterObserver {
         grid.addColumn("dateOfBirth").setAutoWidth(true);
         grid.addColumn("phone").setAutoWidth(true);
         grid.addColumn("email").setAutoWidth(true);
-        grid.addColumn("login").setAutoWidth(true);
+        grid.addColumn("username").setAutoWidth(true);
         grid.addColumn("specialization").setAutoWidth(true);
         grid.setItems(query -> employeeService.getAll(
                         PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)))
@@ -235,13 +235,13 @@ public class EditEmployeesView extends Div implements BeforeEnterObserver {
         dateOfBirth = new DatePicker("Date Of Birth");
         phone = new TextField("Phone");
         email = new EmailField("Email");
-        login = new TextField("Login");
+        username = new TextField("Username");
         password = new PasswordField("Password");
         specializationsComboBox = new ComboBox<>("Specialization");
         specializationsComboBox.setWidth("min-content");
         setSpecializationsToComboBox();
         setRequiredFields();
-        formLayout.add(firstName, lastName, patronymicName, dateOfBirth, phone, email, login, password, specializationsComboBox);
+        formLayout.add(firstName, lastName, patronymicName, dateOfBirth, phone, email, username, password, specializationsComboBox);
 
         editorDiv.add(formLayout);
         createButtonLayout(editorLayoutDiv);

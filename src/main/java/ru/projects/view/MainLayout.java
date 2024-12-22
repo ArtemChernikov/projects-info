@@ -24,8 +24,8 @@ import com.vaadin.flow.server.menu.MenuConfiguration;
 import com.vaadin.flow.server.menu.MenuEntry;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import ru.projects.exception.VaadinErrorHandler;
-import ru.projects.model.Employee;
-import ru.projects.security.AuthenticatedEmployee;
+import ru.projects.model.User;
+import ru.projects.security.AuthenticatedUser;
 
 import java.util.List;
 import java.util.Optional;
@@ -39,10 +39,10 @@ public class MainLayout extends AppLayout {
 
     private H1 viewTitle;
 
-    private AuthenticatedEmployee authenticatedEmployee;
+    private AuthenticatedUser authenticatedUser;
 
-    public MainLayout(AuthenticatedEmployee authenticatedEmployee) {
-        this.authenticatedEmployee = authenticatedEmployee;
+    public MainLayout(AuthenticatedUser authenticatedUser) {
+        this.authenticatedUser = authenticatedUser;
         VaadinSession.getCurrent().setErrorHandler(new VaadinErrorHandler());
         setPrimarySection(Section.DRAWER);
         addDrawerContent();
@@ -86,11 +86,11 @@ public class MainLayout extends AppLayout {
     private Footer createFooter() {
         Footer layout = new Footer();
 
-        Optional<Employee> maybeEmployee = authenticatedEmployee.get();
-        if (maybeEmployee.isPresent()) {
-            Employee employee = maybeEmployee.get();
+        Optional<User> optionalUser = authenticatedUser.get();
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
 
-            Avatar avatar = new Avatar(employee.getFirstName());
+            Avatar avatar = new Avatar(user.getUsername());
             avatar.setThemeName("xsmall");
             avatar.getElement().setAttribute("tabindex", "-1");
 
@@ -100,14 +100,14 @@ public class MainLayout extends AppLayout {
             MenuItem userName = userMenu.addItem("");
             Div div = new Div();
             div.add(avatar);
-            div.add(employee.getFirstName());
+            div.add(user.getUsername());
             div.add(new Icon("lumo", "dropdown"));
             div.getElement().getStyle().set("display", "flex");
             div.getElement().getStyle().set("align-items", "center");
             div.getElement().getStyle().set("gap", "var(--lumo-space-s)");
             userName.add(div);
             userName.getSubMenu().addItem("Sign out", e -> {
-                authenticatedEmployee.logout();
+                authenticatedUser.logout();
             });
 
             layout.add(userMenu);

@@ -5,22 +5,25 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import ru.projects.model.Employee;
-import ru.projects.repository.EmployeeRepository;
+import ru.projects.model.User;
+import ru.projects.repository.UserRepository;
 
 import java.util.Optional;
 
 @RequiredArgsConstructor
 @Component
-public class AuthenticatedEmployee {
+public class AuthenticatedUser {
 
-    private final EmployeeRepository employeeRepository;
+    private final UserRepository userRepository;
     private final AuthenticationContext authenticationContext;
 
     @Transactional
-    public Optional<Employee> get() {
-        return authenticationContext.getAuthenticatedUser(UserDetails.class)
-                .map(userDetails -> employeeRepository.findByLogin(userDetails.getUsername()));
+    public Optional<User> get() {
+        Optional<UserDetails> authenticatedUser = authenticationContext.getAuthenticatedUser(UserDetails.class);
+        if (authenticatedUser.isEmpty()) {
+            return Optional.empty();
+        }
+        return userRepository.findByUsername(authenticatedUser.get().getUsername());
     }
 
     public void logout() {
