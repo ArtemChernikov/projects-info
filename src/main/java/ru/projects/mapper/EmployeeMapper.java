@@ -18,29 +18,35 @@ import java.util.Set;
 public abstract class EmployeeMapper {
 
     @Autowired
-    protected RoleService roleService;
+    protected SpecializationService specializationService;
 
     @Autowired
-    protected SpecializationService specializationService;
+    protected RoleService roleService;
 
     @Autowired
     protected PasswordEncoder passwordEncoder;
 
-    @Mapping(target = "role", expression = "java(roleService.getRoleBySpecializationName(employeeDto.getSpecialization()))")
     @Mapping(target = "specialization", expression = "java(specializationService.getSpecializationByName(employeeDto.getSpecialization()))")
-    @Mapping(target = "password", expression = "java(passwordEncoder.encode(employeeDto.getPassword()))")
+    @Mapping(target = "user.role", expression = "java(roleService.getRoleBySpecializationName(employeeDto.getSpecialization()))")
+    @Mapping(target = "user.username", source = "username")
+    @Mapping(target = "user.password", expression = "java(passwordEncoder.encode(employeeDto.getPassword()))")
     public abstract Employee employeeDtoToEmployee(EmployeeDto employeeDto);
 
     @Mapping(target = "specialization", source = "specialization.specializationName")
+    @Mapping(target = "username", source = "user.username")
+    @Mapping(target = "password", source = "user.password")
     public abstract EmployeeDto employeeToEmployeeDto(Employee employee);
 
     @Mapping(target = "specialization", expression = "java(employee.getSpecialization().getSpecializationName())")
+    @Mapping(target = "username", source = "user.username")
+    @Mapping(target = "password", source = "user.password")
     public abstract EmployeeFullDto employeeToEmployeeFullDto(Employee employee);
 
     public abstract List<EmployeeFullDto> employeesToEmployeesFullDto(List<Employee> employees);
 
-    @Mapping(target = "role", expression = "java(roleService.getRoleBySpecializationName(employeeFullDto.getSpecialization()))")
     @Mapping(target = "specialization", expression = "java(specializationService.getSpecializationByName(employeeFullDto.getSpecialization()))")
+    @Mapping(target = "user.username", source = "username")
+    @Mapping(target = "user.password", source = "password")
     public abstract Employee employeeFullDtoToEmployee(EmployeeFullDto employeeFullDto);
 
     @Mapping(target = "name", expression = "java(getEmployeeFullName(employee))")

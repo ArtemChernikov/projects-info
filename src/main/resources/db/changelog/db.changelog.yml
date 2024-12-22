@@ -6,23 +6,29 @@ databaseChangeLog:
       file: scripts/002_ddl_create_table_specializations.sql
       relativeToChangelogFile: true
   - include:
-      file: scripts/003_ddl_create_table_employees.sql
+      file: scripts/003_ddl_create_table_users.sql
       relativeToChangelogFile: true
   - include:
-      file: scripts/004_ddl_create_table_projects.sql
+      file: scripts/004_ddl_create_table_employees.sql
       relativeToChangelogFile: true
   - include:
-      file: scripts/005_ddl_create_table_tasks.sql
+      file: scripts/005_ddl_create_table_projects.sql
       relativeToChangelogFile: true
   - include:
-      file: scripts/006_ddl_create_table_bugs.sql
+      file: scripts/006_ddl_create_table_tasks.sql
       relativeToChangelogFile: true
   - include:
-      file: scripts/007_dml_insert_specializations.sql
+      file: scripts/007_ddl_create_table_bugs.sql
       relativeToChangelogFile: true
   - include:
-      file: scripts/008_dml_insert_roles.sql
+      file: scripts/008_dml_insert_specializations.sql
       relativeToChangelogFile: true
   - include:
-      file: scripts/009_ddl_create_table_projects_employees.sql
+      file: scripts/009_dml_insert_roles.sql
+      relativeToChangelogFile: true
+  - include:
+      file: scripts/010_ddl_create_table_projects_employees.sql
+      relativeToChangelogFile: true
+  - include:
+      file: scripts/011_dml_insert_admin.sql
       relativeToChangelogFile: true

@@ -48,7 +48,7 @@ public class CreateEmployeeView extends Composite<VerticalLayout> {
     private TextField patronymicNameField;
     private DatePicker dateOfBirth;
     private TextField phoneNumberField;
-    private TextField loginField;
+    private TextField usernameField;
     private PasswordField passwordField;
     private EmailField emailField;
     private ComboBox<String> specializationsComboBox;
@@ -133,7 +133,7 @@ public class CreateEmployeeView extends Composite<VerticalLayout> {
         patronymicNameField = new TextField("Patronymic Name");
         dateOfBirth = new DatePicker("Birthday");
         phoneNumberField = new TextField("Phone Number");
-        loginField = new TextField("Login");
+        usernameField = new TextField("Username");
         passwordField = new PasswordField("Password");
         passwordField.setWidth("min-content");
         emailField = new EmailField("Email");
@@ -142,7 +142,7 @@ public class CreateEmployeeView extends Composite<VerticalLayout> {
         setSpecializationsToComboBox();
 
         formLayout2Col.add(firstNameField, lastNameField, patronymicNameField, dateOfBirth,
-                phoneNumberField, loginField, passwordField, emailField, specializationsComboBox);
+                phoneNumberField, usernameField, passwordField, emailField, specializationsComboBox);
     }
 
     private void configureValidationBinder() {
@@ -165,9 +165,9 @@ public class CreateEmployeeView extends Composite<VerticalLayout> {
         binder.forField(emailField)
                 .asRequired("Email is required")
                 .bind(EmployeeDto::getEmail, EmployeeDto::setEmail);
-        binder.forField(loginField)
-                .asRequired("Login is required")
-                .bind(EmployeeDto::getLogin, EmployeeDto::setLogin);
+        binder.forField(usernameField)
+                .asRequired("Username is required")
+                .bind(EmployeeDto::getUsername, EmployeeDto::setUsername);
         binder.forField(passwordField)
                 .asRequired("Password is required")
                 .bind(EmployeeDto::getPassword, EmployeeDto::setPassword);
@@ -184,7 +184,7 @@ public class CreateEmployeeView extends Composite<VerticalLayout> {
         dateOfBirth.setRequiredIndicatorVisible(true);
         phoneNumberField.setRequiredIndicatorVisible(true);
         emailField.setRequiredIndicatorVisible(true);
-        loginField.setRequiredIndicatorVisible(true);
+        usernameField.setRequiredIndicatorVisible(true);
         passwordField.setRequiredIndicatorVisible(true);
         specializationsComboBox.setRequiredIndicatorVisible(true);
     }

@@ -9,8 +9,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.projects.model.Employee;
-import ru.projects.repository.EmployeeRepository;
+import ru.projects.repository.UserRepository;
 
 import java.util.List;
 
@@ -18,21 +17,19 @@ import java.util.List;
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
 
-    private final EmployeeRepository employeeRepository;
+    private final UserRepository userRepository;
 
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Employee employee = employeeRepository.findByLogin(username);
-        if (employee == null) {
-            throw new UsernameNotFoundException("No employee present with login: " + username);
-        }
-        return new User(employee.getLogin(), employee.getPassword(),
-                getAuthorities(employee));
+        ru.projects.model.User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("No user present with username: " + username));
+        return new User(user.getUsername(), user.getPassword(),
+                getAuthorities(user));
     }
 
-    private static List<GrantedAuthority> getAuthorities(Employee employee) {
-        return List.of(new SimpleGrantedAuthority(employee.getRole().getRoleName()));
+    private static List<GrantedAuthority> getAuthorities(ru.projects.model.User user) {
+        return List.of(new SimpleGrantedAuthority(user.getRole().getRoleName()));
     }
 
 }

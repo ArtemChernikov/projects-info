@@ -38,7 +38,7 @@ public class EmployeeFullDto {
 
     private String email;
 
-    private String login;
+    private String username;
 
     private String password;
 }
