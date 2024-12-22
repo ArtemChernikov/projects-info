@@ -32,3 +32,9 @@ databaseChangeLog:
   - include:
       file: scripts/011_dml_insert_admin.sql
       relativeToChangelogFile: true
+  - include:
+      file: scripts/012_ddl_create_table_photos.sql
+      relativeToChangelogFile: true
+  - include:
+      file: scripts/013_ddl_alter_table_users.sql
+      relativeToChangelogFile: true

@@ -13,13 +13,13 @@ import ru.projects.service.TasksExportService;
 import java.io.ByteArrayInputStream;
 
 @RestController
-@RequestMapping("/api/download")
-public class FileDownloadController {
+@RequestMapping("/api/report")
+public class ReportExportController {
 
     private final TasksExportService exportService;
 
     @Autowired
-    public FileDownloadController(TasksExportService exportService) {
+    public ReportExportController(TasksExportService exportService) {
         this.exportService = exportService;
     }
 
@@ -35,4 +35,6 @@ public class FileDownloadController {
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .body(new InputStreamResource(excelStream));
     }
+
+
 }

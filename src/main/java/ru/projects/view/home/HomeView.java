@@ -29,7 +29,7 @@ import java.io.IOException;
 @RolesAllowed(value = {"ROLE_ADMIN", "ROLE_USER", "ROLE_PM", "ROLE_DEV", "ROLE_TEST"})
 public class HomeView extends VerticalLayout {
 
-    private BackupService backupService;
+    private final BackupService backupService;
 
     public HomeView(BackupService backupService) {
         this.backupService = backupService;
@@ -45,7 +45,7 @@ public class HomeView extends VerticalLayout {
         add(new Paragraph("This is a place where you can work 🤗"));
 
         Button downloadButton = createButton("Download tasks report",
-                () -> UI.getCurrent().getPage().open("/api/download/employees"));
+                () -> UI.getCurrent().getPage().open("/api/report/employees"));
 
         if (isUserInRole("ROLE_ADMIN")) {
             Button backupDatabaseButton = createButton("Create backup database", this::createBackupDatabase);
