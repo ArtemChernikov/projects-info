@@ -23,12 +23,12 @@ public class ReportExportController {
         this.exportService = exportService;
     }
 
-    @GetMapping("/employees")
-    public ResponseEntity<InputStreamResource> downloadEmployeesXml() {
+    @GetMapping("/employees-tasks")
+    public ResponseEntity<InputStreamResource> downloadEmployeesTasksXml() {
         ByteArrayInputStream excelStream = exportService.generateExcelReport();
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=tasks_report.xlsx");
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=employees_tasks_report.xlsx");
 
         return ResponseEntity.ok()
                 .headers(headers)

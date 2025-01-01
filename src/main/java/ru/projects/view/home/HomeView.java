@@ -44,16 +44,15 @@ public class HomeView extends VerticalLayout {
         add(header);
         add(new Paragraph("This is a place where you can work 🤗"));
 
-        Button downloadButton = createButton("Download tasks report",
-                () -> UI.getCurrent().getPage().open("/api/report/employees"));
-
         if (isUserInRole("ROLE_ADMIN")) {
             Button backupDatabaseButton = createButton("Create backup database", this::createBackupDatabase);
             Button restoreDatabaseButton = createButton("Restore database", this::restoreDatabase);
-            add(backupDatabaseButton, restoreDatabaseButton);
+            Button downloadButton = createButton("Download employees-tasks report",
+                    () -> UI.getCurrent().getPage().open("/api/report/employees-tasks"));
+
+            add(backupDatabaseButton, restoreDatabaseButton, downloadButton);
         }
 
-        add(downloadButton);
         setSizeFull();
         setJustifyContentMode(JustifyContentMode.CENTER);
         setDefaultHorizontalComponentAlignment(Alignment.CENTER);
