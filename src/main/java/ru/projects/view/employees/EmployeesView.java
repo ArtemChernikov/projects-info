@@ -30,7 +30,7 @@ import ru.projects.view.MainLayout;
 @Route(value = "employees", layout = MainLayout.class)
 @Uses(Icon.class)
 @RolesAllowed(value = {"ROLE_ADMIN", "ROLE_PM"})
-@Menu(order = 1, icon = "line-awesome/svg/user.svg")
+@Menu(order = 1, icon = "line-awesome/svg/users-solid.svg")
 public class EmployeesView extends Div {
 
     private Grid<EmployeeDto> grid;

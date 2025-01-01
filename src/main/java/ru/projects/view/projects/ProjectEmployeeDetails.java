@@ -34,15 +34,15 @@ public class ProjectEmployeeDetails {
     }
 
     private static class ProjectDetailsFormLayout extends FormLayout {
-        private final TextField projectManagerField = new TextField("Project Manager");
-        private final TextField backendDeveloperField = new TextField("Backend Developers");
-        private final TextField frontendDeveloperField = new TextField("Frontend Developers");
-        private final TextField fullstackDeveloperField = new TextField("Fullstack Developer");
-        private final TextField qaEngineerField = new TextField("QA Engineer");
-        private final TextField aqaEngineerField = new TextField("AQA Engineer");
+        private final TextField projectManagerField = new TextField("Project manager");
+        private final TextField backendDeveloperField = new TextField("Backend developers");
+        private final TextField frontendDeveloperField = new TextField("Frontend developers");
+        private final TextField fullstackDeveloperField = new TextField("Fullstack developer");
+        private final TextField qaEngineerField = new TextField("QA engineer");
+        private final TextField aqaEngineerField = new TextField("AQA engineer");
         private final TextField devOpsField = new TextField("DevOps");
-        private final TextField dataScientistField = new TextField("Data Scientist");
-        private final TextField dataAnalystField = new TextField("Data Analyst");
+        private final TextField dataScientistField = new TextField("Data scientist");
+        private final TextField dataAnalystField = new TextField("Data analyst");
 
         public ProjectDetailsFormLayout() {
             Stream.of(projectManagerField, fullstackDeveloperField, qaEngineerField, aqaEngineerField, devOpsField,

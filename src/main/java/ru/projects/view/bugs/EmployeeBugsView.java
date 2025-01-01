@@ -23,7 +23,7 @@ import ru.projects.view.MainLayout;
 @PageTitle("Bugs")
 @Route(value = "employee-bugs", layout = MainLayout.class)
 @RolesAllowed(value = {"ROLE_DEV"})
-@Menu(order = 10, icon = "line-awesome/svg/user.svg")
+@Menu(order = 10, icon = "line-awesome/svg/bug-solid.svg")
 public class EmployeeBugsView extends Div  {
 
     private final Grid<BugViewDto> grid = new Grid<>(BugViewDto.class, false);

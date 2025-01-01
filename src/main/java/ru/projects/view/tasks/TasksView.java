@@ -42,7 +42,7 @@ import java.util.Set;
 @PageTitle("Tasks")
 @Route(value = "tasks/:taskID?/:action?(edit)", layout = MainLayout.class)
 @RolesAllowed(value = {"ROLE_ADMIN", "ROLE_PM"})
-@Menu(order = 6, icon = "line-awesome/svg/user.svg")
+@Menu(order = 6, icon = "line-awesome/svg/list-alt-solid.svg")
 public class TasksView extends Div implements BeforeEnterObserver {
 
     private static final String TASK_ID = "taskID";
@@ -105,10 +105,10 @@ public class TasksView extends Div implements BeforeEnterObserver {
             UI.getCurrent().navigate(TasksView.class);
         } catch (ObjectOptimisticLockingFailureException exception) {
             Notification.show(
-                    "Error updating the employee. Somebody else has updated the record while you were making changes.",
+                    "Error updating the task. Somebody else has updated the record while you were making changes.",
                     3000, Position.TOP_CENTER).addThemeVariants(NotificationVariant.LUMO_ERROR);
         } catch (ValidationException validationException) {
-            Notification.show("Failed to update the employee. Check again that all values are valid",
+            Notification.show("Failed to update the task. Check again that all values are valid",
                     3000, Position.TOP_CENTER).addThemeVariants(NotificationVariant.LUMO_ERROR);
         }
     }
@@ -122,7 +122,7 @@ public class TasksView extends Div implements BeforeEnterObserver {
             taskService.deleteById(this.task.getTaskId());
             clearForm();
             refreshGrid();
-            Notification.show("The employee has been removed.", 3000, Position.TOP_CENTER)
+            Notification.show("The task has been removed.", 3000, Position.TOP_CENTER)
                     .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
             UI.getCurrent().navigate(TasksView.class);
         } catch (ObjectOptimisticLockingFailureException exception) {
@@ -130,7 +130,7 @@ public class TasksView extends Div implements BeforeEnterObserver {
                     "Error updating the data. Somebody else has updated the record while you were making changes.",
                     3000, Position.TOP_CENTER).addThemeVariants(NotificationVariant.LUMO_ERROR);
         } catch (ValidationException validationException) {
-            Notification.show("Failed to delete employee. Check again that all values are valid",
+            Notification.show("Failed to delete task. Check again that all values are valid",
                     3000, Position.TOP_CENTER);
         }
     }
@@ -158,7 +158,7 @@ public class TasksView extends Div implements BeforeEnterObserver {
     private void configureValidationBinder() {
         binder = new BeanValidationBinder<>(TaskFullDto.class);
         binder.forField(name)
-                .asRequired("Task Name is required")
+                .asRequired("Task name is required")
                 .bind(TaskFullDto::getName, TaskFullDto::setName);
         binder.forField(description)
                 .asRequired("Description is required")
@@ -219,8 +219,6 @@ public class TasksView extends Div implements BeforeEnterObserver {
         editorLayoutDiv.add(editorDiv);
 
         FormLayout formLayout = new FormLayout();
-        name = new TextField("First Name");
-
         name = new TextField("Task name");
         description = new TextArea("Description");
         employee = new ComboBox<>("Employee");

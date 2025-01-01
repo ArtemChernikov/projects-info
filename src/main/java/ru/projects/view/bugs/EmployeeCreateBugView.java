@@ -41,7 +41,7 @@ import java.util.Set;
 @PageTitle("Create bug")
 @Route(value = "create-bug", layout = MainLayout.class)
 @RolesAllowed(value = {"ROLE_TEST"})
-@Menu(order = 9, icon = "line-awesome/svg/user.svg")
+@Menu(order = 9, icon = "line-awesome/svg/bug-solid.svg")
 public class EmployeeCreateBugView extends Composite<VerticalLayout> {
 
     private final BugService bugService;
@@ -120,7 +120,7 @@ public class EmployeeCreateBugView extends Composite<VerticalLayout> {
         layoutColumn2.setMaxWidth("800px");
         layoutColumn2.setHeight("1600px");
 
-        H3 h3 = new H3("Bug Information");
+        H3 h3 = new H3("Bug information");
         h3.setWidth("100%");
 
         formLayout2Col = new FormLayout();
@@ -168,7 +168,7 @@ public class EmployeeCreateBugView extends Composite<VerticalLayout> {
                 .asRequired("Project is required")
                 .bind(BugCreateDto::getProject, BugCreateDto::setProject);
         binder.forField(name)
-                .asRequired("Bug Name is required")
+                .asRequired("Bug name is required")
                 .bind(BugCreateDto::getName, BugCreateDto::setName);
         binder.forField(description)
                 .asRequired("Description is required")

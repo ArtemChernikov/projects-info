@@ -23,7 +23,7 @@ import ru.projects.view.MainLayout;
 @PageTitle("My tasks")
 @Route(value = "employee-tasks", layout = MainLayout.class)
 @RolesAllowed(value = {"ROLE_USER", "ROLE_DEV", "ROLE_TEST"})
-@Menu(order = 8, icon = "line-awesome/svg/user.svg")
+@Menu(order = 8, icon = "line-awesome/svg/list-alt-solid.svg")
 public class EmployeeTasksView extends Div  {
 
     private final Grid<TaskViewDto> grid = new Grid<>(TaskViewDto.class, false);

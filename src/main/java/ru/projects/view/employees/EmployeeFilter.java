@@ -28,7 +28,7 @@ public class EmployeeFilter extends Div implements Specification<Employee> {
 
     private final TextField name = new TextField("Name");
     private final TextField phone = new TextField("Phone");
-    private final DatePicker startDate = new DatePicker("Date of Birth");
+    private final DatePicker startDate = new DatePicker("Date of birth");
     private final DatePicker endDate = new DatePicker();
     private final MultiSelectComboBox<String> specializations = new MultiSelectComboBox<>("Specialization");
 

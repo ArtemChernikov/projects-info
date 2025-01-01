@@ -42,7 +42,7 @@ import java.util.Set;
 @PageTitle("Create Task")
 @Route(value = "create-task", layout = MainLayout.class)
 @RolesAllowed(value = {"ROLE_ADMIN", "ROLE_PM"})
-@Menu(order = 7, icon = "line-awesome/svg/user.svg")
+@Menu(order = 7, icon = "line-awesome/svg/pencil-alt-solid.svg")
 public class CreateTaskView extends Composite<VerticalLayout> {
 
     private final TaskService taskService;
@@ -131,7 +131,7 @@ public class CreateTaskView extends Composite<VerticalLayout> {
         layoutColumn2.setMaxWidth("800px");
         layoutColumn2.setHeight("1600px");
 
-        H3 h3 = new H3("Task Information");
+        H3 h3 = new H3("Task information");
         h3.setWidth("100%");
 
         formLayout2Col = new FormLayout();
@@ -143,7 +143,7 @@ public class CreateTaskView extends Composite<VerticalLayout> {
     }
 
     private void initFormFields() {
-        name = new TextField("Task Name");
+        name = new TextField("Task name");
         description = new TextArea("Description");
         initComboBoxes();
         addActionForChangeProject();
@@ -154,7 +154,7 @@ public class CreateTaskView extends Composite<VerticalLayout> {
     private void initComboBoxes() {
         project = new ComboBox<>("Project");
         employee = new ComboBox<>("Employee");
-        taskType = new ComboBox<>("Task Type");
+        taskType = new ComboBox<>("Task type");
         priority = new ComboBox<>("Priority");
         setWidthToComboBoxes();
         setProjectsToComboBox();
@@ -223,13 +223,13 @@ public class CreateTaskView extends Composite<VerticalLayout> {
                 .asRequired("Project is required")
                 .bind(TaskCreateDto::getProject, TaskCreateDto::setProject);
         binder.forField(name)
-                .asRequired("Task Name is required")
+                .asRequired("Task name is required")
                 .bind(TaskCreateDto::getName, TaskCreateDto::setName);
         binder.forField(description)
                 .asRequired("Description is required")
                 .bind(TaskCreateDto::getDescription, TaskCreateDto::setDescription);
         binder.forField(taskType)
-                .asRequired("Task Type is required")
+                .asRequired("Task type is required")
                 .bind(TaskCreateDto::getTaskType, TaskCreateDto::setTaskType);
         binder.forField(priority)
                 .asRequired("Priority is required")

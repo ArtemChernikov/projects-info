@@ -51,7 +51,7 @@ import static ru.projects.util.Constants.QA_ENGINEER_SPECIALIZATION_NAME;
 @PageTitle("All Projects")
 @Route(value = "projects/:projectID?/:action?(edit)", layout = MainLayout.class)
 @RolesAllowed(value = {"ROLE_ADMIN", "ROLE_PM"})
-@Menu(order = 4, icon = "line-awesome/svg/user.svg")
+@Menu(order = 4, icon = "line-awesome/svg/project-diagram-solid.svg")
 public class ProjectsView extends Div implements BeforeEnterObserver {
 
     private static final String PROJECT_ID = "projectID";
@@ -127,15 +127,15 @@ public class ProjectsView extends Div implements BeforeEnterObserver {
     private void configureValidationBinder() {
         binder = new BeanValidationBinder<>(ProjectFullDto.class);
         binder.forField(name)
-                .asRequired("Project Name is required")
+                .asRequired("Project name is required")
                 .bind(ProjectFullDto::getName, ProjectFullDto::setName);
         binder.forField(startDate)
-                .asRequired("Start Date is required")
+                .asRequired("Start date is required")
                 .bind(ProjectFullDto::getStartDate, ProjectFullDto::setStartDate);
         binder.forField(endDate)
                 .bind(ProjectFullDto::getEndDate, ProjectFullDto::setEndDate);
         binder.forField(status)
-                .asRequired("Project Status is required")
+                .asRequired("Project status is required")
                 .bind(ProjectFullDto::getStatus, ProjectFullDto::setStatus);
         binder.bindInstanceFields(this);
     }
@@ -199,19 +199,19 @@ public class ProjectsView extends Div implements BeforeEnterObserver {
     }
 
     private void initializeFields() {
-        name = new TextField("Project Name");
-        startDate = new DatePicker("Start Date");
-        endDate = new DatePicker("End Date");
+        name = new TextField("Project name");
+        startDate = new DatePicker("Start date");
+        endDate = new DatePicker("End date");
         status = new ComboBox<>("Status");
-        projectManagers = new MultiSelectComboBox<>("Project Manager");
-        backendDevelopers = new MultiSelectComboBox<>("Backend Developers");
-        frontendDevelopers = new MultiSelectComboBox<>("Frontend Developers");
-        fullstackDevelopers = new MultiSelectComboBox<>("Fullstack Developer");
-        qaEngineers = new MultiSelectComboBox<>("QA Engineer");
-        aqaEngineers = new MultiSelectComboBox<>("AQA Engineer");
+        projectManagers = new MultiSelectComboBox<>("Project manager");
+        backendDevelopers = new MultiSelectComboBox<>("Backend developers");
+        frontendDevelopers = new MultiSelectComboBox<>("Frontend developers");
+        fullstackDevelopers = new MultiSelectComboBox<>("Fullstack developer");
+        qaEngineers = new MultiSelectComboBox<>("QA engineer");
+        aqaEngineers = new MultiSelectComboBox<>("AQA engineer");
         devOps = new MultiSelectComboBox<>("DevOps");
-        dataScientists = new MultiSelectComboBox<>("Data Scientist");
-        dataAnalysts = new MultiSelectComboBox<>("Data Analysts");
+        dataScientists = new MultiSelectComboBox<>("Data scientist");
+        dataAnalysts = new MultiSelectComboBox<>("Data analysts");
     }
 
     private void setWidthsToFields(String width) {

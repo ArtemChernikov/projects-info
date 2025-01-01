@@ -25,7 +25,7 @@ import java.io.IOException;
  */
 @PageTitle("Home Page")
 @Route("")
-@Menu(order = 0, icon = "line-awesome/svg/file.svg")
+@Menu(order = 0, icon = "line-awesome/svg/home-solid.svg")
 @RolesAllowed(value = {"ROLE_ADMIN", "ROLE_USER", "ROLE_PM", "ROLE_DEV", "ROLE_TEST"})
 public class HomeView extends VerticalLayout {
 

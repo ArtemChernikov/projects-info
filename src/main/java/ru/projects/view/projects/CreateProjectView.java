@@ -53,7 +53,7 @@ import static ru.projects.util.Constants.QA_ENGINEER_SPECIALIZATION_NAME;
 @PageTitle("Create Project")
 @Route(value = "create-project", layout = MainLayout.class)
 @RolesAllowed(value = {"ROLE_ADMIN", "ROLE_PM"})
-@Menu(order = 5, icon = "line-awesome/svg/user.svg")
+@Menu(order = 5, icon = "line-awesome/svg/folder-plus-solid.svg")
 public class CreateProjectView extends Composite<VerticalLayout> {
 
     private final ProjectService projectService;
@@ -174,15 +174,15 @@ public class CreateProjectView extends Composite<VerticalLayout> {
     }
 
     private void initComboBoxes() {
-        projectManagersComboBox = new MultiSelectComboBox<>("Project Managers");
-        backendDevelopersComboBox = new MultiSelectComboBox<>("Backend Developers");
-        frontendDevelopersComboBox = new MultiSelectComboBox<>("Frontend Developers");
-        fullstackDevelopersComboBox = new MultiSelectComboBox<>("Fullstack Developers");
-        qaEngineersComboBox = new MultiSelectComboBox<>("QA Engineers");
-        aqaEngineersComboBox = new MultiSelectComboBox<>("AQA Engineers");
+        projectManagersComboBox = new MultiSelectComboBox<>("Project managers");
+        backendDevelopersComboBox = new MultiSelectComboBox<>("Backend developers");
+        frontendDevelopersComboBox = new MultiSelectComboBox<>("Frontend developers");
+        fullstackDevelopersComboBox = new MultiSelectComboBox<>("Fullstack developers");
+        qaEngineersComboBox = new MultiSelectComboBox<>("QA engineers");
+        aqaEngineersComboBox = new MultiSelectComboBox<>("AQA engineers");
         devOpsComboBox = new MultiSelectComboBox<>("DevOps");
-        dataScientistsComboBox = new MultiSelectComboBox<>("Data Scientists");
-        dataAnalystsComboBox = new MultiSelectComboBox<>("Data Analysts");
+        dataScientistsComboBox = new MultiSelectComboBox<>("Data scientists");
+        dataAnalystsComboBox = new MultiSelectComboBox<>("Data analysts");
         setWidthToComboBoxes();
         setEmployeesToComboBoxes();
     }
@@ -215,10 +215,10 @@ public class CreateProjectView extends Composite<VerticalLayout> {
     private void configureValidationBinder() {
         binder = new BeanValidationBinder<>(ProjectCreateDto.class);
         binder.forField(name)
-                .asRequired("Project Name is required")
+                .asRequired("Project name is required")
                 .bind(ProjectCreateDto::getName, ProjectCreateDto::setName);
         binder.forField(startDate)
-                .asRequired("Start Date is required")
+                .asRequired("Start date is required")
                 .bind(ProjectCreateDto::getStartDate, ProjectCreateDto::setStartDate);
         binder.bindInstanceFields(this);
     }

@@ -39,7 +39,7 @@ import java.util.Optional;
 @PageTitle("Employees")
 @Route(value = "edit-employees/:employeeID?/:action?(edit)", layout = MainLayout.class)
 @RolesAllowed(value = {"ROLE_ADMIN"})
-@Menu(order = 2, icon = "line-awesome/svg/user.svg")
+@Menu(order = 2, icon = "line-awesome/svg/users-cog-solid.svg")
 public class EditEmployeesView extends Div implements BeforeEnterObserver {
 
     private static final String EMPLOYEE_ID = "employeeID";
@@ -155,16 +155,16 @@ public class EditEmployeesView extends Div implements BeforeEnterObserver {
     private void configureValidationBinder() {
         binder = new BeanValidationBinder<>(EmployeeFullDto.class);
         binder.forField(firstName)
-                .asRequired("First Name is required")
+                .asRequired("First name is required")
                 .bind(EmployeeFullDto::getFirstName, EmployeeFullDto::setFirstName);
         binder.forField(lastName)
-                .asRequired("Last Name is required")
+                .asRequired("Last name is required")
                 .bind(EmployeeFullDto::getLastName, EmployeeFullDto::setLastName);
         binder.forField(patronymicName)
-                .asRequired("Patronymic Name is required")
+                .asRequired("Patronymic name is required")
                 .bind(EmployeeFullDto::getPatronymicName, EmployeeFullDto::setPatronymicName);
         binder.forField(dateOfBirth)
-                .asRequired("Date of Birth is required")
+                .asRequired("Date of birth is required")
                 .bind(EmployeeFullDto::getDateOfBirth, EmployeeFullDto::setDateOfBirth);
         binder.forField(phone)
                 .asRequired("Phone is required")
@@ -229,10 +229,10 @@ public class EditEmployeesView extends Div implements BeforeEnterObserver {
         editorLayoutDiv.add(editorDiv);
 
         FormLayout formLayout = new FormLayout();
-        firstName = new TextField("First Name");
-        lastName = new TextField("Last Name");
-        patronymicName = new TextField("Patronymic Name");
-        dateOfBirth = new DatePicker("Date Of Birth");
+        firstName = new TextField("First name");
+        lastName = new TextField("Last name");
+        patronymicName = new TextField("Patronymic name");
+        dateOfBirth = new DatePicker("Date of birth");
         phone = new TextField("Phone");
         email = new EmailField("Email");
         username = new TextField("Username");

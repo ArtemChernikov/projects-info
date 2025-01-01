@@ -38,7 +38,7 @@ import java.util.List;
 @PageTitle("Create Employee")
 @Route(value = "create-employee", layout = MainLayout.class)
 @RolesAllowed(value = {"ROLE_ADMIN"})
-@Menu(order = 3, icon = "line-awesome/svg/user.svg")
+@Menu(order = 3, icon = "line-awesome/svg/user-plus-solid.svg")
 public class CreateEmployeeView extends Composite<VerticalLayout> {
 
     private final EmployeeService employeeService;
@@ -128,11 +128,11 @@ public class CreateEmployeeView extends Composite<VerticalLayout> {
     }
 
     private void initFormFields() {
-        firstNameField = new TextField("First Name");
-        lastNameField = new TextField("Last Name");
-        patronymicNameField = new TextField("Patronymic Name");
+        firstNameField = new TextField("First name");
+        lastNameField = new TextField("Last name");
+        patronymicNameField = new TextField("Patronymic name");
         dateOfBirth = new DatePicker("Birthday");
-        phoneNumberField = new TextField("Phone Number");
+        phoneNumberField = new TextField("Phone number");
         usernameField = new TextField("Username");
         passwordField = new PasswordField("Password");
         passwordField.setWidth("min-content");
@@ -148,16 +148,16 @@ public class CreateEmployeeView extends Composite<VerticalLayout> {
     private void configureValidationBinder() {
         binder = new BeanValidationBinder<>(EmployeeDto.class);
         binder.forField(firstNameField)
-                .asRequired("First Name is required")
+                .asRequired("First name is required")
                 .bind(EmployeeDto::getFirstName, EmployeeDto::setFirstName);
         binder.forField(lastNameField)
-                .asRequired("Last Name is required")
+                .asRequired("Last name is required")
                 .bind(EmployeeDto::getLastName, EmployeeDto::setLastName);
         binder.forField(patronymicNameField)
-                .asRequired("Patronymic Name is required")
+                .asRequired("Patronymic name is required")
                 .bind(EmployeeDto::getPatronymicName, EmployeeDto::setPatronymicName);
         binder.forField(dateOfBirth)
-                .asRequired("Date of Birth is required")
+                .asRequired("Date of birth is required")
                 .bind(EmployeeDto::getDateOfBirth, EmployeeDto::setDateOfBirth);
         binder.forField(phoneNumberField)
                 .asRequired("Phone is required")

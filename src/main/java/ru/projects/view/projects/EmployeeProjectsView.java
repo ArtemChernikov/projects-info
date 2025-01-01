@@ -19,7 +19,7 @@ import ru.projects.view.MainLayout;
 @PageTitle("My projects")
 @Route(value = "employee-projects", layout = MainLayout.class)
 @RolesAllowed(value = {"ROLE_USER", "ROLE_DEV", "ROLE_TEST"})
-@Menu(order = 9, icon = "line-awesome/svg/user.svg")
+@Menu(order = 9, icon = "line-awesome/svg/project-diagram-solid.svg")
 public class EmployeeProjectsView extends Div  {
 
     private final Grid<ProjectFullDto> grid = new Grid<>(ProjectFullDto.class, false);
