@@ -44,7 +44,7 @@ public class HomeView extends VerticalLayout {
         add(header);
         add(new Paragraph("This is a place where you can work 🤗"));
 
-        if (isUserInRole("ROLE_ADMIN")) {
+        if (isUserInRole("ROLE_ADMIN") || isUserInRole("ROLE_PM")) {
             Button backupDatabaseButton = createButton("Create backup database", this::createBackupDatabase);
             Button restoreDatabaseButton = createButton("Restore database", this::restoreDatabase);
             Button downloadButton = createButton("Download employees-tasks report",
