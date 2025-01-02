@@ -39,7 +39,6 @@ public class HomeView extends VerticalLayout {
 
     public HomeView(BackupService backupService, EmployeeService employeeService) {
         this.backupService = backupService;
-        authenticatedEmployee = employeeService.getCurrentEmployee();
         setSpacing(false);
 
         Image img = new Image("images/empty-plant.png", "placeholder plant");
@@ -60,6 +59,7 @@ public class HomeView extends VerticalLayout {
             add(backupDatabaseButton, restoreDatabaseButton, downloadButton);
         }
         if (isUserInRole("ROLE_PM")) {
+            authenticatedEmployee = employeeService.getCurrentEmployee();
             String projectIds = authenticatedEmployee.getProjects().stream()
                     .map(Project::getProjectId)
                     .map(String::valueOf)
