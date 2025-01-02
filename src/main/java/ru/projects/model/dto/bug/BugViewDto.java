@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import ru.projects.model.dto.project.ProjectShortDto;
 
 /**
  * @author Artem Chernikov

@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.projects.mapper.TaskMapper;
+import ru.projects.model.Project;
 import ru.projects.model.Task;
 import ru.projects.model.dto.task.TaskCreateDto;
 import ru.projects.model.dto.task.TaskFullDto;
@@ -14,6 +15,7 @@ import ru.projects.repository.TaskRepository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * @author Artem Chernikov
@@ -64,7 +66,10 @@ public class TaskService {
                 .map(taskMapper::taskToTaskViewDto);
     }
 
-    public Page<TaskViewDto> getAllByProjectIds(Pageable pageable, List<Long> projectIds) {
+    public Page<TaskViewDto> getAllByProjects(Pageable pageable, Set<Project> projects) {
+        List<Long> projectIds = projects.stream()
+                .map(Project::getProjectId)
+                .toList();
         return taskRepository.findAllByProjectIds(pageable, projectIds)
                 .map(taskMapper::taskToTaskViewDto);
     }

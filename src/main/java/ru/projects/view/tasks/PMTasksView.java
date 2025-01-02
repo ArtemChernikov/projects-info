@@ -27,7 +27,6 @@ import jakarta.annotation.security.RolesAllowed;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import ru.projects.model.Employee;
-import ru.projects.model.Project;
 import ru.projects.model.dto.employee.EmployeeShortDto;
 import ru.projects.model.dto.task.TaskFullDto;
 import ru.projects.model.dto.task.TaskViewDto;
@@ -202,13 +201,9 @@ public class PMTasksView extends Div implements BeforeEnterObserver {
         grid.setDetailsVisibleOnClick(false);
         grid.setItemDetailsRenderer(TaskDescriptionDetails.createTaskDetailsRenderer());
 
-        List<Long> projectIds = authenticatedEmployee.getProjects().stream()
-                .map(Project::getProjectId)
-                .toList();
-
-        grid.setItems(query -> taskService.getAllByProjectIds(
+        grid.setItems(query -> taskService.getAllByProjects(
                         PageRequest.of(query.getPage(), query.getPageSize(),
-                                VaadinSpringDataHelpers.toSpringDataSort(query)), projectIds)
+                                VaadinSpringDataHelpers.toSpringDataSort(query)), authenticatedEmployee.getProjects())
                 .stream());
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
 
