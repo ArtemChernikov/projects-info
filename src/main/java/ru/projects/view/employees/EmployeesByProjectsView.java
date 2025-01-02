@@ -24,26 +24,26 @@ import ru.projects.view.MainLayout;
 /**
  * @author Artem Chernikov
  * @version 1.0
- * @since 19.10.2024
+ * @since 02.01.2025
  */
-@PageTitle("Employees")
-@Route(value = "employees", layout = MainLayout.class)
+@PageTitle("My employees")
+@Route(value = "my-employees", layout = MainLayout.class)
 @Uses(Icon.class)
-@RolesAllowed(value = {"ROLE_ADMIN", "ROLE_PM"})
-@Menu(order = 1, icon = "line-awesome/svg/users-solid.svg")
-public class EmployeesView extends Div {
+@RolesAllowed(value = {"ROLE_PM"})
+@Menu(order = 3, icon = "line-awesome/svg/users-solid.svg")
+public class EmployeesByProjectsView extends Div {
 
     private Grid<EmployeeDto> grid;
 
-    private EmployeeFilter employeeFilter;
+    private EmployeeByProjectsFilter employeeFilter;
     private final EmployeeService employeeService;
 
-    public EmployeesView(EmployeeService employeeService, SpecializationService specializationService) {
+    public EmployeesByProjectsView(EmployeeService employeeService, SpecializationService specializationService) {
         this.employeeService = employeeService;
         setSizeFull();
         addClassNames("employees-view");
 
-        this.employeeFilter = new EmployeeFilter(specializationService, this::refreshGrid);
+        this.employeeFilter = new EmployeeByProjectsFilter(specializationService, employeeService, this::refreshGrid);
         VerticalLayout layout = new VerticalLayout(createMobileFilters(), employeeFilter, createGrid());
         layout.setSizeFull();
         layout.setPadding(false);

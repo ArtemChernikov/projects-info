@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
  * @version 1.0
  * @since 10.11.2024
  */
-@PageTitle("Home Page")
+@PageTitle("Home page")
 @Route("")
 @Menu(order = 0, icon = "line-awesome/svg/home-solid.svg")
 @RolesAllowed(value = {"ROLE_ADMIN", "ROLE_USER", "ROLE_PM", "ROLE_DEV", "ROLE_TEST"})
