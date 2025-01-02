@@ -40,7 +40,7 @@ import java.util.Optional;
 @PageTitle("Bugs")
 @Route(value = "qa-bugs/:bugID?/:action?(edit)", layout = MainLayout.class)
 @RolesAllowed(value = {"ROLE_TEST"})
-@Menu(order = 11, icon = "line-awesome/svg/bug-solid.svg")
+@Menu(order = 10, icon = "line-awesome/svg/bug-solid.svg")
 public class QABugsView extends Div implements BeforeEnterObserver {
 
     private static final String BUG_ID = "bugID";
