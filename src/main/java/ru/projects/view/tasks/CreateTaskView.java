@@ -21,6 +21,7 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility.Gap;
 import jakarta.annotation.security.RolesAllowed;
+import ru.projects.model.Employee;
 import ru.projects.model.dto.employee.EmployeeShortDto;
 import ru.projects.model.dto.project.ProjectShortDto;
 import ru.projects.model.dto.task.TaskCreateDto;
@@ -49,6 +50,8 @@ public class CreateTaskView extends Composite<VerticalLayout> {
     private final ProjectService projectService;
     private final EmployeeService employeeService;
 
+    private Employee authenticatedEmployee;
+
     private TextField name;
     private TextArea description;
     private ComboBox<ProjectShortDto> project;
@@ -65,6 +68,7 @@ public class CreateTaskView extends Composite<VerticalLayout> {
         this.taskService = taskService;
         this.projectService = projectService;
         this.employeeService = employeeService;
+        authenticatedEmployee = employeeService.getCurrentEmployee();
 
         getContent().setWidth("100%");
         getContent().setHeight("100%");
@@ -195,7 +199,8 @@ public class CreateTaskView extends Composite<VerticalLayout> {
     }
 
     private void setProjectsToComboBox() {
-        Set<ProjectShortDto> projectShortDtos = projectService.getAllProjectsShortDto();
+        Set<ProjectShortDto> projectShortDtos = projectService
+                .getAllProjectShortDtoByEmployeeId(authenticatedEmployee.getEmployeeId());
         project.setItems(projectShortDtos);
         project.setItemLabelGenerator(ProjectShortDto::getName);
     }
