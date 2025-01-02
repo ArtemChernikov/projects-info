@@ -4,6 +4,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import ru.projects.model.Bug;
 import ru.projects.model.dto.bug.BugCreateDto;
+import ru.projects.model.dto.bug.BugUpdateDto;
 import ru.projects.model.dto.bug.BugViewDto;
 import ru.projects.model.enums.Priority;
 import ru.projects.model.enums.Status;
@@ -20,4 +21,7 @@ public interface BugMapper {
     @Mapping(target = "priority", expression = "java(bug.getPriority().getDisplayName())")
     @Mapping(target = "status", expression = "java(bug.getStatus().getDisplayName())")
     BugViewDto bugToBugViewDto(Bug bug);
+
+    @Mapping(target = "priority", expression = "java(bug.getPriority().getDisplayName())")
+    BugUpdateDto bugToBugUpdateDto(Bug bug);
 }

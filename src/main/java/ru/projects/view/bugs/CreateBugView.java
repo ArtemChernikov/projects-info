@@ -41,7 +41,7 @@ import java.util.Set;
 @PageTitle("Create bug")
 @Route(value = "create-bug", layout = MainLayout.class)
 @RolesAllowed(value = {"ROLE_TEST"})
-@Menu(order = 9, icon = "line-awesome/svg/bug-solid.svg")
+@Menu(order = 10, icon = "line-awesome/svg/bug-solid.svg")
 public class CreateBugView extends Composite<VerticalLayout> {
 
     private final BugService bugService;

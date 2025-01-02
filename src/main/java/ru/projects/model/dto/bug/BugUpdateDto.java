@@ -1,0 +1,28 @@
+package ru.projects.model.dto.bug;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+
+/**
+ * @author Artem Chernikov
+ * @version 1.0
+ * @since 10.11.2024
+ */
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
+@ToString
+public class BugUpdateDto {
+
+    private Long bugId;
+
+    private String name;
+
+    private String description;
+
+    private String priority;
+}

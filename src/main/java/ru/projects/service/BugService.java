@@ -8,11 +8,14 @@ import ru.projects.mapper.BugMapper;
 import ru.projects.model.Bug;
 import ru.projects.model.Project;
 import ru.projects.model.dto.bug.BugCreateDto;
+import ru.projects.model.dto.bug.BugUpdateDto;
 import ru.projects.model.dto.bug.BugViewDto;
+import ru.projects.model.enums.Priority;
 import ru.projects.model.enums.Status;
 import ru.projects.repository.BugRepository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -32,6 +35,25 @@ public class BugService {
         bugRepository.save(bug);
     }
 
+    public Bug update(BugUpdateDto bugUpdateDto) {
+        Bug bug = bugRepository.findById(bugUpdateDto.getBugId())
+                .orElseThrow(() -> new RuntimeException("Bug not found"));
+        bug.setName(bugUpdateDto.getName());
+        bug.setDescription(bugUpdateDto.getDescription());
+        bug.setPriority(Priority.fromDisplayName(bugUpdateDto.getPriority()));
+        return bugRepository.save(bug);
+    }
+
+    public Optional<BugUpdateDto> getByIdForUpdate(Long bugId) {
+        Optional<Bug> optionalBug = bugRepository.findById(bugId);
+        if (optionalBug.isEmpty()) {
+            return Optional.empty();
+        }
+        Bug bug = optionalBug.get();
+        BugUpdateDto bugUpdateDto = bugMapper.bugToBugUpdateDto(bug);
+        return Optional.of(bugUpdateDto);
+    }
+
     public Page<BugViewDto> getAllByProjects(Pageable pageable, Set<Project> projects) {
         List<Long> projectIds = projects.stream()
                 .map(Project::getProjectId)
@@ -45,6 +67,17 @@ public class BugService {
         Status newStatus = Status.fromDisplayName(status);
         bug.setStatus(newStatus);
         bugRepository.save(bug);
+    }
+
+    public void deleteById(Long bugId) {
+        checkExistsById(bugId);
+        bugRepository.deleteById(bugId);
+    }
+
+    private void checkExistsById(Long bugId) {
+        if (!bugRepository.existsById(bugId)) {
+            throw new RuntimeException("Bug not found");
+        }
     }
 
 }
