@@ -26,6 +26,8 @@ import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
 import jakarta.annotation.security.RolesAllowed;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
+import ru.projects.model.Employee;
+import ru.projects.model.Project;
 import ru.projects.model.dto.employee.EmployeeShortDto;
 import ru.projects.model.dto.task.TaskFullDto;
 import ru.projects.model.dto.task.TaskViewDto;
@@ -40,13 +42,13 @@ import java.util.Optional;
 import java.util.Set;
 
 @PageTitle("Tasks")
-@Route(value = "tasks/:taskID?/:action?(edit)", layout = MainLayout.class)
-@RolesAllowed(value = {"ROLE_ADMIN"})
+@Route(value = "pm-tasks/:taskID?/:action?(edit)", layout = MainLayout.class)
+@RolesAllowed(value = {"ROLE_PM"})
 @Menu(order = 6, icon = "line-awesome/svg/list-alt-solid.svg")
-public class TasksView extends Div implements BeforeEnterObserver {
+public class PMTasksView extends Div implements BeforeEnterObserver {
 
     private static final String TASK_ID = "taskID";
-    private static final String TASK_EDIT_ROUTE_TEMPLATE = "tasks/%s/edit";
+    private static final String TASK_EDIT_ROUTE_TEMPLATE = "pm-tasks/%s/edit";
 
     private final Grid<TaskViewDto> grid = new Grid<>(TaskViewDto.class, false);
 
@@ -64,12 +66,15 @@ public class TasksView extends Div implements BeforeEnterObserver {
 
     private TaskFullDto task;
 
+    private Employee authenticatedEmployee;
+
     private final TaskService taskService;
     private final EmployeeService employeeService;
 
-    public TasksView(TaskService taskService, EmployeeService employeeService) {
+    public PMTasksView(TaskService taskService, EmployeeService employeeService) {
         this.taskService = taskService;
         this.employeeService = employeeService;
+        authenticatedEmployee = employeeService.getCurrentEmployee();
         addClassNames("tasks-view");
         createUI();
     }
@@ -87,11 +92,11 @@ public class TasksView extends Div implements BeforeEnterObserver {
             clearForm();
             refreshGrid();
         });
-        save.addClickListener(clickEvent -> updateEmployee());
-        delete.addClickListener(clickEvent -> deleteEmployee());
+        save.addClickListener(clickEvent -> updateTask());
+        delete.addClickListener(clickEvent -> deleteTask());
     }
 
-    private void updateEmployee() {
+    private void updateTask() {
         try {
             if (this.task == null) {
                 this.task = new TaskFullDto();
@@ -100,9 +105,9 @@ public class TasksView extends Div implements BeforeEnterObserver {
             taskService.update(this.task);
             clearForm();
             refreshGrid();
-            Notification.show("The employee has been updated.", 3000, Position.TOP_CENTER)
+            Notification.show("The task has been updated.", 3000, Position.TOP_CENTER)
                     .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
-            UI.getCurrent().navigate(TasksView.class);
+            UI.getCurrent().navigate(PMTasksView.class);
         } catch (ObjectOptimisticLockingFailureException exception) {
             Notification.show(
                     "Error updating the task. Somebody else has updated the record while you were making changes.",
@@ -113,7 +118,7 @@ public class TasksView extends Div implements BeforeEnterObserver {
         }
     }
 
-    private void deleteEmployee() {
+    private void deleteTask() {
         try {
             if (this.task == null) {
                 this.task = new TaskFullDto();
@@ -124,7 +129,7 @@ public class TasksView extends Div implements BeforeEnterObserver {
             refreshGrid();
             Notification.show("The task has been removed.", 3000, Position.TOP_CENTER)
                     .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
-            UI.getCurrent().navigate(TasksView.class);
+            UI.getCurrent().navigate(PMTasksView.class);
         } catch (ObjectOptimisticLockingFailureException exception) {
             Notification.show(
                     "Error updating the data. Somebody else has updated the record while you were making changes.",
@@ -150,7 +155,7 @@ public class TasksView extends Div implements BeforeEnterObserver {
                 Notification.show(String.format("The requested employee was not found, ID = %s", employeeId.get()),
                         3000, Position.BOTTOM_START);
                 refreshGrid();
-                event.forwardTo(TasksView.class);
+                event.forwardTo(PMTasksView.class);
             }
         }
     }
@@ -195,8 +200,13 @@ public class TasksView extends Div implements BeforeEnterObserver {
         grid.setDetailsVisibleOnClick(false);
         grid.setItemDetailsRenderer(TaskDescriptionDetails.createTaskDetailsRenderer());
 
-        grid.setItems(query -> taskService.getAll(
-                        PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)))
+        List<Long> projectIds = authenticatedEmployee.getProjects().stream()
+                .map(Project::getProjectId)
+                .toList();
+
+        grid.setItems(query -> taskService.getAllByProjectIds(
+                        PageRequest.of(query.getPage(), query.getPageSize(),
+                                VaadinSpringDataHelpers.toSpringDataSort(query)), projectIds)
                 .stream());
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
 
@@ -205,7 +215,7 @@ public class TasksView extends Div implements BeforeEnterObserver {
                 UI.getCurrent().navigate(String.format(TASK_EDIT_ROUTE_TEMPLATE, event.getValue().getTaskId()));
             } else {
                 clearForm();
-                UI.getCurrent().navigate(TasksView.class);
+                UI.getCurrent().navigate(PMTasksView.class);
             }
         });
     }

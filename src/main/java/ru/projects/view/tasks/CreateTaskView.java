@@ -41,14 +41,13 @@ import java.util.Set;
  */
 @PageTitle("Create Task")
 @Route(value = "create-task", layout = MainLayout.class)
-@RolesAllowed(value = {"ROLE_ADMIN", "ROLE_PM"})
+@RolesAllowed(value = {"ROLE_PM"})
 @Menu(order = 7, icon = "line-awesome/svg/pencil-alt-solid.svg")
 public class CreateTaskView extends Composite<VerticalLayout> {
 
     private final TaskService taskService;
     private final ProjectService projectService;
     private final EmployeeService employeeService;
-
 
     private TextField name;
     private TextArea description;

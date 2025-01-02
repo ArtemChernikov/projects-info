@@ -16,6 +16,9 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 
     List<Task> findAllByOrderByProject_Name();
 
+    @Query("SELECT t FROM Task t WHERE t.project.projectId IN :projectIds")
+    Page<Task> findAllByProjectIds(Pageable pageable, @Param("projectIds") List<Long> projectIds);
+
     @Query("SELECT t FROM Task t WHERE t.project.projectId IN :projectIds ORDER BY t.project.name")
     List<Task> findAllByProjectIdsOrderByProjectName(@Param("projectIds") List<Long> projectIds);
 

@@ -64,6 +64,11 @@ public class TaskService {
                 .map(taskMapper::taskToTaskViewDto);
     }
 
+    public Page<TaskViewDto> getAllByProjectIds(Pageable pageable, List<Long> projectIds) {
+        return taskRepository.findAllByProjectIds(pageable, projectIds)
+                .map(taskMapper::taskToTaskViewDto);
+    }
+
     public List<TaskFullDto> getAllByOrderProjectName() {
         return taskMapper.tasksToTaskFullDtos(taskRepository.findAllByOrderByProject_Name());
     }
