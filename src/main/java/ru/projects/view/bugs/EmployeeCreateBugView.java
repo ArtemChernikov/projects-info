@@ -169,9 +169,11 @@ public class EmployeeCreateBugView extends Composite<VerticalLayout> {
                 .bind(BugCreateDto::getProject, BugCreateDto::setProject);
         binder.forField(name)
                 .asRequired("Bug name is required")
+                .withValidator(value -> !value.trim().isEmpty(), "Bug name cannot be empty or spaces only")
                 .bind(BugCreateDto::getName, BugCreateDto::setName);
         binder.forField(description)
                 .asRequired("Description is required")
+                .withValidator(value -> !value.trim().isEmpty(), "Description cannot be empty or spaces only")
                 .bind(BugCreateDto::getDescription, BugCreateDto::setDescription);
         binder.forField(priority)
                 .asRequired("Priority is required")

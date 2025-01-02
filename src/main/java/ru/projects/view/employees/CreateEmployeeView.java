@@ -28,6 +28,7 @@ import ru.projects.service.EmployeeService;
 import ru.projects.service.SpecializationService;
 import ru.projects.view.MainLayout;
 
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -43,15 +44,15 @@ public class CreateEmployeeView extends Composite<VerticalLayout> {
 
     private final EmployeeService employeeService;
     private final SpecializationService specializationService;
-    private TextField firstNameField;
-    private TextField lastNameField;
-    private TextField patronymicNameField;
+    private TextField firstName;
+    private TextField lastName;
+    private TextField patronymicName;
     private DatePicker dateOfBirth;
-    private TextField phoneNumberField;
-    private TextField usernameField;
-    private PasswordField passwordField;
-    private EmailField emailField;
-    private ComboBox<String> specializationsComboBox;
+    private TextField phoneNumber;
+    private TextField username;
+    private PasswordField password;
+    private EmailField email;
+    private ComboBox<String> specialization;
     private FormLayout formLayout2Col;
     private BeanValidationBinder<EmployeeDto> binder;
 
@@ -128,75 +129,86 @@ public class CreateEmployeeView extends Composite<VerticalLayout> {
     }
 
     private void initFormFields() {
-        firstNameField = new TextField("First name");
-        lastNameField = new TextField("Last name");
-        patronymicNameField = new TextField("Patronymic name");
+        firstName = new TextField("First name");
+        lastName = new TextField("Last name");
+        patronymicName = new TextField("Patronymic name");
         dateOfBirth = new DatePicker("Birthday");
-        phoneNumberField = new TextField("Phone number");
-        usernameField = new TextField("Username");
-        passwordField = new PasswordField("Password");
-        passwordField.setWidth("min-content");
-        emailField = new EmailField("Email");
-        specializationsComboBox = new ComboBox<>("Specialization");
-        specializationsComboBox.setWidth("min-content");
+        phoneNumber = new TextField("Phone number");
+        username = new TextField("Username");
+        password = new PasswordField("Password");
+        password.setWidth("min-content");
+        email = new EmailField("Email");
+        specialization = new ComboBox<>("Specialization");
+        specialization.setWidth("min-content");
         setSpecializationsToComboBox();
 
-        formLayout2Col.add(firstNameField, lastNameField, patronymicNameField, dateOfBirth,
-                phoneNumberField, usernameField, passwordField, emailField, specializationsComboBox);
+        formLayout2Col.add(firstName, lastName, patronymicName, dateOfBirth,
+                phoneNumber, username, password, email, specialization);
     }
 
     private void configureValidationBinder() {
         binder = new BeanValidationBinder<>(EmployeeDto.class);
-        binder.forField(firstNameField)
+        binder.forField(firstName)
                 .asRequired("First name is required")
+                .withValidator(value -> !value.trim().isEmpty(), "First name cannot be empty or spaces only")
+                .withValidator(value -> value.matches("^[a-zA-Zа-яА-ЯёЁ]+$"), "First name must contain only letters")
                 .bind(EmployeeDto::getFirstName, EmployeeDto::setFirstName);
-        binder.forField(lastNameField)
+        binder.forField(lastName)
                 .asRequired("Last name is required")
+                .withValidator(value -> !value.trim().isEmpty(), "Last name cannot be empty or spaces only")
+                .withValidator(value -> value.matches("^[a-zA-Zа-яА-ЯёЁ]+$"), "Last name must contain only letters")
                 .bind(EmployeeDto::getLastName, EmployeeDto::setLastName);
-        binder.forField(patronymicNameField)
+        binder.forField(patronymicName)
                 .asRequired("Patronymic name is required")
+                .withValidator(value -> !value.trim().isEmpty(), "Patronymic name cannot be empty or spaces only")
+                .withValidator(value -> value.matches("^[a-zA-Zа-яА-ЯёЁ]+$"), "Patronymic name must contain only letters")
                 .bind(EmployeeDto::getPatronymicName, EmployeeDto::setPatronymicName);
         binder.forField(dateOfBirth)
                 .asRequired("Date of birth is required")
+                .withValidator(value -> value.isBefore(LocalDate.now()), "Date of birth cannot be after now")
                 .bind(EmployeeDto::getDateOfBirth, EmployeeDto::setDateOfBirth);
-        binder.forField(phoneNumberField)
+        binder.forField(phoneNumber)
                 .asRequired("Phone is required")
+                .withValidator(phone -> phone.matches("^(\\+7|8)[0-9]{10}$"),
+                        "Phone number must be valid (e.g., +79301044124 or 89301044124)")
                 .bind(EmployeeDto::getPhone, EmployeeDto::setPhone);
-        binder.forField(emailField)
+        binder.forField(email)
                 .asRequired("Email is required")
                 .bind(EmployeeDto::getEmail, EmployeeDto::setEmail);
-        binder.forField(usernameField)
+        binder.forField(username)
                 .asRequired("Username is required")
+                .withValidator(value -> !value.trim().isEmpty(), "Username cannot be empty or spaces only")
                 .bind(EmployeeDto::getUsername, EmployeeDto::setUsername);
-        binder.forField(passwordField)
+        binder.forField(password)
                 .asRequired("Password is required")
+                .withValidator(value -> !value.trim().isEmpty(), "Password cannot be empty or spaces only")
                 .bind(EmployeeDto::getPassword, EmployeeDto::setPassword);
-        binder.forField(specializationsComboBox)
+        binder.forField(specialization)
                 .asRequired("Specialization is required")
                 .bind(EmployeeDto::getSpecialization, EmployeeDto::setSpecialization);
         binder.bindInstanceFields(this);
     }
 
     private void setRequiredFields() {
-        firstNameField.setRequiredIndicatorVisible(true);
-        lastNameField.setRequiredIndicatorVisible(true);
-        phoneNumberField.setRequiredIndicatorVisible(true);
+        firstName.setRequiredIndicatorVisible(true);
+        lastName.setRequiredIndicatorVisible(true);
+        phoneNumber.setRequiredIndicatorVisible(true);
         dateOfBirth.setRequiredIndicatorVisible(true);
-        phoneNumberField.setRequiredIndicatorVisible(true);
-        emailField.setRequiredIndicatorVisible(true);
-        usernameField.setRequiredIndicatorVisible(true);
-        passwordField.setRequiredIndicatorVisible(true);
-        specializationsComboBox.setRequiredIndicatorVisible(true);
+        phoneNumber.setRequiredIndicatorVisible(true);
+        email.setRequiredIndicatorVisible(true);
+        username.setRequiredIndicatorVisible(true);
+        password.setRequiredIndicatorVisible(true);
+        specialization.setRequiredIndicatorVisible(true);
     }
 
     private void clearForm() {
         this.employeeDto = null;
         binder.readBean(this.employeeDto);
-        specializationsComboBox.clear();
+        specialization.clear();
     }
 
     private void setSpecializationsToComboBox() {
         List<String> specializations = specializationService.getAllSpecializationsNames();
-        specializationsComboBox.setItems(specializations);
+        specialization.setItems(specializations);
     }
 }

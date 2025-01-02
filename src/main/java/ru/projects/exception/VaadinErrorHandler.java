@@ -14,7 +14,7 @@ public class VaadinErrorHandler extends DefaultErrorHandler {
         throwable.printStackTrace();
 
         // Вывод уведомления пользователю
-        Notification.show("An unexpected error occurred: " + throwable.getMessage(), 3000,
+        Notification.show("An unexpected error occurred: " + throwable.getMessage(), 5000,
                 Notification.Position.TOP_CENTER).addThemeVariants(NotificationVariant.LUMO_ERROR);
     }
 }

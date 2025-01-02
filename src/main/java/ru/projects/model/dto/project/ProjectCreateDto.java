@@ -1,5 +1,7 @@
 package ru.projects.model.dto.project;
 
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,8 +24,10 @@ import java.util.Set;
 @ToString
 public class ProjectCreateDto {
 
+    @NotEmpty(message = "Name cannot be empty")
     private String name;
 
+    @NotNull(message = "Start Date cannot be null")
     private LocalDate startDate;
 
     private Set<EmployeeShortDto> employees;

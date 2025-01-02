@@ -228,9 +228,11 @@ public class CreateTaskView extends Composite<VerticalLayout> {
                 .bind(TaskCreateDto::getProject, TaskCreateDto::setProject);
         binder.forField(name)
                 .asRequired("Task name is required")
+                .withValidator(value -> !value.trim().isEmpty(), "Task name cannot be empty or spaces only")
                 .bind(TaskCreateDto::getName, TaskCreateDto::setName);
         binder.forField(description)
                 .asRequired("Description is required")
+                .withValidator(value -> !value.trim().isEmpty(), "Description cannot be empty or spaces only")
                 .bind(TaskCreateDto::getDescription, TaskCreateDto::setDescription);
         binder.forField(taskType)
                 .asRequired("Task type is required")
