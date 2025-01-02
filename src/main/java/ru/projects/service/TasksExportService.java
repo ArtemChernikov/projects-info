@@ -22,9 +22,27 @@ public class TasksExportService {
 
     private final TaskService taskService;
 
-    public ByteArrayInputStream generateExcelReport() {
+    public ByteArrayInputStream generateTasksReport() {
         List<TaskFullDto> tasks = taskService.getAllByOrderProjectName();
+        return generateExcelReport(tasks);
+    }
 
+    public ByteArrayInputStream generateTasksReportByProjectIds(List<Long> projectIds) {
+        List<TaskFullDto> tasks = taskService.getAllByProjectIdsAndOrderProjectName(projectIds);
+        return generateExcelReport(tasks);
+    }
+
+    public ByteArrayInputStream generateActiveTasksReportByProjectIds(List<Long> projectIds) {
+        List<TaskFullDto> tasks = taskService.getAllActiveByProjectIdsAndOrderProjectName(projectIds);
+        return generateExcelReport(tasks);
+    }
+
+    public ByteArrayInputStream generateFinishedTasksReportByProjectIds(List<Long> projectIds) {
+        List<TaskFullDto> tasks = taskService.getAllFinishedByProjectIdsAndOrderProjectName(projectIds);
+        return generateExcelReport(tasks);
+    }
+
+    private ByteArrayInputStream generateExcelReport(List<TaskFullDto> tasks) {
         try (Workbook workbook = new XSSFWorkbook();
              ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
             Sheet sheet = workbook.createSheet("Tasks and employees");

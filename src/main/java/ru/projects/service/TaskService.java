@@ -65,7 +65,19 @@ public class TaskService {
     }
 
     public List<TaskFullDto> getAllByOrderProjectName() {
-        return taskMapper.tasksToTaskFullDtos(taskRepository.findAllByOrderByProject_NameAsc());
+        return taskMapper.tasksToTaskFullDtos(taskRepository.findAllByOrderByProject_Name());
+    }
+
+    public List<TaskFullDto> getAllByProjectIdsAndOrderProjectName(List<Long> projectIds) {
+        return taskMapper.tasksToTaskFullDtos(taskRepository.findAllByProjectIdsOrderByProjectName(projectIds));
+    }
+
+    public List<TaskFullDto> getAllActiveByProjectIdsAndOrderProjectName(List<Long> projectIds) {
+        return taskMapper.tasksToTaskFullDtos(taskRepository.findAllActiveByProjectIdsOrderByProjectName(projectIds));
+    }
+
+    public List<TaskFullDto> getAllFinishedByProjectIdsAndOrderProjectName(List<Long> projectIds) {
+        return taskMapper.tasksToTaskFullDtos(taskRepository.findAllFinishedByProjectIdsOrderByProjectName(projectIds));
     }
 
     public void updateStatusById(Long taskId, String status) {

@@ -50,9 +50,9 @@ import static ru.projects.util.Constants.QA_ENGINEER_SPECIALIZATION_NAME;
 
 @PageTitle("All Projects")
 @Route(value = "projects/:projectID?/:action?(edit)", layout = MainLayout.class)
-@RolesAllowed(value = {"ROLE_ADMIN", "ROLE_PM"})
+@RolesAllowed(value = {"ROLE_ADMIN"})
 @Menu(order = 4, icon = "line-awesome/svg/project-diagram-solid.svg")
-public class ProjectsView extends Div implements BeforeEnterObserver {
+public class EditAllProjectsView extends Div implements BeforeEnterObserver {
 
     private static final String PROJECT_ID = "projectID";
     private static final String PROJECT_EDIT_ROUTE_TEMPLATE = "projects/%s/edit";
@@ -84,7 +84,7 @@ public class ProjectsView extends Div implements BeforeEnterObserver {
     private final ProjectService projectService;
     private final EmployeeService employeeService;
 
-    public ProjectsView(ProjectService projectService, EmployeeService employeeService) {
+    public EditAllProjectsView(ProjectService projectService, EmployeeService employeeService) {
         this.projectService = projectService;
         this.employeeService = employeeService;
         addClassNames("projects-view");
@@ -102,7 +102,7 @@ public class ProjectsView extends Div implements BeforeEnterObserver {
                 Notification.show(String.format("The requested employee was not found, ID = %s", projectId.get()),
                         3000, Position.BOTTOM_START);
                 refreshGrid();
-                event.forwardTo(ProjectsView.class);
+                event.forwardTo(EditAllProjectsView.class);
             }
         }
     }
@@ -167,7 +167,7 @@ public class ProjectsView extends Div implements BeforeEnterObserver {
                 UI.getCurrent().navigate(String.format(PROJECT_EDIT_ROUTE_TEMPLATE, event.getValue().getProjectId()));
             } else {
                 clearForm();
-                UI.getCurrent().navigate(ProjectsView.class);
+                UI.getCurrent().navigate(EditAllProjectsView.class);
             }
         });
     }
@@ -255,7 +255,7 @@ public class ProjectsView extends Div implements BeforeEnterObserver {
             refreshGrid();
             Notification.show("The project has been updated.", 3000, Position.TOP_CENTER)
                     .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
-            UI.getCurrent().navigate(ProjectsView.class);
+            UI.getCurrent().navigate(EditAllProjectsView.class);
         } catch (ObjectOptimisticLockingFailureException exception) {
             Notification.show(
                     "Error updating the project. Somebody else has updated the record while you were making changes.",
@@ -277,7 +277,7 @@ public class ProjectsView extends Div implements BeforeEnterObserver {
             refreshGrid();
             Notification.show("The project has been removed.", 3000, Position.TOP_CENTER)
                     .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
-            UI.getCurrent().navigate(ProjectsView.class);
+            UI.getCurrent().navigate(EditAllProjectsView.class);
         } catch (ObjectOptimisticLockingFailureException exception) {
             Notification.show(
                     "Error updating the project. Somebody else has updated the record while you were making changes.",
