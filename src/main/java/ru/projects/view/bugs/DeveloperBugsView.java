@@ -24,7 +24,7 @@ import ru.projects.view.MainLayout;
 @Route(value = "employee-bugs", layout = MainLayout.class)
 @RolesAllowed(value = {"ROLE_DEV"})
 @Menu(order = 10, icon = "line-awesome/svg/bug-solid.svg")
-public class EmployeeBugsView extends Div  {
+public class DeveloperBugsView extends Div  {
 
     private final Grid<BugViewDto> grid = new Grid<>(BugViewDto.class, false);
 
@@ -32,7 +32,7 @@ public class EmployeeBugsView extends Div  {
 
     private Employee authenticatedEmployee;
 
-    public EmployeeBugsView(BugService bugService, EmployeeService employeeService) {
+    public DeveloperBugsView(BugService bugService, EmployeeService employeeService) {
         this.bugService = bugService;
         authenticatedEmployee = employeeService.getCurrentEmployee();
         addClassNames("employee-bugs-view");

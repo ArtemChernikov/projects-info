@@ -42,7 +42,7 @@ import java.util.Set;
 @Route(value = "create-bug", layout = MainLayout.class)
 @RolesAllowed(value = {"ROLE_TEST"})
 @Menu(order = 9, icon = "line-awesome/svg/bug-solid.svg")
-public class EmployeeCreateBugView extends Composite<VerticalLayout> {
+public class CreateBugView extends Composite<VerticalLayout> {
 
     private final BugService bugService;
     private final ProjectService projectService;
@@ -59,8 +59,8 @@ public class EmployeeCreateBugView extends Composite<VerticalLayout> {
 
     private BugCreateDto bugCreateDto;
 
-    public EmployeeCreateBugView(BugService bugService, ProjectService projectService,
-                                 EmployeeService employeeService) {
+    public CreateBugView(BugService bugService, ProjectService projectService,
+                         EmployeeService employeeService) {
         this.bugService = bugService;
         this.projectService = projectService;
         authenticatedEmployee = employeeService.getCurrentEmployee();

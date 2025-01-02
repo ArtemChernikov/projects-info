@@ -1,4 +1,4 @@
-package ru.projects.view.employees;
+package ru.projects.view.employees.filter;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Text;

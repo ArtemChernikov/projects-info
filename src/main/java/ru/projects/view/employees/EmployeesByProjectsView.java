@@ -16,11 +16,11 @@ import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import jakarta.annotation.security.RolesAllowed;
 import org.springframework.data.domain.PageRequest;
-import ru.projects.model.dto.employee.EmployeeDto;
 import ru.projects.model.dto.employee.EmployeeFullDto;
 import ru.projects.service.EmployeeService;
 import ru.projects.service.SpecializationService;
 import ru.projects.view.MainLayout;
+import ru.projects.view.employees.filter.EmployeeByProjectsFilter;
 
 /**
  * @author Artem Chernikov
