@@ -44,13 +44,15 @@ public class ProjectService {
     }
 
     public Project update(ProjectFullDto projectFullDto) {
-        checkProjectExistsById(projectFullDto.getProjectId());
+        Project oldProject = getProjectById(projectFullDto.getProjectId());
         Project project = projectMapper.projectFullDtoToProject(projectFullDto);
+        project.setTasks(oldProject.getTasks());
+        project.setBugs(oldProject.getBugs());
         return projectRepository.save(project);
     }
 
     public void deleteById(Long projectId) {
-        checkProjectExistsById(projectId);
+        getProjectById(projectId);
         projectRepository.deleteById(projectId);
     }
 
@@ -72,10 +74,8 @@ public class ProjectService {
         return projectMapper.projectsToProjectsShortDto(projectRepository.findByEmployees_EmployeeId(employeeId));
     }
 
-    private void checkProjectExistsById(Long projectId) {
-        if (!projectRepository.existsById(projectId)) {
-            throw new RuntimeException("Project Not Found.");
-        }
+    private Project getProjectById(Long projectId) {
+        return projectRepository.findById(projectId).orElseThrow(() -> new RuntimeException("Project Not Found."));
     }
 
 }
