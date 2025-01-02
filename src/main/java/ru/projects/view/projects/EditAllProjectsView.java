@@ -128,6 +128,7 @@ public class EditAllProjectsView extends Div implements BeforeEnterObserver {
         binder = new BeanValidationBinder<>(ProjectFullDto.class);
         binder.forField(name)
                 .asRequired("Project name is required")
+                .withValidator(value -> !value.trim().isEmpty(), "Project name cannot be empty or spaces only")
                 .bind(ProjectFullDto::getName, ProjectFullDto::setName);
         binder.forField(startDate)
                 .asRequired("Start date is required")

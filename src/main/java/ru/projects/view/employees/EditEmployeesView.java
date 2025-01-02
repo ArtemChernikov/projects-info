@@ -33,6 +33,7 @@ import ru.projects.service.EmployeeService;
 import ru.projects.service.SpecializationService;
 import ru.projects.view.MainLayout;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -156,27 +157,38 @@ public class EditEmployeesView extends Div implements BeforeEnterObserver {
         binder = new BeanValidationBinder<>(EmployeeFullDto.class);
         binder.forField(firstName)
                 .asRequired("First name is required")
+                .withValidator(value -> !value.trim().isEmpty(), "First name cannot be empty or spaces only")
+                .withValidator(value -> value.matches("^[a-zA-Zа-яА-ЯёЁ]+$"), "First name must contain only letters")
                 .bind(EmployeeFullDto::getFirstName, EmployeeFullDto::setFirstName);
         binder.forField(lastName)
                 .asRequired("Last name is required")
+                .withValidator(value -> !value.trim().isEmpty(), "Last name cannot be empty or spaces only")
+                .withValidator(value -> value.matches("^[a-zA-Zа-яА-ЯёЁ]+$"), "Last name must contain only letters")
                 .bind(EmployeeFullDto::getLastName, EmployeeFullDto::setLastName);
         binder.forField(patronymicName)
                 .asRequired("Patronymic name is required")
+                .withValidator(value -> !value.trim().isEmpty(), "Patronymic name cannot be empty or spaces only")
+                .withValidator(value -> value.matches("^[a-zA-Zа-яА-ЯёЁ]+$"), "Patronymic name must contain only letters")
                 .bind(EmployeeFullDto::getPatronymicName, EmployeeFullDto::setPatronymicName);
         binder.forField(dateOfBirth)
                 .asRequired("Date of birth is required")
+                .withValidator(value -> value.isBefore(LocalDate.now()), "Date of birth cannot be after now")
                 .bind(EmployeeFullDto::getDateOfBirth, EmployeeFullDto::setDateOfBirth);
         binder.forField(phone)
                 .asRequired("Phone is required")
+                .withValidator(phone -> phone.matches("^(\\+7|8)[0-9]{10}$"),
+                        "Phone number must be valid (e.g., +79301044124 or 89301044124)")
                 .bind(EmployeeFullDto::getPhone, EmployeeFullDto::setPhone);
         binder.forField(email)
                 .asRequired("Email is required")
                 .bind(EmployeeFullDto::getEmail, EmployeeFullDto::setEmail);
         binder.forField(username)
                 .asRequired("Username is required")
+                .withValidator(value -> !value.trim().isEmpty(), "Username cannot be empty or spaces only")
                 .bind(EmployeeFullDto::getUsername, EmployeeFullDto::setUsername);
         binder.forField(password)
                 .asRequired("Password is required")
+                .withValidator(value -> !value.trim().isEmpty(), "Password cannot be empty or spaces only")
                 .bind(EmployeeFullDto::getPassword, EmployeeFullDto::setPassword);
         binder.forField(specializationsComboBox)
                 .asRequired("Specialization is required")

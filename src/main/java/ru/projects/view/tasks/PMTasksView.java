@@ -164,9 +164,11 @@ public class PMTasksView extends Div implements BeforeEnterObserver {
         binder = new BeanValidationBinder<>(TaskFullDto.class);
         binder.forField(name)
                 .asRequired("Task name is required")
+                .withValidator(value -> !value.trim().isEmpty(), "Task name cannot be empty or spaces only")
                 .bind(TaskFullDto::getName, TaskFullDto::setName);
         binder.forField(description)
                 .asRequired("Description is required")
+                .withValidator(value -> !value.trim().isEmpty(), "Description cannot be empty or spaces only")
                 .bind(TaskFullDto::getDescription, TaskFullDto::setDescription);
         binder.forField(employee)
                 .asRequired("Employee is required")
