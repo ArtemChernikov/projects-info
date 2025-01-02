@@ -17,6 +17,7 @@ import com.vaadin.flow.theme.lumo.LumoUtility;
 import jakarta.annotation.security.RolesAllowed;
 import org.springframework.data.domain.PageRequest;
 import ru.projects.model.dto.employee.EmployeeDto;
+import ru.projects.model.dto.employee.EmployeeFullDto;
 import ru.projects.service.EmployeeService;
 import ru.projects.service.SpecializationService;
 import ru.projects.view.MainLayout;
@@ -33,7 +34,7 @@ import ru.projects.view.MainLayout;
 @Menu(order = 1, icon = "line-awesome/svg/users-solid.svg")
 public class AllEmployeesView extends Div {
 
-    private Grid<EmployeeDto> grid;
+    private Grid<EmployeeFullDto> grid;
 
     private EmployeeFilter employeeFilter;
     private final EmployeeService employeeService;
@@ -76,13 +77,14 @@ public class AllEmployeesView extends Div {
 
 
     private Component createGrid() {
-        grid = new Grid<>(EmployeeDto.class, false);
+        grid = new Grid<>(EmployeeFullDto.class, false);
         grid.addColumn("firstName").setAutoWidth(true);
         grid.addColumn("lastName").setAutoWidth(true);
         grid.addColumn("email").setAutoWidth(true);
         grid.addColumn("phone").setAutoWidth(true);
         grid.addColumn("dateOfBirth").setAutoWidth(true);
         grid.addColumn("specialization").setAutoWidth(true);
+        grid.addColumn("projects").setAutoWidth(true);
 
         grid.setItems(query -> employeeService.getAllByFilter(
                 PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)),

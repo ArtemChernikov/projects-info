@@ -205,6 +205,7 @@ public class EditEmployeesView extends Div implements BeforeEnterObserver {
         grid.addColumn("email").setAutoWidth(true);
         grid.addColumn("username").setAutoWidth(true);
         grid.addColumn("specialization").setAutoWidth(true);
+        grid.addColumn("projects").setAutoWidth(true);
         grid.setItems(query -> employeeService.getAll(
                         PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)))
                 .stream());

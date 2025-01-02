@@ -5,6 +5,7 @@ import org.mapstruct.Mapping;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import ru.projects.model.Employee;
+import ru.projects.model.Project;
 import ru.projects.model.dto.employee.EmployeeDto;
 import ru.projects.model.dto.employee.EmployeeFullDto;
 import ru.projects.model.dto.employee.EmployeeShortDto;
@@ -13,6 +14,7 @@ import ru.projects.service.SpecializationService;
 
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Mapper(componentModel = "spring")
 public abstract class EmployeeMapper {
@@ -40,6 +42,7 @@ public abstract class EmployeeMapper {
     @Mapping(target = "specialization", expression = "java(employee.getSpecialization().getSpecializationName())")
     @Mapping(target = "username", source = "user.username")
     @Mapping(target = "password", source = "user.password")
+    @Mapping(target = "projects", expression = "java(getProjectNames(employee.getProjects()))")
     public abstract EmployeeFullDto employeeToEmployeeFullDto(Employee employee);
 
     public abstract List<EmployeeFullDto> employeesToEmployeesFullDto(List<Employee> employees);
@@ -47,6 +50,7 @@ public abstract class EmployeeMapper {
     @Mapping(target = "specialization", expression = "java(specializationService.getSpecializationByName(employeeFullDto.getSpecialization()))")
     @Mapping(target = "user.username", source = "username")
     @Mapping(target = "user.password", source = "password")
+    @Mapping(target = "projects", ignore = true)
     public abstract Employee employeeFullDtoToEmployee(EmployeeFullDto employeeFullDto);
 
     @Mapping(target = "name", expression = "java(getEmployeeFullName(employee))")
@@ -58,6 +62,12 @@ public abstract class EmployeeMapper {
 
     public String getEmployeeFullName(Employee employee) {
         return String.join(" ", employee.getLastName(), employee.getFirstName(), employee.getPatronymicName());
+    }
+
+    public String getProjectNames(Set<Project> projects) {
+        return projects.stream()
+                .map(Project::getName)
+                .collect(Collectors.joining(", "));
     }
 
 }

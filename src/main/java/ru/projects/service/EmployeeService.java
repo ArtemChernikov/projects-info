@@ -9,6 +9,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.projects.mapper.EmployeeMapper;
 import ru.projects.model.Employee;
 import ru.projects.model.User;
@@ -17,7 +18,6 @@ import ru.projects.model.dto.employee.EmployeeFullDto;
 import ru.projects.model.dto.employee.EmployeeShortDto;
 import ru.projects.model.enums.TaskType;
 import ru.projects.repository.EmployeeRepository;
-import ru.projects.repository.TaskRepository;
 
 import java.util.List;
 import java.util.Map;
@@ -35,7 +35,6 @@ import java.util.stream.Collectors;
 public class EmployeeService {
 
     private final EmployeeRepository employeeRepository;
-    private final TaskRepository taskRepository;
     private final SpecializationService specializationService;
     private final PasswordEncoder passwordEncoder;
     private final EmployeeMapper employeeMapper;
@@ -69,10 +68,12 @@ public class EmployeeService {
         return employeeRepository.save(employeeForUpdate);
     }
 
+    @Transactional
     public void deleteById(Long id) {
         if (!employeeRepository.existsById(id)) {
             throw new RuntimeException("Employee not found");
         }
+        employeeRepository.deleteEmployeeProjects(id);
         employeeRepository.deleteById(id);
     }
 
@@ -85,9 +86,9 @@ public class EmployeeService {
         return employeeMapper.employeesToEmployeesFullDto(employeeRepository.findAll());
     }
 
-    public Page<EmployeeDto> getAllByFilter(Pageable pageable, Specification<Employee> filter) {
+    public Page<EmployeeFullDto> getAllByFilter(Pageable pageable, Specification<Employee> filter) {
         return employeeRepository.findAll(filter, pageable)
-                .map(employeeMapper::employeeToEmployeeDto);
+                .map(employeeMapper::employeeToEmployeeFullDto);
     }
 
     public Map<String, List<EmployeeShortDto>> getAllEmployeesBySpecialization() {
