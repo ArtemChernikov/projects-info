@@ -12,6 +12,7 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
 import jakarta.annotation.security.RolesAllowed;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import ru.projects.model.Employee;
 import ru.projects.model.dto.bug.BugViewDto;
@@ -24,6 +25,7 @@ import ru.projects.view.MainLayout;
 @Route(value = "employee-bugs", layout = MainLayout.class)
 @RolesAllowed(value = {"ROLE_DEV"})
 @Menu(order = 10, icon = "line-awesome/svg/bug-solid.svg")
+@Slf4j
 public class DeveloperBugsView extends Div  {
 
     private final Grid<BugViewDto> grid = new Grid<>(BugViewDto.class, false);
@@ -61,6 +63,7 @@ public class DeveloperBugsView extends Div  {
                 if (event.getValue() != null) {
                     bug.setStatus(event.getValue());
                     bugService.updateStatusById(bug.getBugId(), event.getValue());
+                    log.info("VIEW: Bug status is updated.");
                     Notification.show("Status updated", 3000, Notification.Position.TOP_CENTER)
                             .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
                     refreshGrid();
@@ -78,6 +81,7 @@ public class DeveloperBugsView extends Div  {
     }
 
     private void refreshGrid() {
+        log.info("VIEW: Get all bugs by projects.");
         grid.setItems(query -> bugService.getAllByProjects(
                 PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)),
                 authenticatedEmployee.getProjects()

@@ -24,6 +24,7 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
 import jakarta.annotation.security.RolesAllowed;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import ru.projects.model.Employee;
@@ -41,6 +42,7 @@ import java.util.Optional;
 @Route(value = "qa-bugs/:bugID?/:action?(edit)", layout = MainLayout.class)
 @RolesAllowed(value = {"ROLE_TEST"})
 @Menu(order = 10, icon = "line-awesome/svg/bug-solid.svg")
+@Slf4j
 public class QABugsView extends Div implements BeforeEnterObserver {
 
     private static final String BUG_ID = "bugID";
@@ -89,6 +91,7 @@ public class QABugsView extends Div implements BeforeEnterObserver {
     }
 
     private void updateBug() {
+        log.info("VIEW: Updating bug.");
         try {
             if (this.bugUpdateDto == null) {
                 this.bugUpdateDto = new BugUpdateDto();
@@ -97,20 +100,24 @@ public class QABugsView extends Div implements BeforeEnterObserver {
             bugService.update(this.bugUpdateDto);
             clearForm();
             refreshGrid();
+            log.info("VIEW: Bug update successfully.");
             Notification.show("The bug has been updated.", 3000, Position.TOP_CENTER)
                     .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
             UI.getCurrent().navigate(QABugsView.class);
         } catch (ObjectOptimisticLockingFailureException exception) {
+            log.error("VIEW: Error updating the bug: {}", exception.getMessage());
             Notification.show(
                     "Error updating the bug. Somebody else has updated the record while you were making changes.",
                     3000, Position.TOP_CENTER).addThemeVariants(NotificationVariant.LUMO_ERROR);
         } catch (ValidationException validationException) {
+            log.error("VIEW: Error updating the bug: {}", validationException.getMessage());
             Notification.show("Failed to update the bug. Check again that all values are valid",
                     3000, Position.TOP_CENTER).addThemeVariants(NotificationVariant.LUMO_ERROR);
         }
     }
 
     private void deleteBug() {
+        log.info("VIEW: Deleting bug.");
         try {
             if (this.bugUpdateDto == null) {
                 this.bugUpdateDto = new BugUpdateDto();
@@ -119,14 +126,17 @@ public class QABugsView extends Div implements BeforeEnterObserver {
             bugService.deleteById(this.bugUpdateDto.getBugId());
             clearForm();
             refreshGrid();
+            log.info("VIEW: Bug delete successfully.");
             Notification.show("The bug has been removed.", 3000, Position.TOP_CENTER)
                     .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
             UI.getCurrent().navigate(QABugsView.class);
         } catch (ObjectOptimisticLockingFailureException exception) {
+            log.error("VIEW: Error deleting the bug: {}", exception.getMessage());
             Notification.show(
                     "Error updating the data. Somebody else has updated the record while you were making changes.",
                     3000, Position.TOP_CENTER).addThemeVariants(NotificationVariant.LUMO_ERROR);
         } catch (ValidationException validationException) {
+            log.error("VIEW: Error deleting the bug: {}", validationException.getMessage());
             Notification.show("Failed to delete bug. Check again that all values are valid",
                     3000, Position.TOP_CENTER);
         }

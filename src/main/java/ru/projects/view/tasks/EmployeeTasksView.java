@@ -12,6 +12,7 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
 import jakarta.annotation.security.RolesAllowed;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import ru.projects.model.Employee;
 import ru.projects.model.dto.task.TaskViewDto;
@@ -24,6 +25,7 @@ import ru.projects.view.MainLayout;
 @Route(value = "employee-tasks", layout = MainLayout.class)
 @RolesAllowed(value = {"ROLE_USER", "ROLE_DEV", "ROLE_TEST"})
 @Menu(order = 9, icon = "line-awesome/svg/list-alt-solid.svg")
+@Slf4j
 public class EmployeeTasksView extends Div  {
 
     private final Grid<TaskViewDto> grid = new Grid<>(TaskViewDto.class, false);
@@ -63,6 +65,7 @@ public class EmployeeTasksView extends Div  {
                 if (event.getValue() != null) {
                     task.setStatus(event.getValue());
                     taskService.updateStatusById(task.getTaskId(), event.getValue());
+                    log.info("VIEW: Task status updated.");
                     Notification.show("Status updated", 3000, Notification.Position.TOP_CENTER)
                             .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
 

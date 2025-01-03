@@ -23,6 +23,7 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility.Gap;
 import jakarta.annotation.security.RolesAllowed;
+import lombok.extern.slf4j.Slf4j;
 import ru.projects.model.dto.employee.EmployeeDto;
 import ru.projects.service.EmployeeService;
 import ru.projects.service.SpecializationService;
@@ -40,6 +41,7 @@ import java.util.List;
 @Route(value = "create-employee", layout = MainLayout.class)
 @RolesAllowed(value = {"ROLE_ADMIN"})
 @Menu(order = 3, icon = "line-awesome/svg/user-plus-solid.svg")
+@Slf4j
 public class CreateEmployeeView extends Composite<VerticalLayout> {
 
     private final EmployeeService employeeService;
@@ -75,6 +77,7 @@ public class CreateEmployeeView extends Composite<VerticalLayout> {
     }
 
     private void saveEmployee() {
+        log.info("VIEW: Saving employee.");
         try {
             if (this.employeeDto == null) {
                 this.employeeDto = new EmployeeDto();
@@ -82,9 +85,11 @@ public class CreateEmployeeView extends Composite<VerticalLayout> {
             binder.writeBean(this.employeeDto);
             employeeService.save(employeeDto);
             clearForm();
+            log.info("VIEW: Employee saved.");
             Notification.show("Employee saved successfully.", 3000, Notification.Position.TOP_CENTER)
                     .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
         } catch (ValidationException e) {
+            log.error("VIEW: Failed to create employee: {}", e.getMessage());
             Notification.show("Failed to create employee. Check again that all values are valid",
                     3000, Notification.Position.TOP_CENTER).addThemeVariants(NotificationVariant.LUMO_ERROR);
         }

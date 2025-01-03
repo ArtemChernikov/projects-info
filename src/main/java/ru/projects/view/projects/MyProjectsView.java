@@ -9,6 +9,7 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
 import jakarta.annotation.security.RolesAllowed;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import ru.projects.model.Employee;
 import ru.projects.model.dto.project.ProjectFullDto;
@@ -20,6 +21,7 @@ import ru.projects.view.MainLayout;
 @Route(value = "employee-projects", layout = MainLayout.class)
 @RolesAllowed(value = {"ROLE_USER", "ROLE_DEV", "ROLE_TEST"})
 @Menu(order = 8, icon = "line-awesome/svg/project-diagram-solid.svg")
+@Slf4j
 public class MyProjectsView extends Div  {
 
     private final Grid<ProjectFullDto> grid = new Grid<>(ProjectFullDto.class, false);
@@ -52,6 +54,7 @@ public class MyProjectsView extends Div  {
         grid.setDetailsVisibleOnClick(false);
         grid.setItemDetailsRenderer(ProjectEmployeeDetails.createProjectDetailsRenderer());
 
+        log.info("VIEW: get all projects by employee");
         grid.setItems(query -> projectService.getAllByEmployeeId(
                         PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)),
                         authenticatedEmployee.getEmployeeId())

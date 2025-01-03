@@ -21,6 +21,7 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility.Gap;
 import jakarta.annotation.security.RolesAllowed;
+import lombok.extern.slf4j.Slf4j;
 import ru.projects.model.dto.employee.EmployeeShortDto;
 import ru.projects.model.dto.project.ProjectCreateDto;
 import ru.projects.service.EmployeeService;
@@ -54,6 +55,7 @@ import static ru.projects.util.Constants.QA_ENGINEER_SPECIALIZATION_NAME;
 @Route(value = "create-project", layout = MainLayout.class)
 @RolesAllowed(value = {"ROLE_ADMIN", "ROLE_PM"})
 @Menu(order = 5, icon = "line-awesome/svg/folder-plus-solid.svg")
+@Slf4j
 public class CreateProjectView extends Composite<VerticalLayout> {
 
     private final ProjectService projectService;
@@ -91,6 +93,7 @@ public class CreateProjectView extends Composite<VerticalLayout> {
     }
 
     private void saveProject() {
+        log.info("VIEW: Saving project");
         try {
             if (this.projectCreateDto == null) {
                 this.projectCreateDto = new ProjectCreateDto();
@@ -99,9 +102,11 @@ public class CreateProjectView extends Composite<VerticalLayout> {
             setEmployeesToProject();
             projectService.save(projectCreateDto);
             clearForm();
+            log.info("VIEW: Project saved");
             Notification.show("Project saved successfully.", 3000, Notification.Position.TOP_CENTER)
                     .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
         } catch (ValidationException e) {
+            log.error("VIEW: Failed to create project: {}", e.getMessage());
             Notification.show("Failed to create project. Check again that all values are valid",
                     3000, Notification.Position.TOP_CENTER).addThemeVariants(NotificationVariant.LUMO_ERROR);
         }

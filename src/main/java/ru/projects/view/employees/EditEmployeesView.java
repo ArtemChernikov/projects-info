@@ -26,6 +26,7 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
 import jakarta.annotation.security.RolesAllowed;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import ru.projects.model.dto.employee.EmployeeFullDto;
@@ -41,6 +42,7 @@ import java.util.Optional;
 @Route(value = "edit-employees/:employeeID?/:action?(edit)", layout = MainLayout.class)
 @RolesAllowed(value = {"ROLE_ADMIN"})
 @Menu(order = 2, icon = "line-awesome/svg/users-cog-solid.svg")
+@Slf4j
 public class EditEmployeesView extends Div implements BeforeEnterObserver {
 
     private static final String EMPLOYEE_ID = "employeeID";
@@ -94,6 +96,7 @@ public class EditEmployeesView extends Div implements BeforeEnterObserver {
     }
 
     private void updateEmployee() {
+        log.info("VIEW: Updating employee");
         try {
             if (this.employee == null) {
                 this.employee = new EmployeeFullDto();
@@ -102,20 +105,24 @@ public class EditEmployeesView extends Div implements BeforeEnterObserver {
             employeeService.update(this.employee);
             clearForm();
             refreshGrid();
+            log.info("VIEW: Employee updated");
             Notification.show("The employee has been updated.", 3000, Position.TOP_CENTER)
                     .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
             UI.getCurrent().navigate(EditEmployeesView.class);
         } catch (ObjectOptimisticLockingFailureException exception) {
+            log.error("VIEW: Error updating the employee: {}", exception.getMessage());
             Notification.show(
                     "Error updating the employee. Somebody else has updated the record while you were making changes.",
                     3000, Position.TOP_CENTER).addThemeVariants(NotificationVariant.LUMO_ERROR);
         } catch (ValidationException validationException) {
+            log.error("VIEW: Error updating the employee: {}", validationException.getMessage());
             Notification.show("Failed to update the employee. Check again that all values are valid",
                     3000, Position.TOP_CENTER).addThemeVariants(NotificationVariant.LUMO_ERROR);
         }
     }
 
     private void deleteEmployee() {
+        log.info("VIEW: Deleting employee");
         try {
             if (this.employee == null) {
                 this.employee = new EmployeeFullDto();
@@ -124,14 +131,17 @@ public class EditEmployeesView extends Div implements BeforeEnterObserver {
             employeeService.deleteById(this.employee.getEmployeeId());
             clearForm();
             refreshGrid();
+            log.info("VIEW: Employee deleted.");
             Notification.show("The employee has been removed.", 3000, Position.TOP_CENTER)
                     .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
             UI.getCurrent().navigate(EditEmployeesView.class);
         } catch (ObjectOptimisticLockingFailureException exception) {
+            log.error("VIEW: Error deleting the employee: {}", exception.getMessage());
             Notification.show(
                     "Error updating the data. Somebody else has updated the record while you were making changes.",
                     3000, Notification.Position.TOP_CENTER).addThemeVariants(NotificationVariant.LUMO_ERROR);
         } catch (ValidationException validationException) {
+            log.error("VIEW: Error deleting the employee: {}", validationException.getMessage());
             Notification.show("Failed to delete employee. Check again that all values are valid",
                     3000, Notification.Position.TOP_CENTER);
         }

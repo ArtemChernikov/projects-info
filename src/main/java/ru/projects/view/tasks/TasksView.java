@@ -24,6 +24,7 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
 import jakarta.annotation.security.RolesAllowed;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import ru.projects.model.dto.employee.EmployeeShortDto;
@@ -43,6 +44,7 @@ import java.util.Set;
 @Route(value = "tasks/:taskID?/:action?(edit)", layout = MainLayout.class)
 @RolesAllowed(value = {"ROLE_ADMIN"})
 @Menu(order = 6, icon = "line-awesome/svg/list-alt-solid.svg")
+@Slf4j
 public class TasksView extends Div implements BeforeEnterObserver {
 
     private static final String TASK_ID = "taskID";
@@ -87,11 +89,12 @@ public class TasksView extends Div implements BeforeEnterObserver {
             clearForm();
             refreshGrid();
         });
-        save.addClickListener(clickEvent -> updateEmployee());
-        delete.addClickListener(clickEvent -> deleteEmployee());
+        save.addClickListener(clickEvent -> updateTask());
+        delete.addClickListener(clickEvent -> deleteTask());
     }
 
-    private void updateEmployee() {
+    private void updateTask() {
+        log.info("VIEW: Updating task");
         try {
             if (this.task == null) {
                 this.task = new TaskFullDto();
@@ -100,20 +103,24 @@ public class TasksView extends Div implements BeforeEnterObserver {
             taskService.update(this.task);
             clearForm();
             refreshGrid();
-            Notification.show("The employee has been updated.", 3000, Position.TOP_CENTER)
+            log.info("VIEW: Task updated");
+            Notification.show("The task has been updated.", 3000, Position.TOP_CENTER)
                     .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
             UI.getCurrent().navigate(TasksView.class);
         } catch (ObjectOptimisticLockingFailureException exception) {
+            log.error("VIEW: Error updating the task: {}", exception.getMessage());
             Notification.show(
                     "Error updating the task. Somebody else has updated the record while you were making changes.",
                     3000, Position.TOP_CENTER).addThemeVariants(NotificationVariant.LUMO_ERROR);
         } catch (ValidationException validationException) {
+            log.error("VIEW: Error updating the task: {}", validationException.getMessage());
             Notification.show("Failed to update the task. Check again that all values are valid",
                     3000, Position.TOP_CENTER).addThemeVariants(NotificationVariant.LUMO_ERROR);
         }
     }
 
-    private void deleteEmployee() {
+    private void deleteTask() {
+        log.info("VIEW: Deleting task");
         try {
             if (this.task == null) {
                 this.task = new TaskFullDto();
@@ -122,14 +129,17 @@ public class TasksView extends Div implements BeforeEnterObserver {
             taskService.deleteById(this.task.getTaskId());
             clearForm();
             refreshGrid();
+            log.info("VIEW: Task deleted");
             Notification.show("The task has been removed.", 3000, Position.TOP_CENTER)
                     .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
             UI.getCurrent().navigate(TasksView.class);
         } catch (ObjectOptimisticLockingFailureException exception) {
+            log.error("VIEW: Error deleting the task: {}", exception.getMessage());
             Notification.show(
                     "Error updating the data. Somebody else has updated the record while you were making changes.",
                     3000, Position.TOP_CENTER).addThemeVariants(NotificationVariant.LUMO_ERROR);
         } catch (ValidationException validationException) {
+            log.error("VIEW: Error deleting the task: {}", validationException.getMessage());
             Notification.show("Failed to delete task. Check again that all values are valid",
                     3000, Position.TOP_CENTER);
         }
@@ -147,7 +157,7 @@ public class TasksView extends Div implements BeforeEnterObserver {
                 setStatusesToComboBox();
                 fillEditForm(taskFromBackend);
             } else {
-                Notification.show(String.format("The requested employee was not found, ID = %s", employeeId.get()),
+                Notification.show(String.format("The requested task was not found, ID = %s", employeeId.get()),
                         3000, Position.BOTTOM_START);
                 refreshGrid();
                 event.forwardTo(TasksView.class);

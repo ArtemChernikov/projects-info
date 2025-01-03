@@ -25,6 +25,7 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
 import jakarta.annotation.security.RolesAllowed;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import ru.projects.model.dto.employee.EmployeeShortDto;
@@ -52,6 +53,7 @@ import static ru.projects.util.Constants.QA_ENGINEER_SPECIALIZATION_NAME;
 @Route(value = "projects/:projectID?/:action?(edit)", layout = MainLayout.class)
 @RolesAllowed(value = {"ROLE_ADMIN"})
 @Menu(order = 4, icon = "line-awesome/svg/project-diagram-solid.svg")
+@Slf4j
 public class EditAllProjectsView extends Div implements BeforeEnterObserver {
 
     private static final String PROJECT_ID = "projectID";
@@ -246,6 +248,7 @@ public class EditAllProjectsView extends Div implements BeforeEnterObserver {
     }
 
     private void updateProject() {
+        log.info("VIEW: Updating project");
         try {
             if (this.projectFullDto == null) {
                 this.projectFullDto = new ProjectFullDto();
@@ -254,20 +257,24 @@ public class EditAllProjectsView extends Div implements BeforeEnterObserver {
             projectService.update(this.projectFullDto);
             clearForm();
             refreshGrid();
+            log.info("VIEW: Project updated");
             Notification.show("The project has been updated.", 3000, Position.TOP_CENTER)
                     .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
             UI.getCurrent().navigate(EditAllProjectsView.class);
         } catch (ObjectOptimisticLockingFailureException exception) {
+            log.error("VIEW: Error updating the project: {}", exception.getMessage());
             Notification.show(
                     "Error updating the project. Somebody else has updated the record while you were making changes.",
                     3000, Position.TOP_CENTER).addThemeVariants(NotificationVariant.LUMO_ERROR);
         } catch (ValidationException validationException) {
+            log.error("VIEW: Error updating the project: {}", validationException.getMessage());
             Notification.show("Failed to update the project. Check again that all values are valid",
                     3000, Position.TOP_CENTER).addThemeVariants(NotificationVariant.LUMO_ERROR);
         }
     }
 
     private void deleteProject() {
+        log.info("VIEW: Deleting project");
         try {
             if (this.projectFullDto == null) {
                 this.projectFullDto = new ProjectFullDto();
@@ -276,14 +283,17 @@ public class EditAllProjectsView extends Div implements BeforeEnterObserver {
             projectService.deleteById(this.projectFullDto.getProjectId());
             clearForm();
             refreshGrid();
+            log.info("VIEW: Project deleted.");
             Notification.show("The project has been removed.", 3000, Position.TOP_CENTER)
                     .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
             UI.getCurrent().navigate(EditAllProjectsView.class);
         } catch (ObjectOptimisticLockingFailureException exception) {
+            log.error("VIEW: Error deleting the project: {}", exception.getMessage());
             Notification.show(
                     "Error updating the project. Somebody else has updated the record while you were making changes.",
                     3000, Position.TOP_CENTER).addThemeVariants(NotificationVariant.LUMO_ERROR);
         } catch (ValidationException validationException) {
+            log.error("VIEW: Error deleting the project: {}", validationException.getMessage());
             Notification.show("Failed to delete project. Check again that all values are valid",
                     3000, Position.TOP_CENTER);
         }

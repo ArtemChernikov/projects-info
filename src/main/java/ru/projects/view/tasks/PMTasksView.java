@@ -24,6 +24,7 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
 import jakarta.annotation.security.RolesAllowed;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import ru.projects.model.Employee;
@@ -44,6 +45,7 @@ import java.util.Set;
 @Route(value = "pm-tasks/:taskID?/:action?(edit)", layout = MainLayout.class)
 @RolesAllowed(value = {"ROLE_PM"})
 @Menu(order = 6, icon = "line-awesome/svg/list-alt-solid.svg")
+@Slf4j
 public class PMTasksView extends Div implements BeforeEnterObserver {
 
     private static final String TASK_ID = "taskID";
@@ -96,6 +98,7 @@ public class PMTasksView extends Div implements BeforeEnterObserver {
     }
 
     private void updateTask() {
+        log.info("VIEW: Updating task");
         try {
             if (this.task == null) {
                 this.task = new TaskFullDto();
@@ -104,20 +107,24 @@ public class PMTasksView extends Div implements BeforeEnterObserver {
             taskService.update(this.task);
             clearForm();
             refreshGrid();
+            log.info("VIEW: Task updated");
             Notification.show("The task has been updated.", 3000, Position.TOP_CENTER)
                     .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
             UI.getCurrent().navigate(PMTasksView.class);
         } catch (ObjectOptimisticLockingFailureException exception) {
+            log.error("VIEW: Error updating the task: {}", exception.getMessage());
             Notification.show(
                     "Error updating the task. Somebody else has updated the record while you were making changes.",
                     3000, Position.TOP_CENTER).addThemeVariants(NotificationVariant.LUMO_ERROR);
         } catch (ValidationException validationException) {
+            log.error("VIEW: Error updating the task: {}", validationException.getMessage());
             Notification.show("Failed to update the task. Check again that all values are valid",
                     3000, Position.TOP_CENTER).addThemeVariants(NotificationVariant.LUMO_ERROR);
         }
     }
 
     private void deleteTask() {
+        log.info("VIEW: Deleting task");
         try {
             if (this.task == null) {
                 this.task = new TaskFullDto();
@@ -126,14 +133,17 @@ public class PMTasksView extends Div implements BeforeEnterObserver {
             taskService.deleteById(this.task.getTaskId());
             clearForm();
             refreshGrid();
+            log.info("VIEW: Task deleted");
             Notification.show("The task has been removed.", 3000, Position.TOP_CENTER)
                     .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
             UI.getCurrent().navigate(PMTasksView.class);
         } catch (ObjectOptimisticLockingFailureException exception) {
+            log.error("VIEW: Error deleting the task: {}", exception.getMessage());
             Notification.show(
                     "Error updating the data. Somebody else has updated the record while you were making changes.",
                     3000, Position.TOP_CENTER).addThemeVariants(NotificationVariant.LUMO_ERROR);
         } catch (ValidationException validationException) {
+            log.error("VIEW: Error deleting the task: {}", validationException.getMessage());
             Notification.show("Failed to delete task. Check again that all values are valid",
                     3000, Position.TOP_CENTER);
         }

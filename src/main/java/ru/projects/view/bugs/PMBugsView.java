@@ -9,6 +9,7 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
 import jakarta.annotation.security.RolesAllowed;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import ru.projects.model.Employee;
 import ru.projects.model.dto.bug.BugViewDto;
@@ -20,6 +21,7 @@ import ru.projects.view.MainLayout;
 @Route(value = "pm-bugs", layout = MainLayout.class)
 @RolesAllowed(value = {"ROLE_PM"})
 @Menu(order = 10, icon = "line-awesome/svg/bug-solid.svg")
+@Slf4j
 public class PMBugsView extends Div  {
 
     private final Grid<BugViewDto> grid = new Grid<>(BugViewDto.class, false);
@@ -57,6 +59,7 @@ public class PMBugsView extends Div  {
     }
 
     private void refreshGrid() {
+        log.info("VIEW: Get all bugs by projects.");
         grid.setItems(query -> bugService.getAllByProjects(
                 PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)),
                 authenticatedEmployee.getProjects()

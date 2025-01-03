@@ -21,6 +21,7 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility.Gap;
 import jakarta.annotation.security.RolesAllowed;
+import lombok.extern.slf4j.Slf4j;
 import ru.projects.model.Employee;
 import ru.projects.model.dto.bug.BugCreateDto;
 import ru.projects.model.dto.project.ProjectShortDto;
@@ -42,6 +43,7 @@ import java.util.Set;
 @Route(value = "create-bug", layout = MainLayout.class)
 @RolesAllowed(value = {"ROLE_TEST"})
 @Menu(order = 11, icon = "line-awesome/svg/bug-solid.svg")
+@Slf4j
 public class CreateBugView extends Composite<VerticalLayout> {
 
     private final BugService bugService;
@@ -78,6 +80,7 @@ public class CreateBugView extends Composite<VerticalLayout> {
     }
 
     private void saveBug() {
+        log.info("VIEW: Saving bug.");
         try {
             if (this.bugCreateDto == null) {
                 this.bugCreateDto = new BugCreateDto();
@@ -85,9 +88,11 @@ public class CreateBugView extends Composite<VerticalLayout> {
             binder.writeBean(this.bugCreateDto);
             bugService.save(bugCreateDto);
             clearForm();
+            log.info("VIEW: Bug saved successfully.");
             Notification.show("Bug saved successfully.", 3000, Notification.Position.TOP_CENTER)
                     .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
         } catch (ValidationException e) {
+            log.error("VIEW: Failed to create bug: {}", e.getMessage());
             Notification.show("Failed to create bug. Check again that all values are valid",
                     3000, Notification.Position.TOP_CENTER).addThemeVariants(NotificationVariant.LUMO_ERROR);
         }

@@ -21,6 +21,7 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility.Gap;
 import jakarta.annotation.security.RolesAllowed;
+import lombok.extern.slf4j.Slf4j;
 import ru.projects.model.Employee;
 import ru.projects.model.dto.employee.EmployeeShortDto;
 import ru.projects.model.dto.project.ProjectShortDto;
@@ -44,6 +45,7 @@ import java.util.Set;
 @Route(value = "create-task", layout = MainLayout.class)
 @RolesAllowed(value = {"ROLE_PM"})
 @Menu(order = 7, icon = "line-awesome/svg/pencil-alt-solid.svg")
+@Slf4j
 public class CreateTaskView extends Composite<VerticalLayout> {
 
     private final TaskService taskService;
@@ -92,6 +94,7 @@ public class CreateTaskView extends Composite<VerticalLayout> {
     }
 
     private void saveTask() {
+        log.info("VIEW: Saving task");
         try {
             if (this.taskCreateDto == null) {
                 this.taskCreateDto = new TaskCreateDto();
@@ -99,9 +102,11 @@ public class CreateTaskView extends Composite<VerticalLayout> {
             binder.writeBean(this.taskCreateDto);
             taskService.save(taskCreateDto);
             clearForm();
+            log.info("VIEW: Task saved");
             Notification.show("Task saved successfully.", 3000, Notification.Position.TOP_CENTER)
                     .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
         } catch (ValidationException e) {
+            log.error("VIEW: Failed to create task: {}", e.getMessage());
             Notification.show("Failed to create task. Check again that all values are valid",
                     3000, Notification.Position.TOP_CENTER).addThemeVariants(NotificationVariant.LUMO_ERROR);
         }
