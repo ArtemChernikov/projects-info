@@ -53,7 +53,7 @@ public class HomeView extends VerticalLayout {
         if (isUserInRole("ROLE_ADMIN")) {
             Button backupDatabaseButton = createButton("Create backup database", this::createBackupDatabase);
             Button restoreDatabaseButton = createButton("Restore database", this::restoreDatabase);
-            Button downloadButton = createButton("Download employees-tasks report",
+            Button downloadButton = createButton("Download tasks report",
                     () -> UI.getCurrent().getPage().open("/api/report/all-tasks"));
 
             add(backupDatabaseButton, restoreDatabaseButton, downloadButton);
