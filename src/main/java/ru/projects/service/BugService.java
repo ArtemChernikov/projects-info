@@ -62,6 +62,10 @@ public class BugService {
                 .map(bugMapper::bugToBugViewDto);
     }
 
+    public List<BugViewDto> getAllByProjectIds(List<Long> projectIds) {
+        return bugMapper.bugsToBugViewDtos(bugRepository.findAllByProjectIdsOrderByProjectName(projectIds));
+    }
+
     public void updateStatusById(Long bugId, String status) {
         Bug bug = bugRepository.findById(bugId).orElseThrow(() -> new RuntimeException("Bug not found"));
         Status newStatus = Status.fromDisplayName(status);

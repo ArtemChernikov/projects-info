@@ -9,6 +9,8 @@ import ru.projects.model.dto.bug.BugViewDto;
 import ru.projects.model.enums.Priority;
 import ru.projects.model.enums.Status;
 
+import java.util.List;
+
 @Mapper(componentModel = "spring", uses = {ProjectMapper.class},
         imports = {Priority.class, Status.class})
 public interface BugMapper {
@@ -21,6 +23,8 @@ public interface BugMapper {
     @Mapping(target = "priority", expression = "java(bug.getPriority().getDisplayName())")
     @Mapping(target = "status", expression = "java(bug.getStatus().getDisplayName())")
     BugViewDto bugToBugViewDto(Bug bug);
+
+    List<BugViewDto> bugsToBugViewDtos(List<Bug> bugs);
 
     @Mapping(target = "priority", expression = "java(bug.getPriority().getDisplayName())")
     BugUpdateDto bugToBugUpdateDto(Bug bug);

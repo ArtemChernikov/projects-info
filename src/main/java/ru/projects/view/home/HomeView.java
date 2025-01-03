@@ -71,8 +71,10 @@ public class HomeView extends VerticalLayout {
                     () -> UI.getCurrent().getPage().open("/api/report/active-tasks-by-projects?projectIds=" + projectIds));
             Button finishedTasksReportButton = createButton("Download finished tasks report",
                     () -> UI.getCurrent().getPage().open("/api/report/finished-tasks-by-projects?projectIds=" + projectIds));
+            Button bugsReportButton = createButton("Download bugs report",
+                    () -> UI.getCurrent().getPage().open("/api/report/bugs-by-projects?projectIds=" + projectIds));
 
-            add(tasksReportButton, activeTasksReportButton, finishedTasksReportButton);
+            add(tasksReportButton, activeTasksReportButton, finishedTasksReportButton, bugsReportButton);
         }
 
         setSizeFull();
