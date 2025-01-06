@@ -35,6 +35,7 @@ import ru.projects.service.EmployeeService;
 import ru.projects.service.ProjectService;
 import ru.projects.view.MainLayout;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -134,8 +135,24 @@ public class EditAllProjectsView extends Div implements BeforeEnterObserver {
                 .bind(ProjectFullDto::getName, ProjectFullDto::setName);
         binder.forField(startDate)
                 .asRequired("Start date is required")
+//                .withValidator(start -> endDate.getValue() == null || start.isBefore(endDate.getValue()),
+//                        "Start date must be before end date")
+                .withValidator(start -> {
+                    if (endDate.getValue() != null) {
+                        return start.isBefore(endDate.getValue());
+                    }
+                    return true;
+                        },
+                        "Start date must be before end date")
                 .bind(ProjectFullDto::getStartDate, ProjectFullDto::setStartDate);
         binder.forField(endDate)
+//                .withValidator(end -> end != null && end.isAfter(startDate.getValue()), "End date must be after start date")
+                .withValidator(end -> {
+                    if (end != null && startDate.getValue() != null) {
+                        return end.isAfter(startDate.getValue());
+                    }
+                    return true;
+                 }, "End date must be after start date")
                 .bind(ProjectFullDto::getEndDate, ProjectFullDto::setEndDate);
         binder.forField(status)
                 .asRequired("Project status is required")

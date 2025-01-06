@@ -98,4 +98,6 @@
 
 ## Скриншоты интерфейса
 
+![login_page](src/main/resources/static/application-images/login_page.png)
+
 ---
