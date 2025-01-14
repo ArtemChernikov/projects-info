@@ -25,4 +25,8 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long>, JpaSp
     @Modifying
     @Query(value = "DELETE FROM projects_employees WHERE employee_id = :employeeId", nativeQuery = true)
     void deleteEmployeeProjects(@Param("employeeId") Long employeeId);
+
+    boolean existsByPhone(String phone);
+
+    boolean existsByEmail(String email);
 }

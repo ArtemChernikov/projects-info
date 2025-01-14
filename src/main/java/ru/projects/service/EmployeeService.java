@@ -18,6 +18,7 @@ import ru.projects.model.dto.employee.EmployeeFullDto;
 import ru.projects.model.dto.employee.EmployeeShortDto;
 import ru.projects.model.enums.TaskType;
 import ru.projects.repository.EmployeeRepository;
+import ru.projects.repository.UserRepository;
 
 import java.util.List;
 import java.util.Map;
@@ -35,11 +36,13 @@ import java.util.stream.Collectors;
 public class EmployeeService {
 
     private final EmployeeRepository employeeRepository;
+    private final UserRepository userRepository;
     private final SpecializationService specializationService;
     private final PasswordEncoder passwordEncoder;
     private final EmployeeMapper employeeMapper;
 
     public void save(EmployeeDto employeeDto) {
+        checkIfDataExists(employeeDto.getUsername(), employeeDto.getPhone(), employeeDto.getEmail());
         Employee employee = employeeMapper.employeeDtoToEmployee(employeeDto);
         employeeRepository.save(employee);
     }
@@ -55,6 +58,8 @@ public class EmployeeService {
     }
 
     public Employee update(EmployeeFullDto employeeFullDto) {
+        // TODO Исправить редактирование (уникальность username, phone, email)
+        // TODO Не изменяется имя пользователя (проверить)
         Employee oldEmployee = employeeRepository
                 .findById(employeeFullDto.getEmployeeId())
                 .orElseThrow(() -> new RuntimeException("Employee not found"));
@@ -125,6 +130,22 @@ public class EmployeeService {
 
     private String getPasswordForUpdate(String newPassword, String encodeOldPassword) {
         return newPassword.equals(encodeOldPassword) ? encodeOldPassword : passwordEncoder.encode(newPassword);
+    }
+
+    public boolean checkIfDataExists(String username, String phone, String email) {
+        if (userRepository.existsByUsername(username)) {
+            throw new RuntimeException("Username already exists");
+        }
+
+        if (employeeRepository.existsByPhone(phone)) {
+            throw new RuntimeException("Phone number already exists");
+        }
+
+        if (employeeRepository.existsByEmail(email)) {
+            throw new RuntimeException("Email already exists");
+        }
+
+        return false;
     }
 
 }
