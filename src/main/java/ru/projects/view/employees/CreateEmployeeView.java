@@ -37,8 +37,8 @@ import java.util.List;
  * @version 1.0
  * @since 19.10.2024
  */
-@PageTitle("Create Employee")
-@Route(value = "create-employee", layout = MainLayout.class)
+@PageTitle("Add Employee")
+@Route(value = "add-employee", layout = MainLayout.class)
 @RolesAllowed(value = {"ROLE_ADMIN"})
 @Menu(order = 3, icon = "line-awesome/svg/user-plus-solid.svg")
 @Slf4j
@@ -89,8 +89,8 @@ public class CreateEmployeeView extends Composite<VerticalLayout> {
             Notification.show("Employee saved successfully.", 3000, Notification.Position.TOP_CENTER)
                     .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
         } catch (ValidationException e) {
-            log.error("VIEW: Failed to create employee: {}", e.getMessage());
-            Notification.show("Failed to create employee. Check again that all values are valid",
+            log.error("VIEW: Failed to add employee: {}", e.getMessage());
+            Notification.show("Failed to add employee. Check again that all values are valid",
                     3000, Notification.Position.TOP_CENTER).addThemeVariants(NotificationVariant.LUMO_ERROR);
         }
     }

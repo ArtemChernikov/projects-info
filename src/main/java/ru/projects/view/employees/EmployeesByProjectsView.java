@@ -56,6 +56,7 @@ public class EmployeesByProjectsView extends Div {
         grid = new Grid<>(EmployeeFullDto.class, false);
         grid.addColumn("firstName").setAutoWidth(true);
         grid.addColumn("lastName").setAutoWidth(true);
+        grid.addColumn("patronymicName").setAutoWidth(true);
         grid.addColumn("email").setAutoWidth(true);
         grid.addColumn("phone").setAutoWidth(true);
         grid.addColumn("dateOfBirth").setAutoWidth(true);
