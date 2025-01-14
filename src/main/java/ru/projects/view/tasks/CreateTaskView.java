@@ -41,8 +41,8 @@ import java.util.Set;
  * @version 1.0
  * @since 20.10.2024
  */
-@PageTitle("Create Task")
-@Route(value = "create-task", layout = MainLayout.class)
+@PageTitle("Add Task")
+@Route(value = "add-task", layout = MainLayout.class)
 @RolesAllowed(value = {"ROLE_PM"})
 @Menu(order = 7, icon = "line-awesome/svg/pencil-alt-solid.svg")
 @Slf4j
@@ -94,7 +94,7 @@ public class CreateTaskView extends Composite<VerticalLayout> {
     }
 
     private void saveTask() {
-        log.info("VIEW: Saving task");
+        log.info("VIEW: Add task");
         try {
             if (this.taskCreateDto == null) {
                 this.taskCreateDto = new TaskCreateDto();
@@ -102,12 +102,12 @@ public class CreateTaskView extends Composite<VerticalLayout> {
             binder.writeBean(this.taskCreateDto);
             taskService.save(taskCreateDto);
             clearForm();
-            log.info("VIEW: Task saved");
-            Notification.show("Task saved successfully.", 3000, Notification.Position.TOP_CENTER)
+            log.info("VIEW: Task added");
+            Notification.show("Task added successfully.", 3000, Notification.Position.TOP_CENTER)
                     .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
         } catch (ValidationException e) {
-            log.error("VIEW: Failed to create task: {}", e.getMessage());
-            Notification.show("Failed to create task. Check again that all values are valid",
+            log.error("VIEW: Failed to add task: {}", e.getMessage());
+            Notification.show("Failed to add task. Check again that all values are valid",
                     3000, Notification.Position.TOP_CENTER).addThemeVariants(NotificationVariant.LUMO_ERROR);
         }
     }

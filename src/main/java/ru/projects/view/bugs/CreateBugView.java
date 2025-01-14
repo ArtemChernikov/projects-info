@@ -39,8 +39,8 @@ import java.util.Set;
  * @version 1.0
  * @since 10.11.2024
  */
-@PageTitle("Create bug")
-@Route(value = "create-bug", layout = MainLayout.class)
+@PageTitle("Add bug")
+@Route(value = "add-bug", layout = MainLayout.class)
 @RolesAllowed(value = {"ROLE_TEST"})
 @Menu(order = 11, icon = "line-awesome/svg/bug-solid.svg")
 @Slf4j
@@ -80,7 +80,7 @@ public class CreateBugView extends Composite<VerticalLayout> {
     }
 
     private void saveBug() {
-        log.info("VIEW: Saving bug.");
+        log.info("VIEW: Add bug.");
         try {
             if (this.bugCreateDto == null) {
                 this.bugCreateDto = new BugCreateDto();
@@ -88,12 +88,12 @@ public class CreateBugView extends Composite<VerticalLayout> {
             binder.writeBean(this.bugCreateDto);
             bugService.save(bugCreateDto);
             clearForm();
-            log.info("VIEW: Bug saved successfully.");
-            Notification.show("Bug saved successfully.", 3000, Notification.Position.TOP_CENTER)
+            log.info("VIEW: Bug added successfully.");
+            Notification.show("Bug added successfully.", 3000, Notification.Position.TOP_CENTER)
                     .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
         } catch (ValidationException e) {
-            log.error("VIEW: Failed to create bug: {}", e.getMessage());
-            Notification.show("Failed to create bug. Check again that all values are valid",
+            log.error("VIEW: Failed to add bug: {}", e.getMessage());
+            Notification.show("Failed to add bug. Check again that all values are valid",
                     3000, Notification.Position.TOP_CENTER).addThemeVariants(NotificationVariant.LUMO_ERROR);
         }
     }

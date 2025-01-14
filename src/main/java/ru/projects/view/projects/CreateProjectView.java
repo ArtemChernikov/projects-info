@@ -51,8 +51,8 @@ import static ru.projects.util.Constants.QA_ENGINEER_SPECIALIZATION_NAME;
  * @version 1.0
  * @since 20.10.2024
  */
-@PageTitle("Create Project")
-@Route(value = "create-project", layout = MainLayout.class)
+@PageTitle("Add Project")
+@Route(value = "add-project", layout = MainLayout.class)
 @RolesAllowed(value = {"ROLE_ADMIN", "ROLE_PM"})
 @Menu(order = 5, icon = "line-awesome/svg/folder-plus-solid.svg")
 @Slf4j
@@ -93,7 +93,7 @@ public class CreateProjectView extends Composite<VerticalLayout> {
     }
 
     private void saveProject() {
-        log.info("VIEW: Saving project");
+        log.info("VIEW: Add project");
         try {
             if (this.projectCreateDto == null) {
                 this.projectCreateDto = new ProjectCreateDto();
@@ -102,12 +102,12 @@ public class CreateProjectView extends Composite<VerticalLayout> {
             setEmployeesToProject();
             projectService.save(projectCreateDto);
             clearForm();
-            log.info("VIEW: Project saved");
-            Notification.show("Project saved successfully.", 3000, Notification.Position.TOP_CENTER)
+            log.info("VIEW: Project added");
+            Notification.show("Project added successfully.", 3000, Notification.Position.TOP_CENTER)
                     .addThemeVariants(NotificationVariant.LUMO_SUCCESS);
         } catch (ValidationException e) {
-            log.error("VIEW: Failed to create project: {}", e.getMessage());
-            Notification.show("Failed to create project. Check again that all values are valid",
+            log.error("VIEW: Failed to add project: {}", e.getMessage());
+            Notification.show("Failed to add project. Check again that all values are valid",
                     3000, Notification.Position.TOP_CENTER).addThemeVariants(NotificationVariant.LUMO_ERROR);
         }
     }
