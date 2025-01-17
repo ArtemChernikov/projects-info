@@ -58,11 +58,11 @@ public class EmployeeService {
     }
 
     public Employee update(EmployeeFullDto employeeFullDto) {
-        // TODO Исправить редактирование (уникальность username, phone, email)
-        // TODO Не изменяется имя пользователя (проверить)
         Employee oldEmployee = employeeRepository
                 .findById(employeeFullDto.getEmployeeId())
                 .orElseThrow(() -> new RuntimeException("Employee not found"));
+        checkEmployeeFields(oldEmployee, employeeFullDto.getUsername(),
+                employeeFullDto.getPhone(), employeeFullDto.getEmail());
         Employee employeeForUpdate = employeeMapper.employeeFullDtoToEmployee(employeeFullDto);
         employeeForUpdate.setTasks(oldEmployee.getTasks());
 
@@ -71,6 +71,20 @@ public class EmployeeService {
         user.setPassword(getPasswordForUpdate(employeeFullDto.getPassword(), oldEmployee.getUser().getPassword()));
         employeeForUpdate.setUser(user);
         return employeeRepository.save(employeeForUpdate);
+    }
+
+    private void checkEmployeeFields(Employee oldEmployee, String usernameForUpdate, String phoneForUpdate,
+                                          String emailForUpdate) {
+        User oldUser = oldEmployee.getUser();
+        if (!oldUser.getUsername().equals(usernameForUpdate) && userRepository.existsByUsername(usernameForUpdate)) {
+            throw new RuntimeException("Username already exists");
+        }
+        if (!oldEmployee.getPhone().equals(phoneForUpdate) && employeeRepository.existsByPhone(phoneForUpdate)) {
+            throw new RuntimeException("Phone already exists");
+        }
+        if (!oldEmployee.getEmail().equals(emailForUpdate) && employeeRepository.existsByEmail(emailForUpdate)) {
+            throw new RuntimeException("Email already exists");
+        }
     }
 
     @Transactional
