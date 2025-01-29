@@ -135,8 +135,6 @@ public class EditAllProjectsView extends Div implements BeforeEnterObserver {
                 .bind(ProjectFullDto::getName, ProjectFullDto::setName);
         binder.forField(startDate)
                 .asRequired("Start date is required")
-//                .withValidator(start -> endDate.getValue() == null || start.isBefore(endDate.getValue()),
-//                        "Start date must be before end date")
                 .withValidator(start -> {
                     if (endDate.getValue() != null) {
                         return start.isBefore(endDate.getValue());
@@ -146,7 +144,6 @@ public class EditAllProjectsView extends Div implements BeforeEnterObserver {
                         "Start date must be before end date")
                 .bind(ProjectFullDto::getStartDate, ProjectFullDto::setStartDate);
         binder.forField(endDate)
-//                .withValidator(end -> end != null && end.isAfter(startDate.getValue()), "End date must be after start date")
                 .withValidator(end -> {
                     if (end != null && startDate.getValue() != null) {
                         return end.isAfter(startDate.getValue());
