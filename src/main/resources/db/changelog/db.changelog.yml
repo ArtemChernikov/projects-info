@@ -38,3 +38,6 @@ databaseChangeLog:
   - include:
       file: scripts/013_ddl_alter_table_users.sql
       relativeToChangelogFile: true
+  - include:
+      file: scripts/014_ddl_create_log_trigger.sql
+      relativeToChangelogFile: true
