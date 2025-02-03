@@ -6,7 +6,6 @@ CREATE TABLE user_logs
     changed_at TIMESTAMP DEFAULT now()
 );
 
-
 CREATE OR REPLACE FUNCTION log_user_changes()
     RETURNS TRIGGER AS $$
 BEGIN
